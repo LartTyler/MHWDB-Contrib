@@ -1,0 +1,6 @@
+# IDE Files
+/.idea
+
+# Vagrant files
+/.vagrant
+/*-cloudimg-console.log
