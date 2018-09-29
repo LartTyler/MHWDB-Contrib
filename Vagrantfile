@@ -16,10 +16,16 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision "shell", inline: <<-SHELL
 		apt-get update -y
+		apt-get remove cmdtest
 
 		curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 
-		apt-get install -y build-essential software-properties-common nodejs
+		curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+        echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+        apt-get update -y
+
+		apt-get install -y build-essential software-properties-common nodejs yarn
 	SHELL
 
 	config.vm.provision "shell", privileged: false, inline: <<-SHELL
