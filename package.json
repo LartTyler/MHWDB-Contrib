@@ -1,0 +1,33 @@
+{
+	"name": "@dbstudios/mhwdb-contrib-ui",
+	"private": true,
+	"contributors": [
+		{
+			"name": "Tyler Lartonoix",
+			"email": "tyler@lartonoix.com",
+			"url": "https://github.com/LartTyler"
+		}
+	],
+	"license": "GPL-3.0",
+	"dependencies": {
+		"@types/react": "^16.4.14",
+		"@types/react-dom": "^16.0.8",
+		"@types/react-router": "^4.0.31",
+		"@types/react-router-dom": "^4.3.1",
+		"react": "^16.5.2",
+		"react-dom": "^16.5.2",
+		"react-router": "^4.3.1",
+		"react-router-dom": "^4.3.1"
+	},
+	"devDependencies": {
+		"awesome-typescript-loader": "^5.2.1",
+		"source-map-loader": "^0.2.4",
+		"typescript": "^3.1.1",
+		"webpack": "^4.20.2",
+		"webpack-cli": "^3.1.1",
+		"webpack-dev-server": "^3.1.9"
+	},
+	"scripts": {
+		"start": "webpack-dev-server --mode development"
+	}
+}
