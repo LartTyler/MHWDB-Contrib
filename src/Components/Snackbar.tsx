@@ -1,12 +1,10 @@
 import {createStyles, Snackbar as MuiSnackbar, Theme, WithStyles, withStyles} from '@material-ui/core';
 import {amber, green} from '@material-ui/core/colors';
 import {SvgIconProps} from '@material-ui/core/SvgIcon';
-import {
-	CheckCircle as CheckCircleIcon,
-	Error as ErrorIcon,
-	Info as InfoIcon,
-	Warning as WarningIcon,
-} from '@material-ui/icons';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import InfoIcon from '@material-ui/icons/Info';
+import WarningIcon from '@material-ui/icons/Warning';
+import ErrorIcon from '@material-ui/icons/Error';
 import * as React from 'react';
 
 type SnackbarCloseReason = 'timeout' | 'clickaway';
