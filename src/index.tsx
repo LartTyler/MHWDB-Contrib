@@ -1,4 +1,5 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import {Router} from './Router';
 
-ReactDOM.render(<span>Coming soon!</span>, document.getElementById('application'));
+ReactDOM.render(<Router />, document.getElementById('application'));

@@ -1,0 +1,26 @@
+import {createMuiTheme, CssBaseline, MuiThemeProvider} from '@material-ui/core';
+import * as React from 'react';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {App} from './Components/App';
+import {Login} from './Components/Auth/Login';
+import {PrivateRoute} from './Security/PrivateRoute';
+
+const theme = createMuiTheme({
+	palette: {
+		type: 'dark',
+	},
+});
+
+export const Router: React.SFC<{}> = () => (
+	<MuiThemeProvider theme={theme}>
+		<CssBaseline />
+
+		<BrowserRouter>
+			<Switch>
+				<Route path="/login" component={Login} />
+
+				<PrivateRoute path="/" component={App} />
+			</Switch>
+		</BrowserRouter>
+	</MuiThemeProvider>
+);

@@ -1,13 +1,8 @@
 {
 	"compilerOptions": {
-		"outDir": "./build",
-		"module": "commonjs",
-		"target": "es2015",
-		"sourceMap": true,
 		"jsx": "react",
-		"noImplicitAny": true
-	},
-	"include": [
-		"./src/**/*"
-	]
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true
+	}
 }

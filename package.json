@@ -10,24 +10,23 @@
 	],
 	"license": "GPL-3.0",
 	"dependencies": {
+		"@material-ui/core": "^3.1.2",
+		"@material-ui/icons": "^3.0.1",
 		"@types/react": "^16.4.14",
 		"@types/react-dom": "^16.0.8",
-		"@types/react-router": "^4.0.31",
 		"@types/react-router-dom": "^4.3.1",
+		"dotenv": "^6.0.0",
 		"react": "^16.5.2",
 		"react-dom": "^16.5.2",
-		"react-router": "^4.3.1",
 		"react-router-dom": "^4.3.1"
 	},
 	"devDependencies": {
-		"awesome-typescript-loader": "^5.2.1",
-		"source-map-loader": "^0.2.4",
-		"typescript": "^3.1.1",
-		"webpack": "^4.20.2",
-		"webpack-cli": "^3.1.1",
-		"webpack-dev-server": "^3.1.9"
+		"parcel-bundler": "^1.10.1",
+		"typescript": "^3.1.1"
 	},
 	"scripts": {
-		"start": "webpack-dev-server --mode development"
-	}
+		"start": "parcel serve index.html -p 4000",
+		"build": "parcel build index.html"
+	},
+	"sideEffects": false
 }

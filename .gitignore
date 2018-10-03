@@ -1,9 +1,7 @@
 # IDE Files
 /.idea
 
-# Vagrant files
-/.vagrant
-/*-cloudimg-console.log
-
-# Yarn / NPM Files
+# Bundler Files
 /node_modules
+/.cache
+/dist
