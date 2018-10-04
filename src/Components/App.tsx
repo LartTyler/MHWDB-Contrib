@@ -6,12 +6,14 @@ import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
-import {MainNavList} from './Navigation/MainNavList';
+import {NavList} from './Navigation/NavList';
+import {NavListLink} from './Navigation/NavListLink';
 
 const styles = (theme: Theme) => createStyles({
 	root: {
 		flexGrow: 1,
 		height: '100%',
+		minHeight: '100vh',
 		zIndex: 1,
 		overflow: 'hidden',
 		position: 'relative',
@@ -19,9 +21,6 @@ const styles = (theme: Theme) => createStyles({
 	},
 	appBar: {
 		zIndex: theme.zIndex.drawer + 1,
-	},
-	drawer: {
-		height: '100%',
 	},
 	drawerPaper: {
 		position: 'relative',
@@ -48,15 +47,19 @@ const AppComponent: React.SFC<AppProps> = props => {
 			<AppBar position="absolute" className={classes.appBar}>
 				<Toolbar>
 					<Typography variant="title" color="inherit" noWrap={true}>
-						Monster Hunter: World DB
+						Title
 					</Typography>
 				</Toolbar>
 			</AppBar>
 
-			<Drawer variant="permanent" className={classes.drawer} classes={{paper: classes.drawerPaper}}>
+			<Drawer variant="permanent" classes={{paper: classes.drawerPaper}}>
 				<div className={classes.toolbar} />
 
-				<MainNavList />
+				<NavList>
+					<NavListLink linkTo="/">
+						Home
+					</NavListLink>
+				</NavList>
 			</Drawer>
 
 			<main className={classes.content}>

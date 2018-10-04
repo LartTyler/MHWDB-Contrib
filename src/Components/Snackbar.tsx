@@ -1,27 +1,29 @@
 import amber from '@material-ui/core/colors/amber';
 import green from '@material-ui/core/colors/green';
+import IconButton from '@material-ui/core/IconButton/IconButton';
 import MuiSnackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
+import MuiSnackbarContent from '@material-ui/core/SnackbarContent';
 import {Theme} from '@material-ui/core/styles/createMuiTheme';
 import createStyles from '@material-ui/core/styles/createStyles';
 import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
-import {SvgIconProps} from '@material-ui/core/SvgIcon';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import {SvgIconProps} from '@material-ui/core/SvgIcon/SvgIcon';
+import SuccessIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
+import CloseIcon from '@material-ui/icons/Close';
 import * as React from 'react';
 
-type SnackbarCloseReason = 'timeout' | 'clickaway';
-type SnackbarVariant = 'default' | 'success' | 'info' | 'warning' | 'error';
-
+type CloseReason = 'timeout' | 'clickaway' | 'dismiss';
+type CloseEventHandler = (reason: CloseReason) => void;
+type Variant = 'default' | 'success' | 'info' | 'warning' | 'error';
 type IconSet = {
-	[key in SnackbarVariant]: React.ComponentType<SvgIconProps>;
+	[key in Variant]: React.ComponentType<SvgIconProps>;
 };
 
-const variantIcons: IconSet = {
+const icons: IconSet = {
 	default: null,
-	success: CheckCircleIcon,
+	success: SuccessIcon,
 	info: InfoIcon,
 	warning: WarningIcon,
 	error: ErrorIcon,
@@ -41,13 +43,18 @@ const styles = (theme: Theme) => createStyles({
 	error: {
 		backgroundColor: theme.palette.error.dark,
 	},
-	layout: {
+	root: {
 		margin: theme.spacing.unit,
 	},
 	icon: {
 		fontSize: 20,
+	},
+	iconVariant: {
 		opacity: 0.9,
 		marginRight: theme.spacing.unit,
+	},
+	close: {
+		padding: theme.spacing.unit / 2,
 	},
 	message: {
 		display: 'flex',
@@ -56,10 +63,10 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface SnackbarProps extends WithStyles<typeof styles> {
-	message: React.ReactNode;
+	message: React.ReactNode,
 	autoHideDuration?: number;
-	variant?: SnackbarVariant;
-	onClose?: (event: React.SyntheticEvent<any>, reason: SnackbarCloseReason) => void;
+	variant?: Variant;
+	onClose?: CloseEventHandler;
 }
 
 interface SnackbarState {
@@ -68,7 +75,7 @@ interface SnackbarState {
 
 class SnackbarComponent extends React.Component<SnackbarProps, SnackbarState> {
 	public static defaultProps: Partial<SnackbarProps> = {
-		autoHideDuration: 3000,
+		autoHideDuration: 5000,
 		variant: 'default',
 	};
 
@@ -76,7 +83,7 @@ class SnackbarComponent extends React.Component<SnackbarProps, SnackbarState> {
 		open: true,
 	};
 
-	private onSnackbarClose = (event: React.SyntheticEvent<any>, reason: SnackbarCloseReason): void => {
+	private onSnackbarAutoHide = (event: React.SyntheticEvent<any>, reason: CloseReason): void => {
 		if (reason === 'clickaway')
 			return;
 
@@ -85,16 +92,25 @@ class SnackbarComponent extends React.Component<SnackbarProps, SnackbarState> {
 		});
 
 		if (this.props.onClose)
-			this.props.onClose(event, reason);
+			setTimeout(() => this.props.onClose(reason), 500);
+	};
+
+	private onSnackbarDismiss = () => {
+		this.setState({
+			open: false,
+		});
+
+		if (this.props.onClose)
+			setTimeout(() => this.props.onClose('dismiss'), 500);
 	};
 
 	public render(): JSX.Element {
 		const {classes, variant} = this.props;
+		const Icon = icons[variant];
 
-		const Icon = variantIcons[variant];
 		const message = (
-			<span>
-				<Icon className={classes.icon} />
+			<span className={classes.message}>
+				<Icon className={`${classes.icon} ${classes.iconVariant}`} />
 
 				{this.props.message}
 			</span>
@@ -103,15 +119,29 @@ class SnackbarComponent extends React.Component<SnackbarProps, SnackbarState> {
 		return (
 			<MuiSnackbar
 				open={this.state.open}
-				onClose={this.onSnackbarClose}
-				className={classes.layout}
+				onClose={this.onSnackbarAutoHide}
+				className={classes.root}
 				autoHideDuration={this.props.autoHideDuration}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'left',
+				}}
 			>
-                <SnackbarContent
-					className={classes[variant]}
+				<MuiSnackbarContent
 					message={message}
+					className={classes[variant]}
+					action={[
+						<IconButton
+							key="close"
+							color="inherit"
+							className={classes.close}
+							onClick={this.onSnackbarDismiss}
+						>
+							<CloseIcon className={classes.icon} />
+						</IconButton>
+					]}
 				/>
-            </MuiSnackbar>
+			</MuiSnackbar>
 		);
 	}
 }
