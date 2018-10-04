@@ -1,15 +1,12 @@
-import {
-	Button,
-	createStyles,
-	FormControl,
-	Input,
-	InputLabel,
-	Paper,
-	Theme,
-	Typography,
-	WithStyles,
-	withStyles,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import Paper from '@material-ui/core/Paper';
+import {Theme} from '@material-ui/core/styles/createMuiTheme';
+import createStyles from '@material-ui/core/styles/createStyles';
+import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
+import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
 import {ChangeEvent, FormEvent} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
@@ -76,10 +73,16 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 			.catch((error: Error) => {
 				this.setState({
 					processing: false,
-					error: error.message
+					error: error.message,
 				});
 			});
 	};
+
+	private onErrorSnackbarClose = () => setTimeout(() => {
+		this.setState({
+			error: null,
+		});
+	}, 500);
 
 	public render(): JSX.Element {
 		if (this.state.redirect) {
@@ -90,7 +93,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 
 		const {classes} = this.props;
 		const error = this.state.error ? (
-			<Snackbar message={this.state.error} variant="error" />
+			<Snackbar message={this.state.error} variant="error" onClose={this.onErrorSnackbarClose} />
 		) : null;
 
 		return (

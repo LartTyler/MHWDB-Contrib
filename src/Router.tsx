@@ -1,4 +1,6 @@
-import {createMuiTheme, CssBaseline, MuiThemeProvider} from '@material-ui/core';
+import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
+import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
 import * as React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {App} from './Components/App';

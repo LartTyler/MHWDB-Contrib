@@ -1,10 +1,15 @@
-import {createStyles, Snackbar as MuiSnackbar, Theme, WithStyles, withStyles} from '@material-ui/core';
-import {amber, green} from '@material-ui/core/colors';
+import amber from '@material-ui/core/colors/amber';
+import green from '@material-ui/core/colors/green';
+import MuiSnackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import {Theme} from '@material-ui/core/styles/createMuiTheme';
+import createStyles from '@material-ui/core/styles/createStyles';
+import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
 import {SvgIconProps} from '@material-ui/core/SvgIcon';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
-import ErrorIcon from '@material-ui/icons/Error';
 import * as React from 'react';
 
 type SnackbarCloseReason = 'timeout' | 'clickaway';
@@ -36,6 +41,9 @@ const styles = (theme: Theme) => createStyles({
 	error: {
 		backgroundColor: theme.palette.error.dark,
 	},
+	layout: {
+		margin: theme.spacing.unit,
+	},
 	icon: {
 		fontSize: 20,
 		opacity: 0.9,
@@ -60,7 +68,7 @@ interface SnackbarState {
 
 class SnackbarComponent extends React.Component<SnackbarProps, SnackbarState> {
 	public static defaultProps: Partial<SnackbarProps> = {
-		autoHideDuration: 6000,
+		autoHideDuration: 3000,
 		variant: 'default',
 	};
 
@@ -69,6 +77,9 @@ class SnackbarComponent extends React.Component<SnackbarProps, SnackbarState> {
 	};
 
 	private onSnackbarClose = (event: React.SyntheticEvent<any>, reason: SnackbarCloseReason): void => {
+		if (reason === 'clickaway')
+			return;
+
 		this.setState({
 			open: false,
 		});
@@ -91,11 +102,16 @@ class SnackbarComponent extends React.Component<SnackbarProps, SnackbarState> {
 
 		return (
 			<MuiSnackbar
-				onClose={this.onSnackbarClose}
 				open={this.state.open}
-				className={classes[variant]}
-				message={message}
-			/>
+				onClose={this.onSnackbarClose}
+				className={classes.layout}
+				autoHideDuration={this.props.autoHideDuration}
+			>
+                <SnackbarContent
+					className={classes[variant]}
+					message={message}
+				/>
+            </MuiSnackbar>
 		);
 	}
 }
