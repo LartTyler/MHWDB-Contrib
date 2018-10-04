@@ -114,7 +114,7 @@ export class ApiClient {
 
 		return fetch(url.href, request)
 			.then(response => {
-				if (!response.ok)
+				if (response.headers.get('content-type') !== 'application/json')
 					throw new Error(response.statusText);
 
 				return response.json();
