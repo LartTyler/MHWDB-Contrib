@@ -33,6 +33,11 @@ export class ApiClient {
 
 	public constructor(baseUrl: string) {
 		this.baseUrl = baseUrl;
+
+		const jwt = window.localStorage.getItem('api.auth_token');
+
+		if (jwt)
+			this.setToken(jwt);
 	}
 
 	public isAuthenticated(): boolean {
@@ -65,7 +70,10 @@ export class ApiClient {
 			path = path.substr(1);
 
 		const url = new URL(path, this.baseUrl);
-		const headers = new Headers();
+		const headers = new Headers({
+			'Content-Type': 'application/json',
+		});
+
 		const request: RequestInit = {
 			method: method.toUpperCase(),
 			headers: headers,
@@ -76,12 +84,26 @@ export class ApiClient {
 				for (let key in parameters) {
 					const value = parameters[key];
 
-					if (typeof value === 'object')
-						url.searchParams.set(key, JSON.stringify(value));
-					else if (typeof value === 'boolean' && value)
-						url.searchParams.set(key, '');
-					else if (typeof value === 'number')
-						url.searchParams.set(key, value.toString(10));
+					switch (typeof value) {
+						case 'object':
+							url.searchParams.set(key, JSON.stringify(value));
+
+							break;
+
+						case 'boolean':
+							if (value)
+								url.searchParams.set(key, JSON.stringify(value));
+
+							break;
+
+						case 'number':
+							url.searchParams.set(key, JSON.stringify(value));
+
+							break;
+
+						default:
+							throw new Error(`Unsupported API parameter type: ${typeof value}`);
+					}
 				}
 			} else
 				request.body = JSON.stringify(parameters);
@@ -117,11 +139,27 @@ export class ApiClient {
 		else {
 			this.token = new Token(token);
 
+			if (!this.token.isValid()) {
+				this.token = null;
+
+				return;
+			}
+
+			const delay = this.token.body.exp - Math.floor(Date.now() / 1000) - 15;
+
+			if (delay <= 5) {
+				console.warn('There isn\'t enough time to refresh the token, forcing re-login');
+
+				window.location.href = '/login';
+			}
+
+			window.localStorage.setItem('api.auth_token', token);
+
 			this.tokenRefreshId = window.setTimeout(() => {
 				this.tokenRefreshId = null;
 
 				this.refresh();
-			}, this.token.getExpiration() - Math.floor(Date.now() / 1000) - 15);
+			}, delay * 1000);
 		}
 	}
 }

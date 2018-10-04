@@ -4,19 +4,15 @@ interface JwtBody {
 }
 
 export class Token {
-	protected _jwt: string;
-	protected _body: JwtBody;
+	public readonly jwt: string;
+	public readonly body: JwtBody;
 
 	public constructor(jwt: string) {
-		this._jwt = jwt;
-		this._body = JSON.parse(atob(jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.') - 1)));
+		this.jwt = jwt;
+		this.body = JSON.parse(atob(jwt.substring(jwt.indexOf('.') + 1, jwt.lastIndexOf('.'))));
 	}
 
-	public get jwt(): string {
-		return this._jwt;
-	}
-
-	public getExpiration(): number {
-		return this._body.exp;
+	public isValid(): boolean {
+		return Math.floor(Date.now() / 1000) < this.body.exp;
 	}
 }
