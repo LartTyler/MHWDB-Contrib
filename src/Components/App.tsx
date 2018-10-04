@@ -6,6 +6,9 @@ import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import * as React from 'react';
+import {BrowserRouter, Link, Route, Switch} from 'react-router-dom';
+import {AilmentEditor} from './Editor/AilmentEditor';
+import {Home} from './Home';
 import {NavList} from './Navigation/NavList';
 import {NavListLink} from './Navigation/NavListLink';
 
@@ -47,7 +50,9 @@ const AppComponent: React.SFC<AppProps> = props => {
 			<AppBar position="absolute" className={classes.appBar}>
 				<Toolbar>
 					<Typography variant="title" color="inherit" noWrap={true}>
-						Title
+						<Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>
+							Monster Hunter: World DB
+						</Link>
 					</Typography>
 				</Toolbar>
 			</AppBar>
@@ -59,13 +64,23 @@ const AppComponent: React.SFC<AppProps> = props => {
 					<NavListLink linkTo="/">
 						Home
 					</NavListLink>
+
+					<NavListLink linkTo="/edit/ailments">
+						Ailments
+					</NavListLink>
 				</NavList>
 			</Drawer>
 
 			<main className={classes.content}>
 				<div className={classes.toolbar} />
 
-				Main content.
+				<>
+					<Switch>
+						<Route exact={true} path="/" component={Home} />
+
+						<Route exact={true} path="/edit/ailments" component={AilmentEditor} />
+					</Switch>
+				</>
 			</main>
 		</div>
 	);

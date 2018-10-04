@@ -19,7 +19,7 @@ export const Router: React.SFC<{}> = () => (
 
 		<BrowserRouter>
 			<Switch>
-				<Route path="/login" component={Login} />
+				<Route exact={true} path="/login" component={Login} />
 
 				<PrivateRoute path="/" component={App} />
 			</Switch>
