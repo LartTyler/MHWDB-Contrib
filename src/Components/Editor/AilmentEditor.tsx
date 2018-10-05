@@ -1,8 +1,10 @@
+import Button from '@material-ui/core/Button/Button';
 import Paper from '@material-ui/core/Paper/Paper';
 import {Theme} from '@material-ui/core/styles/createMuiTheme';
 import createStyles from '@material-ui/core/styles/createStyles';
 import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
 import Typography from '@material-ui/core/Typography/Typography';
+import PlusIcon from 'mdi-material-ui/Plus';
 import * as React from 'react';
 
 const styles = (theme: Theme) => createStyles({
@@ -23,9 +25,11 @@ class AilmentEditorComponent extends React.Component<AilmentEditorProps, {}> {
 				</Typography>
 
 				<Paper className={this.props.classes.paper}>
-					<Typography component="p">
-						Ailment editor coming soon!
-					</Typography>
+					<Button variant="contained" color="primary">
+						<PlusIcon />
+
+						Create
+					</Button>
 				</Paper>
 			</div>
 		);
