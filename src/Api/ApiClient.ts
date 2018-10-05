@@ -28,7 +28,6 @@ export class ApiClient {
 	protected baseUrl: string;
 
 	protected token: Token = null;
-
 	protected tokenRefreshId: number = null;
 
 	public constructor(baseUrl: string) {
@@ -134,9 +133,13 @@ export class ApiClient {
 			this.tokenRefreshId = null;
 		}
 
-		if (token === null)
+		if (token === null) {
 			this.token = null;
-		else {
+
+			window.localStorage.removeItem('api.auth_token');
+
+			window.location.href = '/login';
+		} else {
 			this.token = new Token(token);
 
 			if (!this.token.isValid()) {

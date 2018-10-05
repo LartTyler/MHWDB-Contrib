@@ -1,16 +1,21 @@
 import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
+import IconButton from '@material-ui/core/IconButton/IconButton';
 import {Theme} from '@material-ui/core/styles/createMuiTheme';
 import createStyles from '@material-ui/core/styles/createStyles';
 import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
 import Toolbar from '@material-ui/core/Toolbar';
+import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import GithubCircleIcon from 'mdi-material-ui/GithubCircle';
 import * as React from 'react';
-import {BrowserRouter, Link, Route, Switch} from 'react-router-dom';
+import {Link, Route, Switch} from 'react-router-dom';
+import {createLink} from './createLink';
 import {AilmentEditor} from './Editor/AilmentEditor';
 import {Home} from './Home';
 import {NavList} from './Navigation/NavList';
 import {NavListLink} from './Navigation/NavListLink';
+import {PaletteType, ThemeSwitcher} from './ThemeSwitcher';
 
 const styles = (theme: Theme) => createStyles({
 	root: {
@@ -37,9 +42,14 @@ const styles = (theme: Theme) => createStyles({
 		minWidth: 0,
 		flex: '1 1 100%',
 	},
+	grow: {
+		flexGrow: 1,
+	},
 });
 
 interface AppProps extends WithStyles<typeof styles> {
+	onThemeChange: (paletteType: PaletteType) => void;
+	currentTheme: PaletteType;
 }
 
 const AppComponent: React.SFC<AppProps> = props => {
@@ -49,11 +59,21 @@ const AppComponent: React.SFC<AppProps> = props => {
 		<div className={classes.root}>
 			<AppBar position="absolute" className={classes.appBar}>
 				<Toolbar>
-					<Typography variant="title" color="inherit" noWrap={true}>
+					<Typography variant="title" color="inherit" noWrap={true} className={classes.grow}>
 						<Link to="/" style={{textDecoration: 'none', color: 'inherit'}}>
 							Monster Hunter: World DB
 						</Link>
 					</Typography>
+
+					<ThemeSwitcher onChange={props.onThemeChange} paletteType={props.currentTheme} />
+
+					<Tooltip title="Visit us on GitHub">
+						<a href="https://github.com/LartTyler/MHWDB-API" target="_blank">
+							<IconButton aria-label="View the project on GitHub">
+								<GithubCircleIcon />
+							</IconButton>
+						</a>
+					</Tooltip>
 				</Toolbar>
 			</AppBar>
 
@@ -74,13 +94,11 @@ const AppComponent: React.SFC<AppProps> = props => {
 			<main className={classes.content}>
 				<div className={classes.toolbar} />
 
-				<>
-					<Switch>
-						<Route exact={true} path="/" component={Home} />
+				<Switch>
+					<Route exact={true} path="/" component={Home} />
 
-						<Route exact={true} path="/edit/ailments" component={AilmentEditor} />
-					</Switch>
-				</>
+					<Route path="/edit/ailments" component={AilmentEditor} />
+				</Switch>
 			</main>
 		</div>
 	);
