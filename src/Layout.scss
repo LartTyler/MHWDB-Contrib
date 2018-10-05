@@ -1,0 +1,16 @@
+@import "../node_modules/@blueprintjs/core/lib/scss/variables";
+
+body {
+	margin: 0;
+}
+
+#app-root {
+	display: flex;
+	flex-direction: row;
+	margin: 0 auto;
+	min-height: 100vh;
+
+	&.#{$ns}-dark {
+		background: #30404d;
+	}
+}

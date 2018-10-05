@@ -1,0 +1,10 @@
+@import '../../../node_modules/@blueprintjs/core/lib/scss/variables';
+
+#login-component {
+	width: 400px;
+	margin: 15px auto 0;
+
+	.password-reset-link {
+		padding-left: 10px;
+	}
+}
