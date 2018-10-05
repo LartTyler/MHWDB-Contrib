@@ -24,6 +24,8 @@ const isErrorResponse = (object: unknown): object is ErrorResponse => {
 	return typeof object === 'object' && 'error' in object;
 };
 
+const authTokenStorageKey = 'api.auth_token';
+
 export class ApiClient {
 	protected baseUrl: string;
 
@@ -33,7 +35,7 @@ export class ApiClient {
 	public constructor(baseUrl: string) {
 		this.baseUrl = baseUrl;
 
-		const jwt = window.localStorage.getItem('api.auth_token');
+		const jwt = window.localStorage.getItem(authTokenStorageKey);
 
 		if (jwt)
 			this.setToken(jwt);
@@ -62,6 +64,10 @@ export class ApiClient {
 
 			this.setToken(response.token);
 		});
+	}
+
+	public logout(): void {
+		this.setToken(null);
 	}
 
 	protected fetch(method: string, path: string, parameters?: RequestParams): Promise<object | Array<object>> {
@@ -136,9 +142,7 @@ export class ApiClient {
 		if (token === null) {
 			this.token = null;
 
-			window.localStorage.removeItem('api.auth_token');
-
-			window.location.href = '/login';
+			window.localStorage.removeItem(authTokenStorageKey);
 		} else {
 			this.token = new Token(token);
 
@@ -156,7 +160,7 @@ export class ApiClient {
 				window.location.href = '/login';
 			}
 
-			window.localStorage.setItem('api.auth_token', token);
+			window.localStorage.setItem(authTokenStorageKey, token);
 
 			this.tokenRefreshId = window.setTimeout(() => {
 				this.tokenRefreshId = null;
