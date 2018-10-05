@@ -7,10 +7,11 @@ import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Tooltip from '@material-ui/core/Tooltip/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import FileDocumentBoxIcon from 'mdi-material-ui/FileDocumentBox';
 import GithubCircleIcon from 'mdi-material-ui/GithubCircle';
 import * as React from 'react';
 import {Link, Route, Switch} from 'react-router-dom';
-import {createLink} from './createLink';
+import {LogoutButton} from './Auth/LogoutButton';
 import {AilmentEditor} from './Editor/AilmentEditor';
 import {Home} from './Home';
 import {NavList} from './Navigation/NavList';
@@ -69,11 +70,21 @@ const AppComponent: React.SFC<AppProps> = props => {
 
 					<Tooltip title="Visit us on GitHub">
 						<a href="https://github.com/LartTyler/MHWDB-API" target="_blank">
-							<IconButton aria-label="View the project on GitHub">
+							<IconButton>
 								<GithubCircleIcon />
 							</IconButton>
 						</a>
 					</Tooltip>
+
+					<Tooltip title="View the docs">
+						<a href="https://docs.mhw-db.com" target="_blank">
+							<IconButton>
+								<FileDocumentBoxIcon />
+							</IconButton>
+						</a>
+					</Tooltip>
+
+					<LogoutButton />
 				</Toolbar>
 			</AppBar>
 
