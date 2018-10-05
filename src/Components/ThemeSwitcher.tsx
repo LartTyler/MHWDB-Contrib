@@ -19,7 +19,7 @@ export const ThemeSwitcher: React.SFC<ThemeSwitcherProps> = props => {
 
 	return (
 		<div>
-			<Tooltip title={`Switch to ${paletteType === 'dark' ? 'light' : 'dark'} theme`}>
+			<Tooltip title={`Switch to the ${paletteType === 'dark' ? 'light' : 'dark'} theme`}>
 				<IconButton onClick={() => props.onChange(paletteType === 'dark' ? 'light' : 'dark')}>
 					{icon}
 				</IconButton>
