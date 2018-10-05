@@ -1,14 +1,17 @@
 import * as React from 'react';
-import {Redirect, Route, RouteProps} from 'react-router';
+import {Redirect, Route, RouteComponentProps, RouteProps} from 'react-router';
 import {ApiClient} from '../Api';
 
-export const PrivateRoute: React.SFC<RouteProps> = ({component, ...routeProps}) => {
-	const render = (Component?: React.ComponentType) => (props: RouteProps) => {
-		if (!Component)
+type RenderCallback = (props: RouteComponentProps<any>) => React.ReactNode;
+type RendererProps = RouteComponentProps<any> & RouteProps;
+
+export const PrivateRoute: React.SFC<RouteProps> = ({component, render, ...routeProps}) => {
+	const doRender = (Component?: React.ComponentType, render?: RenderCallback) => (props: RendererProps) => {
+		if (!Component && !render)
 			return null;
 
 		if (ApiClient.isAuthenticated())
-			return <Component {...props} />;
+			return Component ? <Component {...props} /> : render(props);
 
 		return (
 			<Redirect
@@ -22,5 +25,5 @@ export const PrivateRoute: React.SFC<RouteProps> = ({component, ...routeProps}) 
 		);
 	};
 
-	return <Route {...routeProps} render={render(component)} />;
+	return <Route {...routeProps} render={doRender(component, render)} />;
 };
