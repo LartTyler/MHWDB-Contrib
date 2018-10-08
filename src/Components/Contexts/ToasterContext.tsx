@@ -5,7 +5,7 @@ export const toaster = Toaster.create({
 	position: Position.BOTTOM_LEFT,
 });
 
-export const ToasterContext: React.Context<IToaster> = React.createContext(toaster);
+export const ToasterContext = React.createContext(toaster);
 
 export interface ToasterComponentProps {
 	toaster: IToaster;
