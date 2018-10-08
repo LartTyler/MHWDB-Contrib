@@ -1,4 +1,4 @@
-import {Alignment, Button, Navbar, NavbarDivider, NavbarGroup, NavbarHeading} from '@blueprintjs/core';
+import {Alignment, Navbar, NavbarDivider, NavbarGroup, NavbarHeading} from '@blueprintjs/core';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {ContributeButton} from './ContributeButton';
