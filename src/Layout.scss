@@ -5,12 +5,24 @@ body {
 }
 
 #app-root {
-	display: flex;
-	flex-direction: row;
 	margin: 0 auto;
-	min-height: 100vh;
+	min-height: calc(100vh - #{$pt-navbar-height});
 
 	&.#{$ns}-dark {
 		background: #30404d;
+	}
+}
+
+.plain-link, .#{$ns}-dark .plain-link {
+	text-decoration: none;
+	color: inherit;
+
+	&:hover {
+		text-decoration: none;
+		color: inherit;
+	}
+
+	&:focus {
+		outline: none;
 	}
 }

@@ -56,7 +56,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 	};
 
 	public render(): JSX.Element {
-		if (this.state.redirect) {
+		if (this.state.redirect || ApiClient.isAuthenticated()) {
 			const {from} = this.props.location.state || {from: {pathname: '/'}};
 
 			return <Redirect to={from} />;
@@ -79,7 +79,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 
 					<a
 						className={`${Classes.TEXT_MUTED} password-reset-link`}
-						onClick={() => alert('Not yet supported :(')}
+						onClick={() => alert('Not yet supported.')}
 					>
 						Forgot your password?
 					</a>
