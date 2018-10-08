@@ -1,11 +1,12 @@
-import {Button, Classes, FormGroup, InputGroup} from '@blueprintjs/core';
+import {Button, Classes, FormGroup, InputGroup, Intent} from '@blueprintjs/core';
 import * as React from 'react';
 import {ChangeEvent, FormEvent} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {ApiClient} from '../../Api';
+import {ToasterComponentProps, withToaster} from '../Contexts/ToasterContext';
 import './Login.scss';
 
-interface LoginProps extends RouteComponentProps<{}> {
+interface LoginProps extends RouteComponentProps<{}>, ToasterComponentProps {
 }
 
 interface LoginState {
@@ -44,7 +45,12 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 			.catch((error: Error) => {
 				this.setState({
 					processing: false,
-					error: error.message,
+				});
+
+				this.props.toaster.show({
+					message: error.message,
+					intent: Intent.WARNING,
+					timeout: 5000,
 				});
 			});
 	};
@@ -67,7 +73,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 						<InputGroup id="password" type="password" onChange={this.onInputChange('password')} />
 					</FormGroup>
 
-					<Button type="submit">
+					<Button type="submit" loading={this.state.processing}>
 						Sign In
 					</Button>
 
@@ -93,4 +99,4 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 	}
 }
 
-export const Login = withRouter(LoginComponent);
+export const Login = withToaster(withRouter(LoginComponent));
