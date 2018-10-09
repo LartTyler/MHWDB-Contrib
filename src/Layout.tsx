@@ -1,83 +1,70 @@
-import CssBaseline from '@material-ui/core/CssBaseline/CssBaseline';
-import createMuiTheme, {Theme} from '@material-ui/core/styles/createMuiTheme';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import {Classes} from '@blueprintjs/core';
 import * as React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {App} from './Components/App';
 import {Login} from './Components/Auth/Login';
-import {isPaletteType, PaletteType} from './Components/ThemeSwitcher';
+import {isThemeName, Theme, ThemeContext, ThemeMutatorContext} from './Components/Contexts/ThemeContext';
+import {toaster, ToasterContext} from './Components/Contexts/ToasterContext';
+import './Layout.scss';
 import {PrivateRoute} from './Security/PrivateRoute';
 
-const buildMuiTheme = (paletteType: PaletteType) => {
-	return createMuiTheme({
-		palette: {
-			type: paletteType,
-		},
-	});
-};
+const THEME_NAME_KEY = 'ui.theme_name';
 
-const uiThemeStorageKey = 'ui.theme_name';
-
-interface ContainerState {
+interface LayoutState {
 	theme: Theme;
-	paletteType: PaletteType;
 }
 
-export class Layout extends React.Component<{}, ContainerState> {
-	private onThemeChange = (theme: PaletteType) => {
-		window.localStorage.setItem(uiThemeStorageKey, theme);
+export class Layout extends React.Component<{}, LayoutState> {
+	private onThemeChange = (theme: Theme) => {
+		window.localStorage.setItem(THEME_NAME_KEY, theme);
 
 		this.setState({
-			paletteType: theme,
-			theme: buildMuiTheme(theme),
+			theme: theme,
 		});
 	};
 
 	public constructor(props: {}) {
 		super(props);
 
-		let paletteType = window.localStorage.getItem(uiThemeStorageKey) || 'dark';
+		const themeValue = window.localStorage.getItem(THEME_NAME_KEY) || Theme.DARK;
+		let theme: Theme;
 
-		if (!isPaletteType(paletteType)) {
-			paletteType = 'dark';
+		if (!isThemeName(themeValue)) {
+			console.warn(`${themeValue} is not a recognized theme`);
 
-			window.localStorage.setItem(uiThemeStorageKey, paletteType);
-		}
+			theme = Theme.DARK;
 
-		if (!isPaletteType(paletteType)) {
-			alert('Could not load theme. Please refresh the page, and try again.');
-
-			window.localStorage.removeItem(uiThemeStorageKey);
-
-			throw new Error('Unknown palette type: ' + paletteType);
-		}
+			window.localStorage.setItem(THEME_NAME_KEY, theme);
+		} else
+			theme = themeValue;
 
 		this.state = {
-			paletteType: paletteType,
-			theme: buildMuiTheme(paletteType),
+			theme: theme,
 		};
 	}
 
 	public render(): JSX.Element {
+		const rootClasses = [];
+
+		if (this.state.theme === Theme.DARK)
+			rootClasses.push(Classes.DARK);
+
 		return (
-			<MuiThemeProvider theme={this.state.theme}>
-				<CssBaseline />
+			<div id="app-root" className={rootClasses.join(' ')}>
+				<ThemeContext.Provider value={this.state.theme}>
+					<ThemeMutatorContext.Provider value={this.onThemeChange}>
+						<ToasterContext.Provider value={toaster}>
+							<BrowserRouter>
+								<Switch>
+									<Route path="/login" component={Login} />
 
-				<BrowserRouter>
-					<Switch>
-						<Route exact={true} path="/login" component={Login} />
-
-						<PrivateRoute
-							path="/"
-							render={props => <App
-								{...props}
-								onThemeChange={this.onThemeChange}
-								currentTheme={this.state.paletteType}
-							/>}
-						/>
-					</Switch>
-				</BrowserRouter>
-			</MuiThemeProvider>
+									<PrivateRoute path="/" component={App} />
+								</Switch>
+							</BrowserRouter>
+						</ToasterContext.Provider>
+					</ThemeMutatorContext.Provider>
+				</ThemeContext.Provider>~
+			</div>
 		);
 	}
 }

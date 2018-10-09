@@ -1,40 +1,12 @@
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import Paper from '@material-ui/core/Paper';
-import {Theme} from '@material-ui/core/styles/createMuiTheme';
-import createStyles from '@material-ui/core/styles/createStyles';
-import withStyles, {WithStyles} from '@material-ui/core/styles/withStyles';
-import Typography from '@material-ui/core/Typography';
+import {Button, Classes, FormGroup, InputGroup, Intent} from '@blueprintjs/core';
 import * as React from 'react';
 import {ChangeEvent, FormEvent} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {ApiClient} from '../../Api';
-import {Snackbar} from '../Snackbar';
+import {ToasterAware, withToasterContext} from '../Contexts/ToasterContext';
+import './Login.scss';
 
-const styles = (theme: Theme) => createStyles({
-	layout: {
-		width: 'auto',
-		margin: '0 auto',
-		[theme.breakpoints.up(400 + theme.spacing.unit * 6)]: {
-			width: 400,
-		},
-	},
-	paper: {
-		marginTop: theme.spacing.unit * 8,
-		display: 'flex',
-		flexDirection: 'column',
-		alignItems: 'center',
-		padding: `${theme.spacing.unit * 3}px`,
-		paddingTop: `${theme.spacing.unit * 2}px`,
-	},
-	button: {
-		marginTop: theme.spacing.unit * 2,
-	},
-});
-
-interface LoginProps extends WithStyles<typeof styles>, RouteComponentProps<{}> {
+interface LoginProps extends RouteComponentProps<{}>, ToasterAware {
 }
 
 interface LoginState {
@@ -73,70 +45,48 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 			.catch((error: Error) => {
 				this.setState({
 					processing: false,
-					error: error.message,
+				});
+
+				this.props.toaster.show({
+					message: error.message || 'An unknown error has occurred',
+					intent: Intent.WARNING,
+					timeout: 5000,
 				});
 			});
 	};
 
-	private onErrorSnackbarClose = () => setTimeout(() => {
-		this.setState({
-			error: null,
-		});
-	}, 500);
-
 	public render(): JSX.Element {
-		if (this.state.redirect) {
+		if (this.state.redirect || ApiClient.isAuthenticated()) {
 			const {from} = this.props.location.state || {from: {pathname: '/'}};
+
+			if (from.pathname === '/login')
+				from.pathname = '/';
 
 			return <Redirect to={from} />;
 		}
 
-		const {classes} = this.props;
-		const error = this.state.error ? (
-			<Snackbar message={this.state.error} variant="error" onClose={this.onErrorSnackbarClose} />
-		) : null;
-
 		return (
-			<div className={classes.layout}>
-				<Paper className={classes.paper}>
-					<Typography variant="headline">Sign in</Typography>
+			<div id="login-component">
+				<form onSubmit={this.onFormSubmit}>
+					<FormGroup label="Email Address" labelFor="email-address">
+						<InputGroup id="email-address" onChange={this.onInputChange('username')} />
+					</FormGroup>
 
-					<form onSubmit={this.onFormSubmit}>
-						<FormControl margin="normal" required={true} fullWidth={true}>
-							<InputLabel>Email Address</InputLabel>
+					<FormGroup label="Password" labelFor="password">
+						<InputGroup id="password" type="password" onChange={this.onInputChange('password')} />
+					</FormGroup>
 
-							<Input
-								name="email"
-								autoFocus={true}
-								onChange={this.onInputChange('username')}
-								value={this.state.username}
-							/>
-						</FormControl>
+					<Button type="submit" loading={this.state.processing}>
+						Sign In
+					</Button>
 
-						<FormControl margin="normal" required={true} fullWidth={true}>
-							<InputLabel>Password</InputLabel>
-
-							<Input
-								name="password"
-								type="password"
-								value={this.state.password}
-								onChange={this.onInputChange('password')}
-							/>
-						</FormControl>
-
-						<Button
-							type="submit"
-							fullWidth={true}
-							color="primary"
-							variant="raised"
-							className={classes.button}
-						>
-							Sign in
-						</Button>
-					</form>
-				</Paper>
-
-				{error}
+					<a
+						className={`${Classes.TEXT_MUTED} password-reset-link`}
+						onClick={() => alert('Not yet supported.')}
+					>
+						Forgot your password?
+					</a>
+				</form>
 			</div>
 		);
 	}
@@ -152,4 +102,4 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 	}
 }
 
-export const Login = withStyles(styles)(withRouter(LoginComponent));
+export const Login = withToasterContext(withRouter(LoginComponent));

@@ -119,8 +119,13 @@ export class ApiClient {
 
 		return fetch(url.href, request)
 			.then(response => {
-				if (response.headers.get('content-type') !== 'application/json')
-					throw new Error(response.statusText);
+				if (response.headers.get('content-type') !== 'application/json') {
+					const error = new Error(response.statusText);
+
+					console.error(error);
+
+					throw error;
+				}
 
 				return response.json();
 			})

@@ -1,29 +1,28 @@
-import IconButton from '@material-ui/core/IconButton/IconButton';
-import Tooltip from '@material-ui/core/Tooltip/Tooltip';
-import DarkThemeIcon from '@material-ui/icons/Brightness3';
-import LightThemeIcon from '@material-ui/icons/BrightnessHigh';
+import {Icon} from '@blueprintjs/core';
 import * as React from 'react';
+import {
+	Theme,
+	ThemeAware,
+	ThemeMutatorAware,
+	ThemeMutatorCallback,
+	withThemeContext,
+	withThemeMutatorContext,
+} from './Contexts/ThemeContext';
+import './ThemeSwitcher.scss';
 
-export type PaletteType = 'dark' | 'light';
-export const isPaletteType = (value: string): value is PaletteType => value === 'light' || value === 'dark';
+const onThemeToggle = (currentTheme: Theme, callback: ThemeMutatorCallback) => {
+	const nextTheme = currentTheme === Theme.DARK ? Theme.LIGHT : Theme.DARK;
 
-interface ThemeSwitcherProps {
-	onChange: (name: PaletteType) => void;
-	paletteType: PaletteType;
+	callback(nextTheme);
+};
+
+interface ThemeSwitcherProps extends ThemeAware, ThemeMutatorAware {
 }
 
-export const ThemeSwitcher: React.SFC<ThemeSwitcherProps> = props => {
-	const {paletteType} = props;
+const ThemeSwitcherComponent: React.SFC<ThemeSwitcherProps> = props => (
+	<div id="theme-switcher-component" onClick={() => onThemeToggle(props.theme, props.onThemeChange)}>
+		<Icon icon={props.theme === Theme.DARK ? 'flash' : 'moon'} />
+	</div>
+);
 
-	const icon = paletteType === 'dark' ? <LightThemeIcon /> : <DarkThemeIcon />;
-
-	return (
-		<div>
-			<Tooltip title={`Switch to the ${paletteType === 'dark' ? 'light' : 'dark'} theme`}>
-				<IconButton onClick={() => props.onChange(paletteType === 'dark' ? 'light' : 'dark')}>
-					{icon}
-				</IconButton>
-			</Tooltip>
-		</div>
-	);
-};
+export const ThemeSwitcher = withThemeContext(withThemeMutatorContext(ThemeSwitcherComponent));

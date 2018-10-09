@@ -1,0 +1,9 @@
+@import '../../node_modules/@blueprintjs/core/lib/scss/variables.scss';
+
+body {
+	padding-top: $pt-navbar-height;
+}
+
+#app-content {
+	padding-top: 25px;
+}

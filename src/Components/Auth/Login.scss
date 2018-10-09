@@ -1,0 +1,13 @@
+@import '../../../node_modules/@blueprintjs/core/lib/scss/variables';
+
+#login-component {
+	max-width: 400px;
+	padding: 75px 10px;
+	margin: 0 auto;
+	min-height: 100vh;
+	margin-top: -#{$pt-navbar-height};
+
+	.password-reset-link {
+		padding-left: 10px;
+	}
+}
