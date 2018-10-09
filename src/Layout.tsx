@@ -63,7 +63,7 @@ export class Layout extends React.Component<{}, LayoutState> {
 							</BrowserRouter>
 						</ToasterContext.Provider>
 					</ThemeMutatorContext.Provider>
-				</ThemeContext.Provider>~
+				</ThemeContext.Provider>
 			</div>
 		);
 	}
