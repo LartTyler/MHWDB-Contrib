@@ -4,7 +4,7 @@ import {ManualLink} from './ManualLink';
 
 export const ContributeButton: React.SFC<{}> = () => {
 	return (
-		<Popover position={Position.BOTTOM_LEFT} interactionKind={PopoverInteractionKind.CLICK}>
+		<Popover position={Position.BOTTOM_LEFT}>
 			<Button minimal={true}>Contribute</Button>
 
 			<Menu>
