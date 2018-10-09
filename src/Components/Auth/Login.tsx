@@ -3,10 +3,10 @@ import * as React from 'react';
 import {ChangeEvent, FormEvent} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {ApiClient} from '../../Api';
-import {ToasterComponentProps, withToaster} from '../Contexts/ToasterContext';
+import {ToasterAware, withToasterContext} from '../Contexts/ToasterContext';
 import './Login.scss';
 
-interface LoginProps extends RouteComponentProps<{}>, ToasterComponentProps {
+interface LoginProps extends RouteComponentProps<{}>, ToasterAware {
 }
 
 interface LoginState {
@@ -48,7 +48,7 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 				});
 
 				this.props.toaster.show({
-					message: error.message,
+					message: error.message || 'An unknown error has occurred',
 					intent: Intent.WARNING,
 					timeout: 5000,
 				});
@@ -58,6 +58,9 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 	public render(): JSX.Element {
 		if (this.state.redirect || ApiClient.isAuthenticated()) {
 			const {from} = this.props.location.state || {from: {pathname: '/'}};
+
+			if (from.pathname === '/login')
+				from.pathname = '/';
 
 			return <Redirect to={from} />;
 		}
@@ -99,4 +102,4 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 	}
 }
 
-export const Login = withToaster(withRouter(LoginComponent));
+export const Login = withToasterContext(withRouter(LoginComponent));
