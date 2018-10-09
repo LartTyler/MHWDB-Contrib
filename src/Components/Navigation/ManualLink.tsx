@@ -7,9 +7,9 @@ interface ManualLinkProps extends RouteComponentProps<{}> {
 }
 
 const ManualLinkComponent: React.SFC<ManualLinkProps> = props => (
-	<span className={props.className} onClick={() => props.history.push(props.to)}>
+	<div className={props.className} onClick={() => props.history.push(props.to)}>
 		{props.children}
-	</span>
+	</div>
 );
 
 export const ManualLink = withRouter(ManualLinkComponent);
