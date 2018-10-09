@@ -1,6 +1,8 @@
+import {Callout} from '@blueprintjs/core';
 import * as React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import './App.scss';
+import {Editors} from './Editor/Editors';
 import {Navigation} from './Navigation/Navigation';
 import {PageNotFound} from './PageNotFound';
 
@@ -11,11 +13,11 @@ export const App: React.SFC<{}> = () => (
 		</div>
 
 		<div id="app-content">
-			<BrowserRouter>
-				<Switch>
-					<Route component={PageNotFound} />
-				</Switch>
-			</BrowserRouter>
+			<Switch>
+				<Route path="/edit" component={Editors} />
+
+				<Route component={PageNotFound} />
+			</Switch>
 		</div>
 	</>
 );

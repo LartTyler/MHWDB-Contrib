@@ -1,6 +1,6 @@
-import {Button, Menu, MenuItem, Popover, PopoverInteractionKind, Position} from '@blueprintjs/core';
+import {Button, Menu, Popover, Position} from '@blueprintjs/core';
 import * as React from 'react';
-import {ManualLink} from './ManualLink';
+import {LinkedMenuItem} from './LinkedMenuItem';
 
 export const ContributeButton: React.SFC<{}> = () => {
 	return (
@@ -8,12 +8,9 @@ export const ContributeButton: React.SFC<{}> = () => {
 			<Button minimal={true}>Contribute</Button>
 
 			<Menu>
-				<MenuItem
-					text={(
-						<ManualLink className="plain-link" to="/edit/ailments">
-							Ailments
-						</ManualLink>
-					)}
+				<LinkedMenuItem
+					text="Ailments"
+					href="/edit/ailments"
 				/>
 			</Menu>
 		</Popover>

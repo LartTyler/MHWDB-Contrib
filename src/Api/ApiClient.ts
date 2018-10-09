@@ -1,8 +1,14 @@
 import {ApiError} from './Errors/ApiError';
+import {ImpossibleError} from './Errors/ImpossibleError';
+import {Ailment, assertAilmentArray} from './Objects/Ailment';
 import {Token} from './Token';
 
 interface RequestParams {
 	[key: string]: string | number | boolean | object;
+}
+
+interface Projection {
+	[key: string]: boolean;
 }
 
 interface AuthResponse {
@@ -22,6 +28,10 @@ const isAuthResponse = (object: unknown): object is AuthResponse => {
 
 const isErrorResponse = (object: unknown): object is ErrorResponse => {
 	return typeof object === 'object' && 'error' in object;
+};
+
+const isArrayResponse = (value: unknown): value is object[] => {
+	return typeof value === 'object' && value.constructor === Array;
 };
 
 const authTokenStorageKey = 'api.auth_token';
@@ -70,7 +80,33 @@ export class ApiClient {
 		this.setToken(null);
 	}
 
-	protected fetch(method: string, path: string, parameters?: RequestParams): Promise<object | Array<object>> {
+	public listAilments(query?: RequestParams, project?: Projection): Promise<Ailment[]> {
+		return this.list('/ailments', query, project).then(data => {
+			if (!assertAilmentArray(data))
+				throw new ImpossibleError();
+
+			return data;
+		});
+	}
+
+	protected list(path: string, query?: RequestParams, project?: Projection): Promise<object[]> {
+		const params: {q?: RequestParams, p?: Projection} = {};
+
+		if (query)
+			params.q = query;
+
+		if (project)
+			params.p = project;
+
+		return this.fetch('GET', path, params).then(data => {
+			if (!isArrayResponse(data))
+				throw new Error('Expected array response from API');
+
+			return data;
+		});
+	}
+
+	protected fetch(method: string, path: string, parameters?: RequestParams): Promise<object | object[]> {
 		if (path.charAt(0) === '/')
 			path = path.substr(1);
 
@@ -84,7 +120,7 @@ export class ApiClient {
 			headers: headers,
 		};
 
-		if (parameters) {
+		if (parameters && Object.keys(parameters).length > 0) {
 			if (request.method === 'GET') {
 				for (let key in parameters) {
 					const value = parameters[key];
