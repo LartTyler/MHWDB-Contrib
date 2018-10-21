@@ -1,6 +1,6 @@
-import {Entity} from './Entity';
+import {IEntity} from './Entity';
 
-export interface SkillRank extends Entity {
+export interface SkillRank extends IEntity {
 	skill: number;
 	skillName: string;
 	level: number;
@@ -8,7 +8,7 @@ export interface SkillRank extends Entity {
 	modifiers: {[key: string]: string | number | boolean};
 }
 
-export interface Skill extends Entity{
+export interface Skill extends IEntity{
 	name: string;
 	description: string;
 	ranks: SkillRank[];

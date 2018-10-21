@@ -3,6 +3,7 @@ import * as React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {App} from './Components/App';
 import {Login} from './Components/Auth/Login';
+import {ApiClientContext, client} from './Components/Contexts/ApiClientContext';
 import {isThemeName, Theme, ThemeContext, ThemeMutatorContext} from './Components/Contexts/ThemeContext';
 import {toaster, ToasterContext} from './Components/Contexts/ToasterContext';
 import './Layout.scss';
@@ -10,19 +11,11 @@ import {PrivateRoute} from './Security/PrivateRoute';
 
 const THEME_NAME_KEY = 'ui.theme_name';
 
-interface LayoutState {
+interface ILayoutState {
 	theme: Theme;
 }
 
-export class Layout extends React.Component<{}, LayoutState> {
-	private onThemeChange = (theme: Theme) => {
-		window.localStorage.setItem(THEME_NAME_KEY, theme);
-
-		this.setState({
-			theme: theme,
-		});
-	};
-
+export class Layout extends React.Component<{}, ILayoutState> {
 	public constructor(props: {}) {
 		super(props);
 
@@ -30,8 +23,6 @@ export class Layout extends React.Component<{}, LayoutState> {
 		let theme: Theme;
 
 		if (!isThemeName(themeValue)) {
-			console.warn(`${themeValue} is not a recognized theme`);
-
 			theme = Theme.DARK;
 
 			window.localStorage.setItem(THEME_NAME_KEY, theme);
@@ -39,7 +30,7 @@ export class Layout extends React.Component<{}, LayoutState> {
 			theme = themeValue;
 
 		this.state = {
-			theme: theme,
+			theme,
 		};
 	}
 
@@ -51,20 +42,30 @@ export class Layout extends React.Component<{}, LayoutState> {
 
 		return (
 			<div id="app-root" className={rootClasses.join(' ')}>
-				<ThemeContext.Provider value={this.state.theme}>
-					<ThemeMutatorContext.Provider value={this.onThemeChange}>
-						<ToasterContext.Provider value={toaster}>
-							<BrowserRouter>
-								<Switch>
-									<Route path="/login" component={Login} />
+				<ApiClientContext.Provider value={client}>
+					<ThemeContext.Provider value={this.state.theme}>
+						<ThemeMutatorContext.Provider value={this.onThemeChange}>
+							<ToasterContext.Provider value={toaster}>
+								<BrowserRouter>
+									<Switch>
+										<Route path="/login" component={Login} />
 
-									<PrivateRoute path="/" component={App} />
-								</Switch>
-							</BrowserRouter>
-						</ToasterContext.Provider>
-					</ThemeMutatorContext.Provider>
-				</ThemeContext.Provider>
+										<PrivateRoute path="/" component={App} />
+									</Switch>
+								</BrowserRouter>
+							</ToasterContext.Provider>
+						</ThemeMutatorContext.Provider>
+					</ThemeContext.Provider>
+				</ApiClientContext.Provider>
 			</div>
 		);
 	}
+
+	private onThemeChange = (theme: Theme) => {
+		window.localStorage.setItem(THEME_NAME_KEY, theme);
+
+		this.setState({
+			theme,
+		});
+	};
 }

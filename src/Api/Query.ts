@@ -1,15 +1,12 @@
-import {Ailment} from './Objects/Ailment';
-
 export type Scalar = string | number | boolean;
+export type ConditionKeys = '$gt' | '$gte';
 
-export type ConditionOperators = '$gt' | '$gte' | '$lt' | '$lte' | '$eq' | '$neq' | '$in';
-
-export type Conditional = {
-	[key in ConditionOperators]?: Scalar;
+export type Condition = {
+	[key in ConditionKeys]: Scalar;
 };
 
-export type Document = {
-	[key: string]: Scalar | Conditional | Document;
-	'$and'?: Document;
-	'$or'?: Document;
-};
+export interface IQueryDocument {
+	[key: string]: Scalar | Condition | IQueryDocument[];
+	'$and'?: IQueryDocument[];
+	'$or'?: IQueryDocument[];
+}

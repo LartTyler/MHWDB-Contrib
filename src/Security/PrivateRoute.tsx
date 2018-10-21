@@ -1,17 +1,20 @@
 import * as React from 'react';
 import {Redirect, Route, RouteComponentProps, RouteProps} from 'react-router';
-import {ApiClient} from '../Api';
+import {IApiClientAware, withApiClient} from '../Components/Contexts/ApiClientContext';
 
 type RenderCallback = (props: RouteComponentProps<any>) => React.ReactNode;
 type RendererProps = RouteComponentProps<any> & RouteProps;
 
-export const PrivateRoute: React.SFC<RouteProps> = ({component, render, ...routeProps}) => {
-	const doRender = (Component?: React.ComponentType, render?: RenderCallback) => (props: RendererProps) => {
-		if (!Component && !render)
+interface IPrivateRouteProps extends RouteProps, IApiClientAware {
+}
+
+const PrivateRouteComponent: React.SFC<IPrivateRouteProps> = ({component, render, client, ...routeProps}) => {
+	const doRender = (Component?: React.ComponentType, renderCallback?: RenderCallback) => (props: RendererProps) => {
+		if (!Component && !renderCallback)
 			return null;
 
-		if (ApiClient.isAuthenticated())
-			return Component ? <Component {...props} /> : render(props);
+		if (client.isAuthenticated())
+			return Component ? <Component {...props} /> : renderCallback(props);
 
 		return (
 			<Redirect
@@ -27,3 +30,5 @@ export const PrivateRoute: React.SFC<RouteProps> = ({component, render, ...route
 
 	return <Route {...routeProps} render={doRender(component, render)} />;
 };
+
+export const PrivateRoute = withApiClient(PrivateRouteComponent);

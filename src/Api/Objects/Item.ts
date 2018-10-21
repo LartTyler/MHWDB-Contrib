@@ -1,6 +1,6 @@
-import {Entity} from './Entity';
+import {IEntity} from './Entity';
 
-export interface Item extends Entity {
+export interface Item extends IEntity {
 	name: string;
 	description: string;
 	rarity: number;

@@ -2,14 +2,14 @@ import {Button, Classes, FormGroup, InputGroup, Intent} from '@blueprintjs/core'
 import * as React from 'react';
 import {ChangeEvent, FormEvent} from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {ApiClient} from '../../Api';
-import {ToasterAware, withToasterContext} from '../Contexts/ToasterContext';
+import {IApiClientAware, withApiClient} from '../Contexts/ApiClientContext';
+import {IToasterAware, withToasterContext} from '../Contexts/ToasterContext';
 import './Login.scss';
 
-interface LoginProps extends RouteComponentProps<{}>, ToasterAware {
+interface ILoginProps extends RouteComponentProps<{}>, IToasterAware, IApiClientAware {
 }
 
-interface LoginState {
+interface ILoginState {
 	username: string;
 	password: string;
 	redirect: boolean;
@@ -19,44 +19,17 @@ interface LoginState {
 
 type ChangeCallback = (event: ChangeEvent<HTMLInputElement>) => void;
 
-class LoginComponent extends React.Component<LoginProps, LoginState> {
-	public state: Readonly<LoginState> = {
-		username: '',
-		password: '',
-		redirect: false,
-		processing: false,
+class LoginComponent extends React.Component<ILoginProps, ILoginState> {
+	public state: Readonly<ILoginState> = {
 		error: null,
-	};
-
-	private onFormSubmit = (event: FormEvent<HTMLFormElement>): void => {
-		event.preventDefault();
-
-		if (this.state.processing)
-			return;
-
-		this.setState({
-			processing: true,
-		});
-
-		ApiClient.login(this.state.username, this.state.password)
-			.then(() => this.setState({
-				redirect: true,
-			}))
-			.catch((error: Error) => {
-				this.setState({
-					processing: false,
-				});
-
-				this.props.toaster.show({
-					message: error.message || 'An unknown error has occurred',
-					intent: Intent.WARNING,
-					timeout: 5000,
-				});
-			});
+		password: '',
+		processing: false,
+		redirect: false,
+		username: '',
 	};
 
 	public render(): JSX.Element {
-		if (this.state.redirect || ApiClient.isAuthenticated()) {
+		if (this.state.redirect || this.props.client.isAuthenticated()) {
 			const {from} = this.props.location.state || {from: {pathname: '/'}};
 
 			if (from.pathname === '/login')
@@ -69,11 +42,11 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 			<div id="login-component">
 				<form onSubmit={this.onFormSubmit}>
 					<FormGroup label="Email Address" labelFor="email-address">
-						<InputGroup id="email-address" onChange={this.onInputChange('username')} />
+						<InputGroup id="email-address" onChange={this.onUsernameInputChange} />
 					</FormGroup>
 
 					<FormGroup label="Password" labelFor="password">
-						<InputGroup id="password" type="password" onChange={this.onInputChange('password')} />
+						<InputGroup id="password" type="password" onChange={this.onPasswordInputChange} />
 					</FormGroup>
 
 					<Button type="submit" loading={this.state.processing}>
@@ -91,15 +64,39 @@ class LoginComponent extends React.Component<LoginProps, LoginState> {
 		);
 	}
 
-	private onInputChange(key: 'username' | 'password'): ChangeCallback {
-		// The `ts-ignore` line below is in place because some IDEs (such as WebStorm) get very confused by the
-		// expression. Rest assured, it compiles properly and with no warnings.
-		//
-		// @ts-ignore
-		return event => this.setState({
-			[key]: event.target.value,
+	private onFormSubmit = (event: FormEvent<HTMLFormElement>): void => {
+		event.preventDefault();
+
+		if (this.state.processing)
+			return;
+
+		this.setState({
+			processing: true,
 		});
-	}
+
+		this.props.client.login(this.state.username, this.state.password)
+			.then(() => this.setState({
+				redirect: true,
+			}))
+			.catch((error: Error) => {
+				this.setState({
+					processing: false,
+				});
+
+				this.props.toaster.show({
+					intent: Intent.WARNING,
+					message: error.message,
+				});
+			});
+	};
+
+	private onUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		username: event.currentTarget.value,
+	});
+
+	private onPasswordInputChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		password: event.currentTarget.value,
+	});
 }
 
-export const Login = withToasterContext(withRouter(LoginComponent));
+export const Login = withApiClient(withToasterContext(withRouter(LoginComponent)));

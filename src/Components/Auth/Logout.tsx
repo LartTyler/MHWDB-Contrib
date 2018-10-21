@@ -1,15 +1,15 @@
 import * as React from 'react';
 import {RouteComponentProps, withRouter} from 'react-router';
-import {ApiClient} from '../../Api';
-import {ToasterAware, withToasterContext} from '../Contexts/ToasterContext';
+import {IApiClientAware, withApiClient} from '../Contexts/ApiClientContext';
+import {IToasterAware, withToasterContext} from '../Contexts/ToasterContext';
 
-interface LogoutProps extends RouteComponentProps<{}>, ToasterAware {
+interface ILogoutProps extends RouteComponentProps<{}>, IToasterAware, IApiClientAware {
 }
 
-const LogoutComponent: React.SFC<LogoutProps> = props => (
+const LogoutComponent: React.SFC<ILogoutProps> = props => (
 	<div
 		onClick={() => {
-			ApiClient.logout();
+			props.client.logout();
 			props.history.push('/login');
 
 			props.toaster.show({
@@ -21,4 +21,4 @@ const LogoutComponent: React.SFC<LogoutProps> = props => (
 	</div>
 );
 
-export const Logout = withToasterContext(withRouter(LogoutComponent));
+export const Logout = withApiClient(withToasterContext(withRouter(LogoutComponent)));

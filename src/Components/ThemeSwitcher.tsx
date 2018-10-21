@@ -2,8 +2,8 @@ import {Icon} from '@blueprintjs/core';
 import * as React from 'react';
 import {
 	Theme,
-	ThemeAware,
-	ThemeMutatorAware,
+	IThemeAware,
+	IThemeMutatorAware,
 	ThemeMutatorCallback,
 	withThemeContext,
 	withThemeMutatorContext,
@@ -16,10 +16,10 @@ const onThemeToggle = (currentTheme: Theme, callback: ThemeMutatorCallback) => {
 	callback(nextTheme);
 };
 
-interface ThemeSwitcherProps extends ThemeAware, ThemeMutatorAware {
+interface IThemeSwitcherProps extends IThemeAware, IThemeMutatorAware {
 }
 
-const ThemeSwitcherComponent: React.SFC<ThemeSwitcherProps> = props => (
+const ThemeSwitcherComponent: React.SFC<IThemeSwitcherProps> = props => (
 	<div id="theme-switcher-component" onClick={() => onThemeToggle(props.theme, props.onThemeChange)}>
 		<Icon icon={props.theme === Theme.DARK ? 'flash' : 'moon'} />
 	</div>

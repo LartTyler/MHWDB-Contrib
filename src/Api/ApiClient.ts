@@ -1,42 +1,30 @@
 import {ApiError} from './Errors/ApiError';
-import {ImpossibleError} from './Errors/ImpossibleError';
-import {Ailment, assertAilmentArray} from './Objects/Ailment';
+import {AilmentApiClientModule} from './Objects/Ailment';
+import {Identifiable, IEntity} from './Objects/Entity';
+import {Projection} from './Projection';
+import {IQueryDocument} from './Query';
+import {isAuthResponse, isErrorResponse, isObjectArrayResponse, isObjectResponse} from './Response';
 import {Token} from './Token';
 
-interface RequestParams {
-	[key: string]: string | number | boolean | object;
+export interface IApiClientModule<T extends IEntity> {
+	list(query?: IQueryDocument, projection?: Projection): Promise<T[]>;
+
+	get(target: Identifiable<T>, projection?: Projection): Promise<T>;
+
+	update(target: Identifiable<T>, values: T, projection?: Projection): Promise<T>;
+
+	delete(target: Identifiable<T>): Promise<void>;
 }
 
-interface Projection {
-	[key: string]: boolean;
+interface IRequestParams {
+	[key: string]: string | number | boolean | null | object;
 }
 
-interface AuthResponse {
-	token: string;
-}
-
-interface ErrorResponse {
-	error: {
-		code: string;
-		message: string;
-	};
-}
-
-const isAuthResponse = (object: unknown): object is AuthResponse => {
-	return typeof object === 'object' && 'token' in object;
-};
-
-const isErrorResponse = (object: unknown): object is ErrorResponse => {
-	return typeof object === 'object' && 'error' in object;
-};
-
-const isArrayResponse = (value: unknown): value is object[] => {
-	return typeof value === 'object' && value.constructor === Array;
-};
-
-const authTokenStorageKey = 'api.auth_token';
+const TOKEN_STORAGE_KEY = 'api.auth_token';
 
 export class ApiClient {
+	public readonly ailments: AilmentApiClientModule;
+
 	protected baseUrl: string;
 
 	protected token: Token = null;
@@ -45,23 +33,30 @@ export class ApiClient {
 	public constructor(baseUrl: string) {
 		this.baseUrl = baseUrl;
 
-		const jwt = window.localStorage.getItem(authTokenStorageKey);
+		this.ailments = new AilmentApiClientModule(this);
+
+		const jwt = window.localStorage.getItem(TOKEN_STORAGE_KEY);
 
 		if (jwt)
 			this.setToken(jwt);
 	}
 
-	public isAuthenticated(): boolean {
-		return this.token !== null;
+	public getToken(): Token {
+		return this.token;
 	}
 
-	public login(email: string, password: string): Promise<void> {
-		return this.fetch('POST', '/auth', {
-			username: email,
-			password: password,
+	public isAuthenticated(): boolean {
+		return this.token && this.token.isValid();
+	}
+
+	public login(username: string, password: string): Promise<void> {
+		return this.fetch('POST', '/auth', {}, {
+			password,
+			username,
 		}).then(response => {
-			if (!isAuthResponse(response))
-				throw new Error('Invalid response from the API');
+			if (!isAuthResponse(response)) {
+				throw new Error('Invalid response from API');
+			}
 
 			this.setToken(response.token);
 		});
@@ -69,8 +64,9 @@ export class ApiClient {
 
 	public refresh(): Promise<void> {
 		return this.fetch('GET', '/auth/refresh').then(response => {
-			if (!isAuthResponse(response))
-				throw new Error('Invalid response from the API');
+			if (!isAuthResponse(response)) {
+				throw new Error('Invalid response from API');
+			}
 
 			this.setToken(response.token);
 		});
@@ -80,35 +76,73 @@ export class ApiClient {
 		this.setToken(null);
 	}
 
-	public listAilments(query?: RequestParams, project?: Projection): Promise<Ailment[]> {
-		return this.list('/ailments', query, project).then(data => {
-			if (!assertAilmentArray(data))
-				throw new ImpossibleError();
+	public list(path: string, query?: IQueryDocument, projection?: Projection): Promise<object[]> {
+		const params: IRequestParams = {};
 
-			return data;
-		});
-	}
-
-	protected list(path: string, query?: RequestParams, project?: Projection): Promise<object[]> {
-		const params: {q?: RequestParams, p?: Projection} = {};
-
-		if (query)
+		if (query) {
 			params.q = query;
+		}
 
-		if (project)
-			params.p = project;
+		if (projection) {
+			params.p = projection;
+		}
 
-		return this.fetch('GET', path, params).then(data => {
-			if (!isArrayResponse(data))
-				throw new Error('Expected array response from API');
+		return this.fetch('GET', path, params).then(response => {
+			if (!isObjectArrayResponse(response)) {
+				throw new Error('Unexpected response type from API');
+			}
 
-			return data;
+			return response;
 		});
 	}
 
-	protected fetch(method: string, path: string, parameters?: RequestParams): Promise<object | object[]> {
-		if (path.charAt(0) === '/')
+	public read(path: string, projection?: Projection): Promise<object> {
+		const params: IRequestParams = {};
+
+		if (projection) {
+			params.p = projection;
+		}
+
+		return this.fetch('GET', path, params).then(response => {
+			if (!isObjectResponse(response)) {
+				throw new Error('Unexpected response from API');
+			}
+
+			return response;
+		});
+	}
+
+	public update<T extends IEntity>(path: string, values: T, projection?: Projection): Promise<object> {
+		const params: IRequestParams = {};
+
+		if (projection) {
+			params.p = projection;
+		}
+
+		return this.fetch('PATCH', path, params, values).then(response => {
+			if (!isObjectResponse(response)) {
+				throw new Error('Unexpected response from API');
+			}
+
+			return response;
+		});
+	}
+
+	public delete(path: string): Promise<void> {
+		return this.fetch('DELETE', path).then(() => {
+			return;
+		});
+	}
+
+	protected fetch(
+		method: string,
+		path: string,
+		queryParameters?: IRequestParams,
+		body?: string | object,
+	): Promise<unknown> {
+		if (path.charAt(0) === '/') {
 			path = path.substr(1);
+		}
 
 		const url = new URL(path, this.baseUrl);
 		const headers = new Headers({
@@ -116,92 +150,101 @@ export class ApiClient {
 		});
 
 		const request: RequestInit = {
+			headers,
 			method: method.toUpperCase(),
-			headers: headers,
 		};
 
-		if (parameters && Object.keys(parameters).length > 0) {
-			if (request.method === 'GET') {
-				for (let key in parameters) {
-					const value = parameters[key];
-
-					switch (typeof value) {
-						case 'object':
-							url.searchParams.set(key, JSON.stringify(value));
-
-							break;
-
-						case 'boolean':
-							if (value)
-								url.searchParams.set(key, JSON.stringify(value));
-
-							break;
-
-						case 'number':
-							url.searchParams.set(key, JSON.stringify(value));
-
-							break;
-
-						default:
-							throw new Error(`Unsupported API parameter type: ${typeof value}`);
-					}
+		if (queryParameters) {
+			for (const key in queryParameters) {
+				if (!queryParameters.hasOwnProperty(key)) {
+					continue;
 				}
-			} else
-				request.body = JSON.stringify(parameters);
+
+				const value = queryParameters[key];
+
+				switch (typeof value) {
+					case 'object':
+						url.searchParams.set(key, JSON.stringify(value));
+
+						break;
+
+					case 'boolean':
+						if (value) {
+							url.searchParams.set(key, '');
+						}
+
+						break;
+
+					case 'number':
+						url.searchParams.set(key, value.toString());
+
+						break;
+				}
+			}
 		}
 
-		if (this.token !== null)
+		if (body) {
+			if (request.method === 'GET') {
+				throw new Error('Cannot set body parameters for GET requests');
+			}
+
+			request.body = JSON.stringify(body);
+		}
+
+		if (this.token !== null) {
 			headers.set('Authorization', `Bearer ${this.token.jwt}`);
+		}
 
 		return fetch(url.href, request)
 			.then(response => {
-				if (response.headers.get('content-type') !== 'application/json') {
-					const error = new Error(response.statusText);
-
-					console.error(error);
-
-					throw error;
+				if (response.headers.get('content-type') === 'application/json') {
+					return response.json();
+				} else if (response.status === 204) {
+					return null;
 				}
 
-				return response.json();
+				throw new Error('API did not send a JSON response');
 			})
 			.then(response => {
-				if (isErrorResponse(response))
+				if (isErrorResponse(response)) {
 					throw new ApiError(response.error.code, response.error.message);
+				}
 
 				return response;
 			});
 	}
 
-	protected setToken(token: string): void {
+	protected setToken(jwt: string): void {
 		if (this.tokenRefreshId !== null) {
 			window.clearTimeout(this.tokenRefreshId);
 
 			this.tokenRefreshId = null;
 		}
 
-		if (token === null) {
+		if (jwt === null) {
 			this.token = null;
 
-			window.localStorage.removeItem(authTokenStorageKey);
+			window.localStorage.removeItem(TOKEN_STORAGE_KEY);
 		} else {
-			this.token = new Token(token);
+			this.token = new Token(jwt);
 
 			if (!this.token.isValid()) {
 				this.token = null;
 
+				window.localStorage.removeItem(TOKEN_STORAGE_KEY);
+
 				return;
 			}
 
-			const delay = this.token.body.exp - Math.floor(Date.now() / 1000) - 15;
+			const delay = this.token.getTimeToLive() - 15;
 
 			if (delay <= 5) {
-				console.warn('There isn\'t enough time to refresh the token, forcing re-login');
+				window.localStorage.removeItem(TOKEN_STORAGE_KEY);
 
 				window.location.href = '/login';
 			}
 
-			window.localStorage.setItem(authTokenStorageKey, token);
+			window.localStorage.setItem(TOKEN_STORAGE_KEY, jwt);
 
 			this.tokenRefreshId = window.setTimeout(() => {
 				this.tokenRefreshId = null;

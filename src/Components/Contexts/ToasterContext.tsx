@@ -8,12 +8,13 @@ export const toaster = Toaster.create({
 
 export const ToasterContext = React.createContext(toaster);
 
-export interface ToasterAware {
+export interface IToasterAware {
 	toaster: IToaster;
 }
 
-export const withToasterContext = <P extends ToasterAware>(Component: React.ComponentType<P>): React.ComponentType<Subtract<P, ToasterAware>> => props => (
-	<ToasterContext.Consumer>
-		{toaster => <Component toaster={toaster} {...props} />}
-	</ToasterContext.Consumer>
-);
+export const withToasterContext = <P extends IToasterAware>(Component: React.ComponentType<P>):
+	React.ComponentType<Subtract<P, IToasterAware>> => props => (
+		<ToasterContext.Consumer>
+			{value => <Component toaster={value} {...props} />}
+		</ToasterContext.Consumer>
+	);
