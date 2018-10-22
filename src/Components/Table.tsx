@@ -104,11 +104,7 @@ interface ITableProps<T> {
 	htmlTableProps?: IHTMLTableProps;
 }
 
-interface ITableState<T> {
-	filteredColumns: Array<IColumn<T>>;
-}
-
-export class Table<T> extends React.Component<ITableProps<T>, ITableState<T>> {
+export class Table<T> extends React.PureComponent<ITableProps<T>, {}> {
 	public static defaultProps: Partial<ITableProps<any>> = {
 		dataSource: [],
 		fullWidth: false,
@@ -116,14 +112,6 @@ export class Table<T> extends React.Component<ITableProps<T>, ITableState<T>> {
 		loading: false,
 		styles: {},
 	};
-
-	public constructor(props: ITableProps<T>) {
-		super(props);
-
-		this.state = {
-			filteredColumns: this.collectFilters(),
-		};
-	}
 
 	public render(): JSX.Element {
 		if (this.props.loading) {
@@ -262,14 +250,21 @@ export class Table<T> extends React.Component<ITableProps<T>, ITableState<T>> {
 	}
 
 	private filterRow(row: T): boolean {
-		if (this.state.filteredColumns.length === 0)
+		if (!this.props.searchText || !this.props.searchText.length)
 			return true;
 
-		for (const column of this.state.filteredColumns) {
+		let filterCount = 0;
+
+		for (const column of this.props.columns) {
+			if (!column.onFilter)
+				continue;
+
+			++filterCount;
+
 			if (column.onFilter(row, this.props.searchText))
 				return true;
 		}
 
-		return false;
+		return filterCount !== 0;
 	}
 }

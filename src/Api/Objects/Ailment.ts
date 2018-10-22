@@ -5,8 +5,12 @@ import {Identifiable, IEntity, toIdentifier} from './Entity';
 import {Item} from './Item';
 import {Skill} from './Skill';
 
+enum RecoveryActions {
+	DODGE = 'dodge',
+}
+
 export interface IAilmentRecovery {
-	actions?: string[];
+	actions?: RecoveryActions[];
 	items?: Item[];
 }
 

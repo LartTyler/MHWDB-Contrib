@@ -38,3 +38,11 @@ body {
 .text-right {
 	text-align: right !important;
 }
+
+.full-width {
+	width: 100%;
+}
+
+textarea.full-width {
+	min-width: 100%;
+}

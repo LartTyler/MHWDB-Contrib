@@ -1,4 +1,4 @@
-import {Button, InputGroup} from '@blueprintjs/core';
+import {InputGroup} from '@blueprintjs/core';
 import * as React from 'react';
 
 interface ISearchInputProps {
