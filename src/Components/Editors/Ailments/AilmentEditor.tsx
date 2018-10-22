@@ -1,8 +1,10 @@
 import {FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import * as React from 'react';
 import {RouteComponentProps} from 'react-router';
+import {IItem} from '../../../Api/Objects/Item';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
+import {EntitySelect} from '../../EntitySelect/EntitySelect';
 import {Cell, Row} from '../../Grid';
 
 interface IAilmentEditorRouteProps {
@@ -16,6 +18,7 @@ interface IAilmentEditorState {
 	name: string;
 	description: string;
 	loading: boolean;
+	recoveryItems: IItem[],
 }
 
 class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IAilmentEditorState> {
@@ -23,6 +26,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		description: '',
 		loading: true,
 		name: '',
+		recoveryItems: [],
 	};
 
 	public componentDidMount(): void {
@@ -58,6 +62,21 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 							</FormGroup>
 						</Cell>
 					</Row>
+
+					<H2>Recovery</H2>
+
+					<Row>
+						<Cell size={6}>
+							<FormGroup label="Items">
+								<EntitySelect
+									provider={this.props.client.items}
+									labelField="name"
+									multiSelect={true}
+									initialSelection={this.state.recoveryItems}
+								/>
+							</FormGroup>
+						</Cell>
+					</Row>
 				</form>
 			</div>
 		);
@@ -78,6 +97,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 			description: ailment.description,
 			loading: false,
 			name: ailment.name,
+			recoveryItems: ailment.recovery.items,
 		}));
 	}
 }

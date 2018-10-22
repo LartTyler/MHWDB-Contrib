@@ -2,7 +2,7 @@ import {ApiClient, IApiClientModule} from '../ApiClient';
 import {Projection} from '../Projection';
 import {IQueryDocument} from '../Query';
 import {Identifiable, IEntity, toIdentifier} from './Entity';
-import {Item} from './Item';
+import {IItem} from './Item';
 import {Skill} from './Skill';
 
 enum RecoveryActions {
@@ -11,11 +11,11 @@ enum RecoveryActions {
 
 export interface IAilmentRecovery {
 	actions?: RecoveryActions[];
-	items?: Item[];
+	items?: IItem[];
 }
 
 export interface IAilmentProtection {
-	items?: Item[];
+	items?: IItem[];
 	skills?: Array<Pick<Skill, 'id' | 'name' | 'description'>>;
 }
 
