@@ -1,21 +1,11 @@
 import {ApiError} from './Errors/ApiError';
 import {AilmentApiClientModule} from './Objects/Ailment';
-import {Identifiable, IEntity} from './Objects/Entity';
+import {IEntity} from './Objects/Entity';
 import {ItemApiClientModule} from './Objects/Item';
 import {Projection} from './Projection';
 import {IQueryDocument} from './Query';
 import {isAuthResponse, isErrorResponse, isObjectArrayResponse, isObjectResponse} from './Response';
 import {Token} from './Token';
-
-export interface IApiClientModule<T extends IEntity> {
-	list(query?: IQueryDocument, projection?: Projection): Promise<T[]>;
-
-	get(target: Identifiable<T>, projection?: Projection): Promise<T>;
-
-	update(target: Identifiable<T>, values: T, projection?: Projection): Promise<T>;
-
-	delete(target: Identifiable<T>): Promise<void>;
-}
 
 interface IRequestParams {
 	[key: string]: string | number | boolean | null | object;
@@ -79,7 +69,12 @@ export class ApiClient {
 		this.setToken(null);
 	}
 
-	public list(path: string, query?: IQueryDocument, projection?: Projection): Promise<object[]> {
+	public list(
+		path: string,
+		query?: IQueryDocument,
+		projection?: Projection,
+		signal?: AbortSignal,
+	): Promise<object[]> {
 		const params: IRequestParams = {};
 
 		if (query) {
@@ -90,7 +85,7 @@ export class ApiClient {
 			params.p = projection;
 		}
 
-		return this.fetch('GET', path, params).then(response => {
+		return this.fetch('GET', path, params, undefined, signal).then(response => {
 			if (!isObjectArrayResponse(response)) {
 				throw new Error('Unexpected response type from API');
 			}
@@ -99,17 +94,16 @@ export class ApiClient {
 		});
 	}
 
-	public read(path: string, projection?: Projection): Promise<object> {
+	public read(path: string, projection?: Projection, signal?: AbortSignal): Promise<object> {
 		const params: IRequestParams = {};
 
 		if (projection) {
 			params.p = projection;
 		}
 
-		return this.fetch('GET', path, params).then(response => {
-			if (!isObjectResponse(response)) {
+		return this.fetch('GET', path, params, undefined, signal).then(response => {
+			if (!isObjectResponse(response))
 				throw new Error('Unexpected response from API');
-			}
 
 			return response;
 		});
@@ -142,10 +136,10 @@ export class ApiClient {
 		path: string,
 		queryParameters?: IRequestParams,
 		body?: string | object,
+		signal?: AbortSignal,
 	): Promise<unknown> {
-		if (path.charAt(0) === '/') {
+		if (path.charAt(0) === '/')
 			path = path.substr(1);
-		}
 
 		const url = new URL(path, this.baseUrl);
 		const headers = new Headers({
@@ -159,9 +153,8 @@ export class ApiClient {
 
 		if (queryParameters) {
 			for (const key in queryParameters) {
-				if (!queryParameters.hasOwnProperty(key)) {
+				if (!queryParameters.hasOwnProperty(key))
 					continue;
-				}
 
 				const value = queryParameters[key];
 
@@ -187,16 +180,17 @@ export class ApiClient {
 		}
 
 		if (body) {
-			if (request.method === 'GET') {
+			if (request.method === 'GET')
 				throw new Error('Cannot set body parameters for GET requests');
-			}
 
 			request.body = JSON.stringify(body);
 		}
 
-		if (this.token !== null) {
+		if (this.token !== null)
 			headers.set('Authorization', `Bearer ${this.token.jwt}`);
-		}
+
+		if (signal)
+			request.signal = signal;
 
 		return fetch(url.href, request)
 			.then(response => {
