@@ -1,7 +1,7 @@
 import {Button, Intent, MenuItem, Spinner} from '@blueprintjs/core';
 import {IItemRendererProps, IMultiSelectProps, ISelectProps, MultiSelect, Select} from '@blueprintjs/select';
 import * as React from 'react';
-import {IApiClientModule} from '../../Api/ApiClient';
+import {IApiClientModule} from '../../Api/Module';
 import {IEntity} from '../../Api/Objects/Entity';
 
 interface IEntitySelectProps<T extends IEntity> {
