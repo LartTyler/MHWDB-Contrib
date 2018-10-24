@@ -1,7 +1,11 @@
+import {Button} from '@blueprintjs/core';
 import * as React from 'react';
+import {Link} from 'react-router-dom';
 import {IAilment} from '../../../Api/Objects/Ailment';
+import {compareFields} from '../../../Api/Objects/Entity';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
+import {Cell, Row} from '../../Grid';
 import {Manager} from '../../Manager/Manager';
 import {ManagerHeader} from '../../Manager/ManagerHeader';
 import {RefreshButton} from '../../Manager/RefreshButton';
@@ -39,6 +43,16 @@ class AilmentListComponent extends React.PureComponent<IAilmentListProps, IAilme
 					refresh={<RefreshButton onRefresh={this.loadAilments} />}
 					search={<SearchInput onSearch={this.onSearchInputChange} />}
 				/>
+
+				<Row align="end">
+					<Cell size={2}>
+						<Link to="/edit/ailments/new" className="plain-link">
+							<Button icon="plus">
+								Add New
+							</Button>
+						</Link>
+					</Cell>
+				</Row>
 
 				<Table
 					dataSource={this.state.ailments}
@@ -99,17 +113,7 @@ class AilmentListComponent extends React.PureComponent<IAilmentListProps, IAilme
 			id: true,
 			name: true,
 		}).then(ailments => this.setState({
-			ailments: ailments.sort((a, b) => {
-				const aVal = a.name.toLowerCase();
-				const bVal = b.name.toLowerCase();
-
-				if (aVal > bVal)
-					return 1;
-				else if (aVal < bVal)
-					return -1;
-
-				return 0;
-			}),
+			ailments: ailments.sort((a, b) => compareFields('name', a, b)),
 			loading: false,
 		}));
 	};
