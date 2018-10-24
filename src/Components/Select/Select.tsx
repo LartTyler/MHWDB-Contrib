@@ -1,7 +1,8 @@
 import {Alignment, Button, Intent, Spinner} from '@blueprintjs/core';
 import {
 	IMultiSelectProps as IBaseMultiSelectProps,
-	ISelectProps as IBaseSelectProps, ItemListRenderer,
+	ISelectProps as IBaseSelectProps,
+	ItemListRenderer,
 	ItemRenderer,
 	MultiSelect as BaseMultiSelect,
 	Select as BaseSelect,

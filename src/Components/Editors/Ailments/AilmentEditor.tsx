@@ -3,6 +3,7 @@ import * as React from 'react';
 import {RouteComponentProps} from 'react-router';
 import {RecoveryAction} from '../../../Api/Objects/Ailment';
 import {IItem} from '../../../Api/Objects/Item';
+import {ISkill} from '../../../Api/Objects/Skill';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
 import {Cell, Row} from '../../Grid';
@@ -20,6 +21,8 @@ interface IAilmentEditorState {
 	description: string;
 	loading: boolean;
 	name: string;
+	protectionItems: IItem[];
+	protectionSkills: ISkill[];
 	recoveryActions: RecoveryAction[];
 	recoveryItems: IItem[];
 }
@@ -29,6 +32,8 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		description: '',
 		loading: true,
 		name: '',
+		protectionItems: [],
+		protectionSkills: [],
 		recoveryActions: [],
 		recoveryItems: [],
 	};
@@ -100,6 +105,38 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 					</Row>
 
 					<H2>Protection</H2>
+
+					<Row>
+						<Cell size={6}>
+							<FormGroup label="Items">
+								<EntitySelect
+									labelField="name"
+									multiSelect={true}
+									onClear={this.onProtectionItemsClear}
+									onItemDeselect={this.onProtectionItemsDeselect}
+									onItemSelect={this.onProtectionItemsSelect}
+									onSelectionLoad={this.onProtectionItemsLoad}
+									provider={this.props.client.items}
+									selected={this.state.protectionItems}
+								/>
+							</FormGroup>
+						</Cell>
+
+						<Cell size={6}>
+							<FormGroup label="Skills">
+								<EntitySelect
+									labelField="name"
+									multiSelect={true}
+									onClear={this.onProtectionSkillsClear}
+									onItemDeselect={this.onProtectionSkillsDeselect}
+									onItemSelect={this.onProtectionSkillsSelect}
+									onSelectionLoad={this.onProtectionSkillsLoad}
+									provider={this.props.client.skills}
+									selected={this.state.protectionSkills}
+								/>
+							</FormGroup>
+						</Cell>
+					</Row>
 				</form>
 			</div>
 		);
@@ -111,6 +148,38 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 
 	private onNameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		name: event.currentTarget.value,
+	});
+
+	private onProtectionItemsClear = () => this.setState({
+		protectionItems: [],
+	});
+
+	private onProtectionItemsDeselect = (removed: IItem) => this.setState({
+		protectionItems: this.state.protectionItems.filter(item => item.id !== removed.id),
+	});
+
+	private onProtectionItemsSelect = (item: IItem) => this.setState({
+		protectionItems: [...this.state.protectionItems, item],
+	});
+
+	private onProtectionItemsLoad = (selected: IItem[]) => this.setState({
+		protectionItems: selected,
+	});
+
+	private onProtectionSkillsClear = () => this.setState({
+		protectionSkills: [],
+	});
+
+	private onProtectionSkillsDeselect = (removed: ISkill) => this.setState({
+		protectionSkills: this.state.protectionSkills.filter(item => item.id !== removed.id),
+	});
+
+	private onProtectionSkillsSelect = (item: ISkill) => this.setState({
+		protectionSkills: [...this.state.protectionSkills, item],
+	});
+
+	private onProtectionSkillsLoad = (selected: ISkill[]) => this.setState({
+		protectionSkills: selected,
 	});
 
 	private onRecoveryActionsClear = () => this.setState({
@@ -142,12 +211,31 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 	});
 
 	private loadAilment(): void {
+		if (this.props.match.params.ailment === 'new') {
+			return this.setState({
+				loading: false,
+			});
+		}
+
 		const ailmentId = parseInt(this.props.match.params.ailment, 10);
 
-		this.props.client.ailments.get(ailmentId).then(ailment => this.setState({
+		this.props.client.ailments.get(ailmentId, {
+			description: true,
+			name: true,
+			'protection.items.id': true,
+			'protection.items.name': true,
+			'protection.skills.id': true,
+			'protection.skills.name': true,
+			'recovery.actions': true,
+			'recovery.items.id': true,
+			'recovery.items.name': true,
+		}).then(ailment => this.setState({
 			description: ailment.description,
 			loading: false,
 			name: ailment.name,
+			protectionItems: ailment.protection.items,
+			protectionSkills: ailment.protection.skills,
+			recoveryActions: ailment.recovery.actions,
 			recoveryItems: ailment.recovery.items,
 		}));
 	}
