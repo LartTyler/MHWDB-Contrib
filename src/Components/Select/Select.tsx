@@ -7,7 +7,6 @@ import {
 	Select as BaseSelect,
 } from '@blueprintjs/select';
 import * as React from 'react';
-import {IEntity} from '../../Api/Objects/Entity';
 
 interface ISelectProps<T> {
 	dataSource: T[];
@@ -29,7 +28,7 @@ interface ISelectProps<T> {
 }
 
 type BaseSelectProps<T> = IBaseSelectProps<T> | IBaseMultiSelectProps<T>;
-const assertMultiSelectProps = <T extends IEntity>(value: any): value is IBaseMultiSelectProps<T> => true;
+const assertMultiSelectProps = <T extends any>(value: any): value is IBaseMultiSelectProps<T> => true;
 
 interface ISelectState<T> {
 	SelectComponent: React.ComponentType<BaseSelectProps<T>>;
