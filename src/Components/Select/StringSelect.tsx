@@ -14,6 +14,7 @@ interface IStringSelectProps {
 	onItemSelect?: (item: string) => void;
 	placeholder?: string;
 	search?: boolean;
+	valueRenderer?: (item: string) => React.ReactNode;
 }
 
 export class StringSelect extends React.PureComponent<IStringSelectProps, {}> {
@@ -42,11 +43,11 @@ export class StringSelect extends React.PureComponent<IStringSelectProps, {}> {
 			icon={this.props.selected.indexOf(item) > -1 ? 'tick' : 'blank'}
 			key={item}
 			onClick={itemProps.handleClick}
-			text={item}
+			text={this.renderText(item)}
 		/>
 	);
 
-	private renderText = (item: string) => item;
+	private renderText = (item: string) => this.props.valueRenderer ? this.props.valueRenderer(item) : item;
 
 	private filterItem = (query: string, item: string) => item.toLowerCase().indexOf(query.toLowerCase()) > -1;
 }
