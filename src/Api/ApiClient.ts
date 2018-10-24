@@ -2,6 +2,7 @@ import {ApiError} from './Errors/ApiError';
 import {AilmentApiClientModule} from './Objects/Ailment';
 import {IEntity} from './Objects/Entity';
 import {ItemApiClientModule} from './Objects/Item';
+import {SkillApiClientModule} from './Objects/Skill';
 import {Projection} from './Projection';
 import {IQueryDocument} from './Query';
 import {isAuthResponse, isErrorResponse, isObjectArrayResponse, isObjectResponse} from './Response';
@@ -16,6 +17,7 @@ const TOKEN_STORAGE_KEY = 'api.auth_token';
 export class ApiClient {
 	public readonly ailments: AilmentApiClientModule;
 	public readonly items: ItemApiClientModule;
+	public readonly skills: SkillApiClientModule;
 
 	protected baseUrl: string;
 
@@ -27,6 +29,7 @@ export class ApiClient {
 
 		this.ailments = new AilmentApiClientModule(this);
 		this.items = new ItemApiClientModule(this);
+		this.skills = new SkillApiClientModule(this);
 
 		const jwt = window.localStorage.getItem(TOKEN_STORAGE_KEY);
 

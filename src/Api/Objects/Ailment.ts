@@ -4,7 +4,7 @@ import {Projection} from '../Projection';
 import {IQueryDocument} from '../Query';
 import {Identifiable, IEntity, toIdentifier} from './Entity';
 import {IItem} from './Item';
-import {Skill} from './Skill';
+import {ISkill} from './Skill';
 
 export enum RecoveryAction {
 	DODGE = 'dodge',
@@ -17,7 +17,7 @@ export interface IAilmentRecovery {
 
 export interface IAilmentProtection {
 	items?: IItem[];
-	skills?: Array<Pick<Skill, 'id' | 'name' | 'description'>>;
+	skills?: Array<Pick<ISkill, 'id' | 'name' | 'description'>>;
 }
 
 export interface IAilment extends IEntity {
