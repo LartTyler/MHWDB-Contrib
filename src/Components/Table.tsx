@@ -1,7 +1,7 @@
 import {HTMLTable, IHTMLTableProps, Intent, Spinner} from '@blueprintjs/core';
 import * as React from 'react';
 
-interface IColumn<T> {
+export interface IColumn<T> {
 	/**
 	 * The column's header node.
 	 */
@@ -46,7 +46,7 @@ interface IColumn<T> {
 	style?: React.CSSProperties;
 }
 
-interface ITableProps<T> {
+export interface ITableProps<T> {
 	/**
 	 * An array containing the data that backs the table.
 	 */

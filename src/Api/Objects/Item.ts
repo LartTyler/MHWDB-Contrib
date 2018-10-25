@@ -1,8 +1,6 @@
 import {ApiClient} from '../ApiClient';
-import {AbstractApiClientModule, IApiClientModule} from '../Module';
-import {Projection} from '../Projection';
-import {IQueryDocument} from '../Query';
-import {Identifiable, IEntity, toIdentifier} from './Entity';
+import {AbstractApiClientModule} from '../Module';
+import {IEntity} from './Entity';
 
 export interface IItem extends IEntity {
 	name?: string;

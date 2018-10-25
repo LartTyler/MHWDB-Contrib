@@ -1,8 +1,6 @@
 import {ApiClient} from '../ApiClient';
-import {AbstractApiClientModule, IApiClientModule} from '../Module';
-import {Projection} from '../Projection';
-import {IQueryDocument} from '../Query';
-import {Identifiable, IEntity, Normalized, toIdArray, toIdentifier} from './Entity';
+import {AbstractApiClientModule} from '../Module';
+import {IEntity, Normalized, toIdArray} from './Entity';
 import {IItem} from './Item';
 import {ISkill} from './Skill';
 

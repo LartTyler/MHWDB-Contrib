@@ -4,7 +4,6 @@ import {Link} from 'react-router-dom';
 import {IAilment} from '../../../Api/Objects/Ailment';
 import {compareFields} from '../../../Api/Objects/Entity';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
 import {Cell, Row} from '../../Grid';
 import {Manager} from '../../Manager/Manager';
 import {ManagerHeader} from '../../Manager/ManagerHeader';
@@ -13,7 +12,7 @@ import {RowControls} from '../../Manager/RowControls';
 import {SearchInput} from '../../Search';
 import {Table} from '../../Table';
 
-interface IAilmentListProps extends IApiClientAware, IToasterAware {
+interface IAilmentListProps extends IApiClientAware {
 }
 
 type Ailment = Pick<IAilment, 'id' | 'name' | 'description'>;
@@ -125,4 +124,4 @@ class AilmentListComponent extends React.PureComponent<IAilmentListProps, IAilme
 	};
 }
 
-export const AilmentList = withApiClient(withToasterContext(AilmentListComponent));
+export const AilmentList = withApiClient(AilmentListComponent);
