@@ -6,6 +6,8 @@ import {IQueryDocument} from './Query';
 export interface IApiClientModule<T extends IEntity> {
 	list(query?: IQueryDocument, projection?: Projection, signal?: AbortSignal): Promise<T[]>;
 
+	create(values: T, projection?: Projection): Promise<T>;
+
 	get(target: Identifiable<T>, projection?: Projection, signal?: AbortSignal): Promise<T>;
 
 	update(target: Identifiable<T>, values: T, projection?: Projection): Promise<T>;
@@ -22,8 +24,20 @@ export abstract class AbstractApiClientModule<T extends IEntity> implements IApi
 		this.basePath = basePath;
 	}
 
-	public delete(target: Identifiable<T>): Promise<void> {
-		return this.client.delete(`${this.basePath}/${toIdentifier(target)}`);
+	public list(query?: IQueryDocument, projection?: Projection, signal?: AbortSignal): Promise<T[]> {
+		return this.client
+			.list(this.basePath, query, projection, signal)
+			.then(entities => entities.map(this.denormalize));
+	}
+
+	public create(values: T, projection?: Projection): Promise<T> {
+		return this.client.create(this.basePath, values, projection)
+			.then((entity: T) => {
+				if (entity !== null)
+					entity = this.denormalize(entity);
+
+				return entity;
+			});
 	}
 
 	public get(target: Identifiable<T>, projection?: Projection, signal?: AbortSignal): Promise<T> {
@@ -37,16 +51,14 @@ export abstract class AbstractApiClientModule<T extends IEntity> implements IApi
 			});
 	}
 
-	public list(query?: IQueryDocument, projection?: Projection, signal?: AbortSignal): Promise<T[]> {
-		return this.client
-			.list(this.basePath, query, projection, signal)
-			.then(entities => entities.map(this.denormalize));
-	}
-
 	public update(target: Identifiable<T>, values: T, projection?: Projection): Promise<T> {
 		return this.client
 			.update(`${this.basePath}/${toIdentifier(target)}`, this.normalize(values), projection)
 			.then(this.denormalize);
+	}
+
+	public delete(target: Identifiable<T>): Promise<void> {
+		return this.client.delete(`${this.basePath}/${toIdentifier(target)}`);
 	}
 
 	protected normalize(entity: T): object {

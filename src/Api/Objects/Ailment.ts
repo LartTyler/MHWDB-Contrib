@@ -2,7 +2,7 @@ import {ApiClient} from '../ApiClient';
 import {AbstractApiClientModule, IApiClientModule} from '../Module';
 import {Projection} from '../Projection';
 import {IQueryDocument} from '../Query';
-import {Identifiable, IEntity, toIdentifier} from './Entity';
+import {Identifiable, IEntity, Normalized, toIdArray, toIdentifier} from './Entity';
 import {IItem} from './Item';
 import {ISkill} from './Skill';
 
@@ -30,5 +30,28 @@ export interface IAilment extends IEntity {
 export class AilmentApiClientModule extends AbstractApiClientModule<IAilment> {
 	public constructor(client: ApiClient) {
 		super(client, '/ailments');
+	}
+
+	protected normalize(entity: IAilment): object {
+		const output: Normalized<IAilment> = {...entity};
+
+		if (entity.protection) {
+			output.protection = {...entity.protection};
+
+			if (entity.protection.items)
+				output.protection.items = toIdArray(entity.protection.items);
+
+			if (entity.protection.skills)
+				output.protection.skills = toIdArray(entity.protection.skills);
+		}
+
+		if (entity.recovery) {
+			output.recovery = {...entity.recovery};
+
+			if (entity.recovery.items)
+				output.recovery.items = toIdArray(entity.recovery.items);
+		}
+
+		return output;
 	}
 }

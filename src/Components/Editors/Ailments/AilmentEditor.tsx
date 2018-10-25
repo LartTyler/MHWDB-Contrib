@@ -1,9 +1,11 @@
-import {FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import * as React from 'react';
-import {RouteComponentProps} from 'react-router';
-import {RecoveryAction} from '../../../Api/Objects/Ailment';
+import {Redirect, RouteComponentProps} from 'react-router';
+import {Link} from 'react-router-dom';
+import {IAilment, RecoveryAction} from '../../../Api/Objects/Ailment';
 import {IItem} from '../../../Api/Objects/Item';
 import {ISkill} from '../../../Api/Objects/Skill';
+import {Projection} from '../../../Api/Projection';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
 import {Cell, Row} from '../../Grid';
@@ -25,6 +27,8 @@ interface IAilmentEditorState {
 	protectionSkills: ISkill[];
 	recoveryActions: RecoveryAction[];
 	recoveryItems: IItem[];
+	redirect: boolean;
+	saving: boolean;
 }
 
 class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IAilmentEditorState> {
@@ -36,6 +40,8 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		protectionSkills: [],
 		recoveryActions: [],
 		recoveryItems: [],
+		redirect: false,
+		saving: false,
 	};
 
 	public componentDidMount(): void {
@@ -45,6 +51,8 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 	public render(): React.ReactNode {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
+		else if (this.state.redirect)
+			return <Redirect to="/edit/ailments" />;
 
 		return (
 			<div>
@@ -99,6 +107,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 									onItemDeselect={this.onRecoveryActionsDeselect}
 									onItemSelect={this.onRecoveryActionsSelect}
 									selected={this.state.recoveryActions}
+									valueRenderer={this.renderRecoveryActionValue}
 								/>
 							</FormGroup>
 						</Cell>
@@ -137,10 +146,28 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 							</FormGroup>
 						</Cell>
 					</Row>
+
+					<Row align="end">
+						<Cell size={1}>
+							<Link to="/edit/ailments" className="plain-link">
+								<Button fill={true} loading={this.state.saving}>
+									Cancel
+								</Button>
+							</Link>
+						</Cell>
+
+						<Cell size={1}>
+							<Button intent={Intent.PRIMARY} fill={true} loading={this.state.saving} onClick={this.save}>
+								Save
+							</Button>
+						</Cell>
+					</Row>
 				</form>
 			</div>
 		);
 	}
+
+	private renderRecoveryActionValue = (action: string) => `${action.charAt(0).toUpperCase()}${action.substr(1)}`;
 
 	private onDescriptionInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({
 		description: event.currentTarget.value,
@@ -212,9 +239,11 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 
 	private loadAilment(): void {
 		if (this.props.match.params.ailment === 'new') {
-			return this.setState({
+			this.setState({
 				loading: false,
 			});
+
+			return;
 		}
 
 		const ailmentId = parseInt(this.props.match.params.ailment, 10);
@@ -239,6 +268,60 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 			recoveryItems: ailment.recovery.items,
 		}));
 	}
+
+	private save = () => {
+		if (this.state.saving)
+			return;
+
+		this.setState({
+			saving: true,
+		});
+
+		const payload: IAilment = {
+			description: this.state.description,
+			name: this.state.name,
+			protection: {
+				items: this.state.protectionItems,
+				skills: this.state.protectionSkills,
+			},
+			recovery: {
+				actions: this.state.recoveryActions,
+				items: this.state.recoveryItems,
+			},
+		};
+
+		const projection: Projection = {
+			name: true,
+		};
+
+		const ailmentId = this.props.match.params.ailment;
+		let promise: Promise<IAilment>;
+
+		if (ailmentId === 'new')
+			promise = this.props.client.ailments.create(payload, projection);
+		else
+			promise = this.props.client.ailments.update(parseInt(ailmentId, 10), payload, projection);
+
+		promise.then(ailment => {
+			this.props.toaster.show({
+				intent: Intent.SUCCESS,
+				message: `${ailment.name} ${ailmentId === 'new' ? 'created' : 'saved'} successfully.`,
+			});
+
+			this.setState({
+				redirect: true,
+			});
+		}).catch((error: Error) => {
+			this.props.toaster.show({
+				intent: Intent.WARNING,
+				message: error.message,
+			});
+
+			this.setState({
+				saving: false,
+			});
+		});
+	};
 }
 
 export const AilmentEditor = withApiClient(withToasterContext(AilmentEditorComponent));

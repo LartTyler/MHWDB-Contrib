@@ -97,6 +97,20 @@ export class ApiClient {
 		});
 	}
 
+	public create<T extends IEntity>(path: string, values: T, projection?: Projection): Promise<object> {
+		const params: IRequestParams = {};
+
+		if (projection)
+			params.p = projection;
+
+		return this.fetch('PUT', path, params, values).then(response => {
+			if (!isObjectResponse(response))
+				throw new Error('Unexpected response from API');
+
+			return response;
+		});
+	}
+
 	public read(path: string, projection?: Projection, signal?: AbortSignal): Promise<object> {
 		const params: IRequestParams = {};
 
