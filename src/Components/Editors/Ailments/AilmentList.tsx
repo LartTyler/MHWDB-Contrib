@@ -60,6 +60,9 @@ class AilmentListComponent extends React.PureComponent<IAilmentListProps, IAilme
 						{
 							dataIndex: 'name',
 							onFilter: (record, search) => record.name.toLowerCase().indexOf(search) > -1,
+							style: {
+								minWidth: 250,
+							},
 							title: 'Name',
 						},
 						{
