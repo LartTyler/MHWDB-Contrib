@@ -31,7 +31,7 @@ export abstract class AbstractApiClientModule<T extends IEntity> implements IApi
 	}
 
 	public create(values: T, projection?: Projection): Promise<T> {
-		return this.client.create(this.basePath, values, projection)
+		return this.client.create(this.basePath, this.normalize(values), projection)
 			.then((entity: T) => {
 				if (entity !== null)
 					entity = this.denormalize(entity);

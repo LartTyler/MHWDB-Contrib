@@ -85,14 +85,15 @@ class AilmentListComponent extends React.PureComponent<IAilmentListProps, IAilme
 							title: 'Controls',
 						},
 					]}
-					searchText={this.state.search}
+					fullWidth={true}
 					htmlTableProps={{
 						interactive: true,
 						striped: true,
 					}}
-					fullWidth={true}
 					loading={this.state.loading}
 					noDataPlaceholder={<span>No ailments found.</span>}
+					rowKey="id"
+					searchText={this.state.search}
 				/>
 			</Manager>
 		);
@@ -102,8 +103,10 @@ class AilmentListComponent extends React.PureComponent<IAilmentListProps, IAilme
 		search,
 	});
 
-	private onDeleteButtonClick = (entity: Ailment) => {
-		return this.props.client.ailments.delete(entity);
+	private onDeleteButtonClick = (target: Ailment) => {
+		return this.props.client.ailments.delete(target).then(() => this.setState({
+			ailments: this.state.ailments.filter(ailment => ailment.id !== target.id),
+		}));
 	};
 
 	private loadAilments = () => {

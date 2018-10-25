@@ -48,7 +48,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		this.loadAilment();
 	}
 
-	public render(): React.ReactNode {
+	public render(): JSX.Element {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
