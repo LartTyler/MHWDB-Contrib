@@ -15,7 +15,6 @@ const AilmentListComponent: React.SFC<IApiClientAware> = props => (
 		basePath="/edit/ailments"
 		projection={{
 			description: true,
-			id: true,
 			name: true,
 		}}
 		provider={props.client.ailments}

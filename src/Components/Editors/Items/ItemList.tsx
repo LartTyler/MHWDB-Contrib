@@ -15,7 +15,6 @@ const ItemListComponent: React.SFC<IApiClientAware> = props => (
 		basePath="/edit/items"
 		projection={{
 			description: true,
-			id: true,
 			name: true,
 		}}
 		provider={props.client.items}

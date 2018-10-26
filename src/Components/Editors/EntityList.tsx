@@ -138,10 +138,11 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 			loading: true,
 		});
 
-		this.props.provider.list(null, this.props.projection, controller.signal).then(entities => this.setState({
-			controller: null,
-			entities: entities.sort(this.props.sorter),
-			loading: false,
-		}));
+		this.props.provider.list(null, {...this.props.projection, id: true}, controller.signal)
+			.then(entities => this.setState({
+				controller: null,
+				entities: entities.sort(this.props.sorter),
+				loading: false,
+			}));
 	};
 }
