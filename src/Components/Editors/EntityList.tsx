@@ -43,6 +43,11 @@ interface IEntityListState<T extends IEntity> {
 }
 
 export class EntityList<T extends IEntity> extends React.PureComponent<IEntityListProps<T>, IEntityListState<T>> {
+	// tslint:disable-next-line
+	private onSearchInputChange = debounce((search: string) => this.setState({
+		search: search.toLowerCase(),
+	}), 200);
+
 	public constructor(props: IEntityListProps<T>) {
 		super(props);
 
@@ -121,11 +126,6 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 			entities: this.state.entities.filter(entity => entity.id !== target.id),
 		}));
 	};
-
-	// tslint:disable-next-line
-	private onSearchInputChange = debounce((search: string) => this.setState({
-		search: search.toLowerCase(),
-	}), 200);
 
 	private loadEntities = () => {
 		if (this.state.controller)
