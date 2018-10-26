@@ -1,8 +1,9 @@
 import {Button} from '@blueprintjs/core';
+import {debounce} from 'debounce';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {IApiClientModule} from '../../Api/Module';
-import {IEntity} from '../../Api/Objects/Entity';
+import {compareFields, IEntity} from '../../Api/Objects/Entity';
 import {Projection} from '../../Api/Projection';
 import {Cell, Row} from '../Grid';
 import {Manager} from '../Manager/Manager';
@@ -11,6 +12,17 @@ import {RefreshButton} from '../Manager/RefreshButton';
 import {RowControls} from '../Manager/RowControls';
 import {SearchInput} from '../Search';
 import {IColumn, Table} from '../Table';
+
+export const createEntityFilter = <T extends IEntity>(key: keyof T) => (record: T, search: string) => {
+	const value = record[key];
+
+	if (typeof value !== 'string')
+		throw new Error('This function can only operate on string values');
+
+	return value.toLowerCase().indexOf(search) > -1;
+};
+
+export const createEntitySorter = <T extends IEntity>(key: keyof T) => (a: T, b: T) => compareFields(key, a, b);
 
 interface IEntityListProps<T extends IEntity> {
 	basePath: string;
@@ -72,7 +84,7 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 		return (
 			<Manager>
 				<ManagerHeader
-					title="Ailments"
+					title={this.props.title}
 					refresh={<RefreshButton onRefresh={this.loadEntities} />}
 					search={<SearchInput onSearch={this.onSearchInputChange} />}
 				/>
@@ -110,9 +122,10 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 		}));
 	};
 
-	private onSearchInputChange = (search: string) => this.setState({
-		search,
-	});
+	// tslint:disable-next-line
+	private onSearchInputChange = debounce((search: string) => this.setState({
+		search: search.toLowerCase(),
+	}), 200);
 
 	private loadEntities = () => {
 		if (this.state.controller)

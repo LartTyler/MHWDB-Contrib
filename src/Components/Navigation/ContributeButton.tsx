@@ -12,6 +12,11 @@ export const ContributeButton: React.SFC<{}> = () => {
 					text="Ailments"
 					href="/edit/ailments"
 				/>
+
+				<LinkedMenuItem
+					href="/edit/items"
+					text="Items"
+				/>
 			</Menu>
 		</Popover>
 	);

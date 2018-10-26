@@ -138,9 +138,8 @@ export class Table<T> extends React.PureComponent<ITableProps<T>, {}> {
 
 		const styles = {...this.props.styles};
 
-		if (this.props.fullWidth) {
+		if (this.props.fullWidth)
 			styles.width = '100%';
-		}
 
 		return (
 			<HTMLTable style={styles} {...this.props.htmlTableProps}>
@@ -155,10 +154,6 @@ export class Table<T> extends React.PureComponent<ITableProps<T>, {}> {
 				</tbody>
 			</HTMLTable>
 		);
-	}
-
-	private collectFilters(): Array<IColumn<T>> {
-		return this.props.columns.filter(column => column.onFilter);
 	}
 
 	private getHeaders(): React.ReactNode[] {
@@ -177,9 +172,8 @@ export class Table<T> extends React.PureComponent<ITableProps<T>, {}> {
 	}
 
 	private getRows(): React.ReactNode[] {
-		const {dataSource} = this.props;
-
 		const rows: React.ReactNode[] = [];
+		const dataSource = this.filterRows(this.props.dataSource);
 
 		for (let index = 0; index < dataSource.length; index++) {
 			const datum = dataSource[index];
@@ -209,9 +203,6 @@ export class Table<T> extends React.PureComponent<ITableProps<T>, {}> {
 	}
 
 	private getCells(row: T): React.ReactNode {
-		if (!this.filterRow(row))
-			return null;
-
 		const {columns} = this.props;
 
 		const cells: React.ReactNode[] = [];
@@ -248,22 +239,22 @@ export class Table<T> extends React.PureComponent<ITableProps<T>, {}> {
 		return cells;
 	}
 
-	private filterRow(row: T): boolean {
+	private filterRows = (rows: T[]): T[] => {
 		if (!this.props.searchText || !this.props.searchText.length)
-			return true;
+			return rows;
 
-		let filterCount = 0;
+		const filterColumns = this.props.columns.filter(column => column.onFilter);
 
-		for (const column of this.props.columns) {
-			if (!column.onFilter)
-				continue;
+		if (!filterColumns.length)
+			return rows;
 
-			++filterCount;
+		return rows.filter(row => {
+			for (const column of filterColumns) {
+				if (column.onFilter(row, this.props.searchText))
+					return true;
+			}
 
-			if (column.onFilter(row, this.props.searchText))
-				return true;
-		}
-
-		return filterCount !== 0;
-	}
+			return false;
+		});
+	};
 }
