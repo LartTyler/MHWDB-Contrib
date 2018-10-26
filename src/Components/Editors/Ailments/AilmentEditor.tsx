@@ -9,6 +9,7 @@ import {Projection} from '../../../Api/Projection';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
 import {Cell, Row} from '../../Grid';
+import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {StringSelect} from '../../Select/StringSelect';
 
@@ -55,10 +56,10 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 			return <Redirect to="/edit/ailments" />;
 
 		return (
-			<div>
-				<H2>{this.state.name.length ? this.state.name : <span>Unnamed</span>}</H2>
+			<>
+				<H2>{this.state.name.length ? this.state.name : 'Unnamed'}</H2>
 
-				<form>
+				<form onSubmit={this.save}>
 					<Row>
 						<Cell size={6}>
 							<FormGroup label="Name" labelFor="name">
@@ -73,8 +74,8 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 								<TextArea
 									name="description"
 									value={this.state.description}
-									className="full-width"
 									onChange={this.onDescriptionInputChange}
+									fill={true}
 								/>
 							</FormGroup>
 						</Cell>
@@ -149,11 +150,9 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 
 					<Row align="end">
 						<Cell size={1}>
-							<Link to="/edit/ailments" className="plain-link">
-								<Button fill={true} loading={this.state.saving}>
-									Cancel
-								</Button>
-							</Link>
+							<LinkButton to="/edit/ailments" buttonProps={{fill: true, loading: this.state.saving}}>
+								Cancel
+							</LinkButton>
 						</Cell>
 
 						<Cell size={1}>
@@ -163,7 +162,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 						</Cell>
 					</Row>
 				</form>
-			</div>
+			</>
 		);
 	}
 
@@ -238,7 +237,9 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 	});
 
 	private loadAilment(): void {
-		if (this.props.match.params.ailment === 'new') {
+		const idParam = this.props.match.params.ailment;
+
+		if (idParam === 'new') {
 			this.setState({
 				loading: false,
 			});
@@ -246,9 +247,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 			return;
 		}
 
-		const ailmentId = parseInt(this.props.match.params.ailment, 10);
-
-		this.props.client.ailments.get(ailmentId, {
+		this.props.client.ailments.get(parseInt(idParam, 10), {
 			description: true,
 			name: true,
 			'protection.items.id': true,
@@ -269,7 +268,10 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		}));
 	}
 
-	private save = () => {
+	private save = (event?: React.SyntheticEvent<any>) => {
+		if (event)
+			event.preventDefault();
+
 		if (this.state.saving)
 			return;
 
@@ -313,7 +315,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 			});
 		}).catch((error: Error) => {
 			this.props.toaster.show({
-				intent: Intent.WARNING,
+				intent: Intent.DANGER,
 				message: error.message,
 			});
 
