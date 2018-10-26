@@ -1,8 +1,6 @@
 import {Button} from '@blueprintjs/core';
 import * as React from 'react';
-import {RouteComponentProps} from 'react-router';
 import {Link} from 'react-router-dom';
-import {sort} from 'semver';
 import {IApiClientModule} from '../../Api/Module';
 import {IEntity} from '../../Api/Objects/Entity';
 import {Projection} from '../../Api/Projection';
@@ -14,25 +12,25 @@ import {RowControls} from '../Manager/RowControls';
 import {SearchInput} from '../Search';
 import {IColumn, Table} from '../Table';
 
-interface IEntityListProps<T extends IEntity> extends RouteComponentProps<{}> {
+interface IEntityListProps<T extends IEntity> {
+	basePath: string;
 	projection: Projection;
 	provider: IApiClientModule<T>;
 	sorter: (a: T, b: T) => -1 | 0 | 1;
-	tableColumns: IColumn<T>[];
+	tableColumns: Array<IColumn<T>>;
 	tableNoDataPlaceholder: React.ReactNode;
 	title: string;
 }
 
 interface IEntityListState<T extends IEntity> {
-	columns: IColumn<T>[];
+	columns: Array<IColumn<T>>;
 	controller: AbortController;
 	entities: T[];
 	loading: boolean;
 	search: string;
 }
 
-export class EntityListComponent<T extends IEntity>
-	extends React.PureComponent<IEntityListProps<T>, IEntityListState<T>> {
+export class EntityList<T extends IEntity> extends React.PureComponent<IEntityListProps<T>, IEntityListState<T>> {
 	public constructor(props: IEntityListProps<T>) {
 		super(props);
 
@@ -44,7 +42,7 @@ export class EntityListComponent<T extends IEntity>
 					render: record => (
 						<RowControls
 							entity={record}
-							editPath={`${props.location.pathname}/${record.id}`}
+							editPath={`${props.basePath}/${record.id}`}
 							onDelete={this.onDeleteButtonClick}
 						/>
 					),
@@ -65,6 +63,11 @@ export class EntityListComponent<T extends IEntity>
 		this.loadEntities();
 	}
 
+	public componentWillUnmount(): void {
+		if (this.state.controller)
+			this.state.controller.abort();
+	}
+
 	public render(): React.ReactNode {
 		return (
 			<Manager>
@@ -76,7 +79,7 @@ export class EntityListComponent<T extends IEntity>
 
 				<Row align="end">
 					<Cell size={2}>
-						<Link to="/edit/ailments/new" className="plain-link">
+						<Link to={`${this.props.basePath}/new`} className="plain-link">
 							<Button icon="plus">
 								Add New
 							</Button>
@@ -86,48 +89,30 @@ export class EntityListComponent<T extends IEntity>
 
 				<Table
 					dataSource={this.state.entities}
-					columns={[
-						{
-							dataIndex: 'name',
-							onFilter: (record, search) => record.name.toLowerCase().indexOf(search) > -1,
-							style: {
-								minWidth: 250,
-							},
-							title: 'Name',
-						},
-						{
-							dataIndex: 'description',
-							onFilter: (record, search) => record.description.toLowerCase().indexOf(search) > -1,
-							title: 'Description',
-						},
-						{
-							align: 'right',
-							render: record => (
-								<RowControls
-									entity={record}
-									editPath={`/edit/ailments/${record.id}`}
-									onDelete={this.onDeleteButtonClick}
-								/>
-							),
-							style: {
-								width: 200,
-							},
-							title: 'Controls',
-						},
-					]}
+					columns={this.state.columns}
 					fullWidth={true}
 					htmlTableProps={{
 						interactive: true,
 						striped: true,
 					}}
 					loading={this.state.loading}
-					noDataPlaceholder={<span>No ailments found.</span>}
+					noDataPlaceholder={this.props.tableNoDataPlaceholder}
 					rowKey="id"
 					searchText={this.state.search}
 				/>
 			</Manager>
 		);
 	}
+
+	private onDeleteButtonClick = (target: T) => {
+		return this.props.provider.delete(target).then(() => this.setState({
+			entities: this.state.entities.filter(entity => entity.id !== target.id),
+		}));
+	};
+
+	private onSearchInputChange = (search: string) => this.setState({
+		search,
+	});
 
 	private loadEntities = () => {
 		if (this.state.controller)

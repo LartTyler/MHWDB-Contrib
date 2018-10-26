@@ -237,10 +237,9 @@ export class Table<T> extends React.PureComponent<ITableProps<T>, {}> {
 				classes.push(`text-${column.align}`);
 
 			const styles = column.style || {};
-			styles.verticalAlign = 'middle';
 
 			cells.push((
-				<td key={key} className={classes.join(' ')} style={styles}>
+				<td key={key} className={classes.join(' ')} style={{...styles, verticalAlign: 'middle'}}>
 					{cell}
 				</td>
 			));
