@@ -10,7 +10,7 @@ export const Navigation: React.SFC<{}> = () => (
 		<NavbarGroup align={Alignment.LEFT}>
 			<NavbarHeading>
 				<Link to="/" className="plain-link">
-					Monster Hunter: World API
+					Title
 				</Link>
 			</NavbarHeading>
 
