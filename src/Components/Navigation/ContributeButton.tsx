@@ -8,15 +8,9 @@ export const ContributeButton: React.SFC<{}> = () => {
 			<Button minimal={true}>Contribute</Button>
 
 			<Menu>
-				<LinkedMenuItem
-					text="Ailments"
-					href="/edit/ailments"
-				/>
-
-				<LinkedMenuItem
-					href="/edit/items"
-					text="Items"
-				/>
+				<LinkedMenuItem href="/edit/ailments" text="Ailments" />
+				<LinkedMenuItem href="/edit/items" text="Items" />
+				<LinkedMenuItem href="/edit/skills" text="Skills" />
 			</Menu>
 		</Popover>
 	);
