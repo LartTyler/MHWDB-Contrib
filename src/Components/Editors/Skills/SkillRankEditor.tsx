@@ -1,5 +1,6 @@
 import {Button, H4, TextArea} from '@blueprintjs/core';
 import * as React from 'react';
+import {getDisplayName} from '../../../Api/Objects/attributes';
 import {ISkillRank, ISkillRankModifiers} from '../../../Api/Objects/Skill';
 import {Cell, Row} from '../../Grid';
 
@@ -39,7 +40,23 @@ export class SkillRankEditor extends React.PureComponent<ISkillRankEditorProps, 
 				</Row>
 
 				<TextArea fill={true} onChange={this.onDescriptionChange} value={this.state.description} />
+
+				{this.renderModifiers()}
 			</div>
+		);
+	}
+
+	private renderModifiers(): React.ReactNode {
+		const modifiers = Object.keys(this.state.modifiers).map((key) => (
+			<Cell key={key} size={4}>
+				{getDisplayName(key)}
+			</Cell>
+		));
+
+		return (
+			<Row>
+				{modifiers}
+			</Row>
 		);
 	}
 
