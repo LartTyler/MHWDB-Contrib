@@ -1,4 +1,4 @@
-import {FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {Button, FormGroup, H2, H3, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {ISkillRank} from '../../../Api/Objects/Skill';
@@ -69,21 +69,35 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 						</Cell>
 					</Row>
 
-					<H2>Skill Ranks</H2>
+					<H3>Skill Ranks</H3>
 
 					{this.state.ranks.map(this.renderRank)}
+
+					<Row>
+						<Cell size={2}>
+							<Button icon="plus" onClick={this.onAddRankClick}>
+								New Rank
+							</Button>
+						</Cell>
+					</Row>
 				</form>
 			</>
 		);
 	}
 
 	private renderRank = (rank: ISkillRank) => (
-		<Row key={rank.level}>
+		<Row key={rank.id}>
 			<Cell size={12}>
-				<SkillRankEditor rank={rank} />
+				<SkillRankEditor rank={rank} onDelete={this.onRankDelete} />
 			</Cell>
 		</Row>
 	);
+
+	private onAddRankClick = () => {
+		this.setState({
+			ranks: [...this.state.ranks, {level: this.state.ranks.length + 1}],
+		});
+	};
 
 	private onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({
 		description: event.currentTarget.value,
@@ -92,6 +106,21 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		name: event.currentTarget.value,
 	});
+
+	private onRankDelete = (target: ISkillRank) => {
+		const ranks = this.state.ranks
+			.filter(rank => rank !== target)
+			.map(rank => {
+				if (rank.level > target.level)
+					rank.level -= 1;
+
+				return {...rank};
+			});
+
+		this.setState({
+			ranks,
+		});
+	};
 
 	private loadSkill = () => {
 		const idParam = this.props.match.params.skill;

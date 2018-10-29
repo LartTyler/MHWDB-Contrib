@@ -1,17 +1,16 @@
-import {H3, TextArea} from '@blueprintjs/core';
+import {Button, H4, TextArea} from '@blueprintjs/core';
 import * as React from 'react';
 import {ISkillRank, ISkillRankModifiers} from '../../../Api/Objects/Skill';
+import {Cell, Row} from '../../Grid';
 
 type SkillRank = Pick<ISkillRank, 'level' | 'description' | 'modifiers'>;
 
 interface ISkillRankEditorProps {
+	onDelete: (rank: SkillRank) => void;
 	rank: SkillRank;
-
-	level?: number;
 }
 
 interface ISkillRankEditorState {
-	level: string;
 	description: string;
 	modifiers: ISkillRankModifiers;
 }
@@ -21,7 +20,6 @@ export class SkillRankEditor extends React.PureComponent<ISkillRankEditorProps, 
 		super(props);
 
 		this.state = {
-			level: (props.level || props.rank.level).toString(),
 			description: props.rank.description,
 			modifiers: props.rank.modifiers,
 		};
@@ -30,7 +28,15 @@ export class SkillRankEditor extends React.PureComponent<ISkillRankEditorProps, 
 	public render(): React.ReactNode {
 		return (
 			<div style={{marginBottom: 10}}>
-				<H3>Level {this.state.level}</H3>
+				<Row>
+					<Cell size={6}>
+						<H4>Level {this.props.rank.level}</H4>
+					</Cell>
+
+					<Cell size={1} offset={5} className="text-right">
+						<Button icon="cross" minimal={true} onClick={this.onDeleteClick} />
+					</Cell>
+				</Row>
 
 				<TextArea fill={true} onChange={this.onDescriptionChange} value={this.state.description} />
 			</div>
@@ -40,4 +46,6 @@ export class SkillRankEditor extends React.PureComponent<ISkillRankEditorProps, 
 	private onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({
 		description: event.currentTarget.value,
 	});
+
+	private onDeleteClick = () => this.props.onDelete(this.props.rank);
 }
