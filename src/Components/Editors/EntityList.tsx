@@ -1,17 +1,16 @@
 import {Button} from '@blueprintjs/core';
+import {Cell, IColumn, Row, Table} from '@dbstudios/blueprintjs-components';
 import {debounce} from 'debounce';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 import {IApiClientModule} from '../../Api/Module';
 import {compareFields, IEntity} from '../../Api/Objects/Entity';
 import {Projection} from '../../Api/Projection';
-import {Cell, Row} from '../Grid';
 import {Manager} from '../Manager/Manager';
 import {ManagerHeader} from '../Manager/ManagerHeader';
 import {RefreshButton} from '../Manager/RefreshButton';
 import {RowControls} from '../Manager/RowControls';
 import {SearchInput} from '../Search';
-import {IColumn, Table} from '../Table';
 
 export const createEntityFilter = <T extends IEntity>(key: keyof T) => (record: T, search: string) => {
 	const value = record[key];
@@ -43,7 +42,6 @@ interface IEntityListState<T extends IEntity> {
 }
 
 export class EntityList<T extends IEntity> extends React.PureComponent<IEntityListProps<T>, IEntityListState<T>> {
-	// tslint:disable-next-line
 	private onSearchInputChange = debounce((search: string) => this.setState({
 		search: search.toLowerCase(),
 	}), 200);

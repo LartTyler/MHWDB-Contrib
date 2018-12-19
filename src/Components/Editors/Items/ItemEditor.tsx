@@ -1,11 +1,11 @@
 import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {IItem} from '../../../Api/Objects/Item';
 import {Projection} from '../../../Api/Projection';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
-import {Cell, Row} from '../../Grid';
 import {LinkButton} from '../../Navigation/LinkButton';
 
 const cleanIntegerString = (input: string, max: number = null): string => {

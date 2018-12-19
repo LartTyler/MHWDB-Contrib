@@ -1,17 +1,15 @@
 import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {Cell, MultiSelect, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
-import {Link} from 'react-router-dom';
 import {IAilment, RecoveryAction} from '../../../Api/Objects/Ailment';
 import {IItem} from '../../../Api/Objects/Item';
 import {ISkill} from '../../../Api/Objects/Skill';
 import {Projection} from '../../../Api/Projection';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
-import {Cell, Row} from '../../Grid';
 import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
-import {StringSelect} from '../../Select/StringSelect';
 
 interface IAilmentEditorRouteProps {
 	ailment: string;
@@ -87,28 +85,35 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 						<Cell size={6}>
 							<FormGroup label="Items">
 								<EntitySelect
+									config={{
+										multi: true,
+										onClear: this.onRecoveryItemsClear,
+										onItemDeselect: this.onRecoveryItemsDeselect,
+										onItemSelect: this.onRecoveryItemsSelect,
+										popoverProps: {
+											targetClassName: 'full-width',
+										},
+										selected: this.state.recoveryItems,
+									}}
 									labelField="name"
-									multiSelect={true}
-									onClear={this.onRecoveryItemsClear}
-									onItemDeselect={this.onRecoveryItemsDeselect}
-									onItemSelect={this.onRecoveryItemsSelect}
 									onSelectionLoad={this.onRecoveryItemsLoad}
 									provider={this.props.client.items}
-									selected={this.state.recoveryItems}
 								/>
 							</FormGroup>
 						</Cell>
 
 						<Cell size={6}>
 							<FormGroup label="Actions">
-								<StringSelect
-									dataSource={[RecoveryAction.DODGE]}
-									multiSelect={true}
+								<MultiSelect
+									items={[RecoveryAction.DODGE]}
+									itemTextRenderer={this.renderRecoveryActionValue}
 									onClear={this.onRecoveryActionsClear}
 									onItemDeselect={this.onRecoveryActionsDeselect}
 									onItemSelect={this.onRecoveryActionsSelect}
+									popoverProps={{
+										targetClassName: 'full-width',
+									}}
 									selected={this.state.recoveryActions}
-									valueRenderer={this.renderRecoveryActionValue}
 								/>
 							</FormGroup>
 						</Cell>
@@ -120,14 +125,19 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 						<Cell size={6}>
 							<FormGroup label="Items">
 								<EntitySelect
+									config={{
+										multi: true,
+										onClear: this.onProtectionItemsClear,
+										onItemDeselect: this.onProtectionItemsDeselect,
+										onItemSelect: this.onProtectionItemsSelect,
+										popoverProps: {
+											targetClassName: 'full-width',
+										},
+										selected: this.state.protectionItems,
+									}}
 									labelField="name"
-									multiSelect={true}
-									onClear={this.onProtectionItemsClear}
-									onItemDeselect={this.onProtectionItemsDeselect}
-									onItemSelect={this.onProtectionItemsSelect}
 									onSelectionLoad={this.onProtectionItemsLoad}
 									provider={this.props.client.items}
-									selected={this.state.protectionItems}
 								/>
 							</FormGroup>
 						</Cell>
@@ -135,14 +145,19 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 						<Cell size={6}>
 							<FormGroup label="Skills">
 								<EntitySelect
+									config={{
+										multi: true,
+										onClear: this.onProtectionSkillsClear,
+										onItemDeselect: this.onProtectionSkillsDeselect,
+										onItemSelect: this.onProtectionSkillsSelect,
+										popoverProps: {
+											targetClassName: 'full-width',
+										},
+										selected: this.state.protectionSkills,
+									}}
 									labelField="name"
-									multiSelect={true}
-									onClear={this.onProtectionSkillsClear}
-									onItemDeselect={this.onProtectionSkillsDeselect}
-									onItemSelect={this.onProtectionSkillsSelect}
 									onSelectionLoad={this.onProtectionSkillsLoad}
 									provider={this.props.client.skills}
-									selected={this.state.protectionSkills}
 								/>
 							</FormGroup>
 						</Cell>
