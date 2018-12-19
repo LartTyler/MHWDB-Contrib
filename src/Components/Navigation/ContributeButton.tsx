@@ -9,6 +9,7 @@ export const ContributeButton: React.SFC<{}> = () => {
 
 			<Menu>
 				<LinkedMenuItem href="/edit/ailments" text="Ailments" />
+				<LinkedMenuItem href="/edit/armor" text="Armor" />
 				<LinkedMenuItem href="/edit/items" text="Items" />
 				<LinkedMenuItem href="/edit/skills" text="Skills" />
 			</Menu>

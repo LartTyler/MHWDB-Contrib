@@ -1,3 +1,5 @@
+import {IItem} from './Item';
+
 export interface IEntity {
 	id?: number;
 }
@@ -7,6 +9,20 @@ export type Normalized<T extends IEntity> = {
 };
 
 export type Identifiable<T extends IEntity> = Pick<T, 'id'> | number;
+
+export enum Rank {
+	LOW = 'low',
+	HIGH = 'high',
+}
+
+export interface ISlot {
+	rank?: number;
+}
+
+export interface ICraftingMaterialCost {
+	quantity?: number;
+	item?: IItem;
+}
 
 export const toIdentifier = <T extends IEntity>(identifiable: Identifiable<T>): number => {
 	return typeof identifiable === 'number' ? identifiable : identifiable.id;

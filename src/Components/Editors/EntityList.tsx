@@ -13,10 +13,12 @@ import {RowControls} from '../Manager/RowControls';
 import {SearchInput} from '../Search';
 
 export const createEntityFilter = <T extends IEntity>(key: keyof T) => (record: T, search: string) => {
-	const value = record[key];
+	let value: any = record[key];
 
-	if (typeof value !== 'string')
-		throw new Error('This function can only operate on string values');
+	if (typeof value === 'number')
+		value = value.toString(10);
+	else if (typeof value !== 'string')
+		throw new Error('This function can only operate on string or number values');
 
 	return value.toLowerCase().indexOf(search) > -1;
 };
