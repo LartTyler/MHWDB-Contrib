@@ -15,6 +15,9 @@ export enum Rank {
 	HIGH = 'high',
 }
 
+// @ts-ignore
+export const rankNames = Object.keys(Rank).map(key => Rank[key]);
+
 export interface ISlot {
 	rank?: number;
 }

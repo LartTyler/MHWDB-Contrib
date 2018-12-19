@@ -1,3 +1,5 @@
+import {ApiClient} from '../ApiClient';
+import {AbstractApiClientModule} from '../Module';
 import {IArmor} from './Armor';
 import {IEntity, Rank} from './Entity';
 import {ISkill} from './Skill';
@@ -17,4 +19,10 @@ export interface IArmorSet extends IEntity {
 	rank?: Rank;
 	pieces?: IArmor[];
 	bonus?: IArmorSetBonus;
+}
+
+export class ArmorSetApiClientModule extends AbstractApiClientModule<IArmorSet> {
+	public constructor(client: ApiClient) {
+		super(client, '/armor/sets');
+	}
 }

@@ -12,6 +12,7 @@ interface IProps<T extends IEntity> {
 	provider: IApiClientModule<T>;
 
 	projection?: Projection;
+	sorter?: (entities: T[]) => T[];
 }
 
 interface IState<T extends IEntity> {
@@ -37,12 +38,20 @@ export class EntitySelect<T extends IEntity, M extends boolean> extends React.Pu
 		this.props.provider.list(null, this.props.projection || {
 			id: true,
 			[this.props.labelField]: true,
-		}, controller.signal).then(entities => this.setState({
-			controller: null,
-			entities,
-			loading: false,
+		}, controller.signal).then(entities => {
+			if (this.props.sorter)
+				entities = this.props.sorter(entities);
+
+			this.setState({
+				controller: null,
+				entities,
+				loading: false,
+			});
 		}, () => {
 			const selected = this.props.config.selected;
+
+			if (!selected)
+				return;
 
 			if (this.props.config.multi) {
 				const ids = (selected as T[]).map(item => item.id);
@@ -59,7 +68,7 @@ export class EntitySelect<T extends IEntity, M extends boolean> extends React.Pu
 					}
 				}
 			}
-		}));
+		});
 	}
 
 	public componentWillUnmount(): void {

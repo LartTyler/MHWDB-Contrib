@@ -1,6 +1,7 @@
 import {ApiError} from './Errors/ApiError';
 import {AilmentApiClientModule} from './Objects/Ailment';
 import {ArmorApiClientModule} from './Objects/Armor';
+import {ArmorSetApiClientModule} from './Objects/ArmorSet';
 import {IEntity} from './Objects/Entity';
 import {ItemApiClientModule} from './Objects/Item';
 import {SkillApiClientModule} from './Objects/Skill';
@@ -18,6 +19,7 @@ const TOKEN_STORAGE_KEY = 'api.auth_token';
 export class ApiClient {
 	public readonly ailments: AilmentApiClientModule;
 	public readonly armor: ArmorApiClientModule;
+	public readonly armorSets: ArmorSetApiClientModule;
 	public readonly items: ItemApiClientModule;
 	public readonly skills: SkillApiClientModule;
 
@@ -31,6 +33,7 @@ export class ApiClient {
 
 		this.ailments = new AilmentApiClientModule(this);
 		this.armor = new ArmorApiClientModule(this);
+		this.armorSets = new ArmorSetApiClientModule(this);
 		this.items = new ItemApiClientModule(this);
 		this.skills = new SkillApiClientModule(this);
 

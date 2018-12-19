@@ -23,6 +23,9 @@ export enum ArmorType {
 	LEGS = 'legs',
 }
 
+// @ts-ignore
+export const armorTypeNames = Object.keys(ArmorType).map(key => ArmorType[key]);
+
 export interface IArmorDefense {
 	base?: number;
 	max?: number;
