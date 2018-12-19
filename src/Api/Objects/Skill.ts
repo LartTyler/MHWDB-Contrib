@@ -1,24 +1,35 @@
+import {toValues} from '../../Utility/enum';
 import {ApiClient} from '../ApiClient';
 import {AbstractApiClientModule} from '../Module';
-import {GeneralAttribute, GeneralAttributes, ResistanceAttribute, ResistanceAttributes} from './attributes';
+import {
+	generalAttributeNames,
+	IGeneralAttributes,
+	IResistanceAttributes,
+	resistanceAttributeNames,
+} from './attributes';
 import {IEntity} from './Entity';
 
-export const SkillAttribute = {
-	...GeneralAttribute,
-	...ResistanceAttribute,
+export enum SkillAttribute {
+	AFFINITY = 'affinity',
+	ATTACK = 'attack',
+	DAMAGE_DRAGON = 'damageDragon',
+	DAMAGE_FIRE = 'damageFire',
+	DAMAGE_ICE = 'damageIce',
+	DAMAGE_THUNDER = 'damageThunder',
+	DAMAGE_WATER = 'damageWater',
+	RESIST_ALL = 'resistAll',
+	SHARPNESS_BONUS = 'sharpnessBonus',
+}
 
-	ATTACK: 'attack' as 'attack',
-	AFFINITY: 'affinity' as 'affinity',
-	DAMAGE_DRAGON: 'damageDragon' as 'damageDragon',
-	DAMAGE_FIRE: 'damageFire' as 'damageFire',
-	DAMAGE_ICE: 'damageIce' as 'damageIce',
-	DAMAGE_THUNDER: 'damageThunder' as 'damageThunder',
-	DAMAGE_WATER: 'damageWater' as 'damageWater',
-	RESIST_ALL: 'resistAll' as 'resistAll',
-	SHARPNESS_BONUS: 'sharpnessBonus' as 'sharpnessBonus',
-};
+export const skillAttributeNames = [
+	...generalAttributeNames,
+	...resistanceAttributeNames,
+	...toValues<string>(SkillAttribute),
+].sort();
 
-export interface ISkillRankModifiers extends GeneralAttributes, ResistanceAttributes {
+export interface ISkillRankModifiers extends IGeneralAttributes, IResistanceAttributes {
+	[key: string]: string | number;
+
 	[SkillAttribute.ATTACK]?: number;
 	[SkillAttribute.AFFINITY]?: number;
 	[SkillAttribute.DAMAGE_DRAGON]?: string | number;
@@ -28,6 +39,7 @@ export interface ISkillRankModifiers extends GeneralAttributes, ResistanceAttrib
 	[SkillAttribute.DAMAGE_WATER]?: string | number;
 	[SkillAttribute.RESIST_ALL]?: number;
 	[SkillAttribute.RESIST_ALL]?: number;
+	[SkillAttribute.SHARPNESS_BONUS]?: number;
 }
 
 export interface ISkillRank extends IEntity {

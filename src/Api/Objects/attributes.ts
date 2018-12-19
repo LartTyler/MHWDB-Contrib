@@ -1,35 +1,46 @@
-export const GeneralAttribute = {
-	DEFENSE: 'defense' as 'defense',
-	HEALTH: 'health' as 'health',
-	STAMINA: 'stamina' as 'stamina',
-};
+import {toValues} from '../../Utility/enum';
 
-export interface GeneralAttributes {
+export enum GeneralAttribute {
+	DEFENSE = 'defense',
+	HEALTH = 'health',
+	STAMINA = 'stamina',
+}
+
+export const generalAttributeNames = toValues<string>(GeneralAttribute).sort();
+
+export interface IGeneralAttributes {
+	[key: string]: string | number;
+
 	[GeneralAttribute.DEFENSE]?: number;
 	[GeneralAttribute.HEALTH]?: number;
 	[GeneralAttribute.STAMINA]?: number;
 }
 
-export const ResistanceAttribute = {
-	RESIST_DRAGON: 'resistDragon' as 'resistDragon',
-	RESIST_FIRE: 'resistFire' as 'resistFire',
-	RESIST_ICE: 'resistIce' as 'resistIce',
-	RESIST_THUNDER: 'resistThunder' as 'resistThunder',
-	RESIST_WATER: 'resistWater' as 'resistWater',
-};
-
-export interface ResistanceAttributes {
-	[ResistanceAttribute.RESIST_DRAGON]?: number | string;
-	[ResistanceAttribute.RESIST_FIRE]?: number | string;
-	[ResistanceAttribute.RESIST_ICE]?: number | string;
-	[ResistanceAttribute.RESIST_WATER]?: number | string;
+export enum ResistanceAttribute {
+	RESIST_DRAGON = 'resistDragon',
+	RESIST_FIRE = 'resistFire',
+	RESIST_ICE = 'resistIce',
+	RESIST_THUNDER = 'resistThunder',
+	RESIST_WATER = 'resistWater',
 }
 
-export const getDisplayName = (key: string): string => {
+export const resistanceAttributeNames = toValues<string>(ResistanceAttribute).sort();
+
+export interface IResistanceAttributes {
+	[key: string]: string | number;
+
+	[ResistanceAttribute.RESIST_DRAGON]?: number;
+	[ResistanceAttribute.RESIST_FIRE]?: number;
+	[ResistanceAttribute.RESIST_ICE]?: number;
+	[ResistanceAttribute.RESIST_THUNDER]?: number;
+	[ResistanceAttribute.RESIST_WATER]?: number;
+}
+
+export const getDisplayName = (attribute: string): string => {
 	let output = '';
 
-	for (let i = 0; i < key.length; i++) {
-		const char = key.charAt(i);
+	for (let i = 0; i < attribute.length; i++) {
+		const char = attribute.charAt(i);
 
 		if (i === 0)
 			output += char.toUpperCase();

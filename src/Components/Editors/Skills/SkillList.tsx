@@ -32,7 +32,7 @@ const SkillListComponent: React.SFC<IApiClientAware> = props => (
 				dataIndex: 'description',
 				onFilter: filterEntityOnDescription,
 				title: 'Description',
-			}
+			},
 		]}
 		tableNoDataPlaceholder={<span>No skills found.</span>}
 		title="Skills"
