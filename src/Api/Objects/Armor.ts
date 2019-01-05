@@ -7,13 +7,27 @@ import {generalAttributeNames, IGeneralAttributes, IResistanceAttributes, resist
 import {ICraftingMaterialCost, IEntity, ISlot, Rank} from './Entity';
 import {ISkill} from './Skill';
 
+export enum Gender {
+	FEMALE = 'female',
+	MALE = 'male',
+}
+
+export enum ArmorAttribute {
+	REQUIRED_GENDER = 'requiredGender',
+}
+
 export interface IArmorAttributes extends IGeneralAttributes, IResistanceAttributes {
+	[ArmorAttribute.REQUIRED_GENDER]?: Gender;
 }
 
 export const armorAttributeNames = [
 	...generalAttributeNames,
-	...resistanceAttributeNames,
+	...toValues<string>(ArmorAttribute),
 ].sort();
+
+export const isGender = (value: any): value is Gender => {
+	return value === 'male' || value === 'female';
+};
 
 export enum ArmorType {
 	HEAD = 'head',
