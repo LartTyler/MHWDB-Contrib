@@ -10,7 +10,7 @@ interface ILinkButtonProps {
 	linkProps?: Omit<LinkProps, 'to'>;
 }
 
-export const LinkButton: React.SFC<ILinkButtonProps> = props => (
+export const LinkButton: React.FC<ILinkButtonProps> = props => (
 	<Link to={props.to} {...props.linkProps} className={props.linkProps.className || 'plain-link'}>
 		<Button {...props.buttonProps}>
 			{props.children}

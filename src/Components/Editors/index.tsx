@@ -7,7 +7,7 @@ import {Armor} from './Armor';
 import {Items} from './Items';
 import {Skills} from './Skills';
 
-export const Editors: React.SFC<{}> = () => (
+export const Editors: React.FC<{}> = () => (
 	<ContentContainer>
 		<Switch>
 			<Route path="/edit/ailments" component={Ailments} />

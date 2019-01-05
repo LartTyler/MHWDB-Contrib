@@ -4,7 +4,7 @@ import {Switch} from '../../Navigation/Switch';
 import {AilmentEditor} from './AilmentEditor';
 import {AilmentList} from './AilmentList';
 
-export const Ailments: React.SFC<{}> = () => (
+export const Ailments: React.FC<{}> = () => (
 	<Switch>
 		<Route path="/edit/ailments" exact={true} component={AilmentList} />
 		<Route path="/edit/ailments/:ailment(\d+|new)" exact={true} component={AilmentEditor} />

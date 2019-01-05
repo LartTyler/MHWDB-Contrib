@@ -22,7 +22,7 @@ interface IManagerHeaderProps {
 	search?: React.ReactNode;
 }
 
-export const ManagerHeader: React.SFC<IManagerHeaderProps> = props => (
+export const ManagerHeader: React.FC<IManagerHeaderProps> = props => (
 	<div className="manager-header-component" style={{display: 'flex'}}>
 		<div style={{flex: 2}}>
 			<H2>

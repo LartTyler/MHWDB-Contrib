@@ -3,7 +3,7 @@ import * as React from 'react';
 import {Link} from 'react-router-dom';
 import './PageNotFound.scss';
 
-export const PageNotFound: React.SFC<{}> = () => {
+export const PageNotFound: React.FC<{}> = () => {
 	const description = (
 		<span>
 			<p>The page you requested could not be found. </p>

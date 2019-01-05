@@ -35,7 +35,7 @@ interface IRequireRoleProps extends IApiClientAware {
 	role: Role;
 }
 
-const RequireRoleComponent: React.SFC<IRequireRoleProps> = ({client, role, children}) => {
+const RequireRoleComponent: React.FC<IRequireRoleProps> = ({client, role, children}) => {
 	if (!client.isAuthenticated() || !isRoleGranted(role, client.getToken().body.roles)) {
 		return null;
 	}

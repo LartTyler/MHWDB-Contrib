@@ -2,7 +2,7 @@ import {Button, Menu, Popover, Position} from '@blueprintjs/core';
 import * as React from 'react';
 import {LinkedMenuItem} from './LinkedMenuItem';
 
-export const ContributeButton: React.SFC<{}> = () => {
+export const ContributeButton: React.FC<{}> = () => {
 	return (
 		<Popover position={Position.BOTTOM_LEFT}>
 			<Button minimal={true}>Contribute</Button>

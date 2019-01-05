@@ -8,7 +8,7 @@ type RendererProps = RouteComponentProps<any> & RouteProps;
 interface IPrivateRouteProps extends RouteProps, IApiClientAware {
 }
 
-const PrivateRouteComponent: React.SFC<IPrivateRouteProps> = ({component, render, client, ...routeProps}) => {
+const PrivateRouteComponent: React.FC<IPrivateRouteProps> = ({component, render, client, ...routeProps}) => {
 	const doRender = (Component?: React.ComponentType, renderCallback?: RenderCallback) => (props: RendererProps) => {
 		if (!Component && !renderCallback)
 			return null;

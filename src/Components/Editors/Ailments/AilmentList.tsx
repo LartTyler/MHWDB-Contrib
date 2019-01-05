@@ -10,7 +10,7 @@ const sorter = createEntitySorter<Ailment>('name');
 const filterEntityOnName = createEntityFilter<Ailment>('name');
 const filterEntityOnDescription = createEntityFilter<Ailment>('description');
 
-const AilmentListComponent: React.SFC<IApiClientAware> = props => (
+const AilmentListComponent: React.FC<IApiClientAware> = props => (
 	<EntityList
 		basePath="/edit/ailments"
 		projection={{

@@ -5,7 +5,7 @@ import {Editors} from './Editors';
 import {Navigation} from './Navigation/Navigation';
 import {PageNotFound} from './PageNotFound';
 
-export const App: React.SFC<{}> = () => (
+export const App: React.FC<{}> = () => (
 	<>
 		<div id="app-navigation">
 			<Navigation />

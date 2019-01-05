@@ -5,7 +5,7 @@ import {Logout} from '../Auth/Logout';
 import {ThemeSwitcher} from '../ThemeSwitcher';
 import {ContributeButton} from './ContributeButton';
 
-export const Navigation: React.SFC<{}> = () => (
+export const Navigation: React.FC<{}> = () => (
 	<Navbar fixedToTop={true}>
 		<NavbarGroup align={Alignment.LEFT}>
 			<NavbarHeading>

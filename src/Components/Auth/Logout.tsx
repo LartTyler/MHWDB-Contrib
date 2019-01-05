@@ -6,7 +6,7 @@ import {IToasterAware, withToasterContext} from '../Contexts/ToasterContext';
 interface ILogoutProps extends RouteComponentProps<{}>, IToasterAware, IApiClientAware {
 }
 
-const LogoutComponent: React.SFC<ILogoutProps> = props => (
+const LogoutComponent: React.FC<ILogoutProps> = props => (
 	<div
 		onClick={() => {
 			props.client.logout();

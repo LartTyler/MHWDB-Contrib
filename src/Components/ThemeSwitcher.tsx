@@ -19,7 +19,7 @@ const onThemeToggle = (currentTheme: Theme, callback: ThemeMutatorCallback) => {
 interface IThemeSwitcherProps extends IThemeAware, IThemeMutatorAware {
 }
 
-const ThemeSwitcherComponent: React.SFC<IThemeSwitcherProps> = props => (
+const ThemeSwitcherComponent: React.FC<IThemeSwitcherProps> = props => (
 	<div id="theme-switcher-component" onClick={() => onThemeToggle(props.theme, props.onThemeChange)}>
 		<Icon icon={props.theme === Theme.DARK ? 'flash' : 'moon'} />
 	</div>

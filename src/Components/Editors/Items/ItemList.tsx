@@ -10,7 +10,7 @@ const sorter = createEntitySorter<Item>('name');
 const filterEntityOnName = createEntityFilter<Item>('name');
 const filterEntityOnDescription = createEntityFilter<Item>('description');
 
-const ItemListComponent: React.SFC<IApiClientAware> = props => (
+const ItemListComponent: React.FC<IApiClientAware> = props => (
 	<EntityList
 		basePath="/edit/items"
 		projection={{

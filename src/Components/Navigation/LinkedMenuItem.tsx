@@ -13,7 +13,7 @@ interface ILinkedMenuItemProps extends IMenuItemProps, RouteComponentProps<{}> {
  * @returns {JSX.Element}
  * @constructor
  */
-const LinkedMenuItemComponent: React.SFC<ILinkedMenuItemProps> = props => {
+const LinkedMenuItemComponent: React.FC<ILinkedMenuItemProps> = props => {
 	// The extra de-referenced properties MUST be included, since they need to be extracted and not passed up to the
 	// enclosing MenuItem component.
 	const {history, location, match, staticContext, ...rest} = props;

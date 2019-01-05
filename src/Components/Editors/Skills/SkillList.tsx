@@ -10,7 +10,7 @@ const sorter = createEntitySorter<Skill>('name');
 const filterEntityOnName = createEntityFilter<Skill>('name');
 const filterEntityOnDescription = createEntityFilter<Skill>('description');
 
-const SkillListComponent: React.SFC<IApiClientAware> = props => (
+const SkillListComponent: React.FC<IApiClientAware> = props => (
 	<EntityList
 		basePath="/edit/skills"
 		projection={{

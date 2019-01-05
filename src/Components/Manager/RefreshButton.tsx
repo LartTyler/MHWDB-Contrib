@@ -8,7 +8,7 @@ interface IRefreshButtonProps {
 	onRefresh: () => void;
 }
 
-export const RefreshButton: React.SFC<IRefreshButtonProps> = props => (
+export const RefreshButton: React.FC<IRefreshButtonProps> = props => (
 	<small className={Classes.TEXT_MUTED} style={{marginLeft: 10, cursor: 'pointer'}} onClick={props.onRefresh}>
 		<Icon icon="refresh" />
 	</small>

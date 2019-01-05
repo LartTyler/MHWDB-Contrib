@@ -7,7 +7,7 @@ interface IButtonWithConfirmProps {
 	title?: React.ReactNode;
 }
 
-export const Confirm: React.SFC<IButtonWithConfirmProps> = props => (
+export const Confirm: React.FC<IButtonWithConfirmProps> = props => (
 	<Popover popoverClassName={Classes.POPOVER_CONTENT_SIZING}>
 		{props.children}
 
