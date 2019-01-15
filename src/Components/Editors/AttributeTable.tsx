@@ -21,7 +21,7 @@ export const AttributeTable: React.FC<IAttributeTableProps> = props => (
 				title: 'Value',
 			},
 		]}
-		dataSource={props.attributes.filter(attribute => attribute.key.length > 0)}
+		dataSource={props.attributes.filter(attribute => attribute.key.length > 0 && attribute.value)}
 		fullWidth={true}
 		noDataPlaceholder={<div style={{marginBottom: 10}}>This item has no attributes.</div>}
 	/>
