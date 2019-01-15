@@ -6,10 +6,17 @@ import {IAilment, RecoveryAction} from '../../../Api/Objects/Ailment';
 import {IItem} from '../../../Api/Objects/Item';
 import {ISkill} from '../../../Api/Objects/Skill';
 import {Projection} from '../../../Api/Projection';
+import {createEntityListFilter, createEntityListSorter} from '../../../Utility/select';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
 import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
+
+const itemListFilter = createEntityListFilter<IItem>('name');
+const skillListFilter = createEntityListFilter<ISkill>('name');
+
+const itemListSorter = createEntityListSorter<IItem>('name');
+const skillListSorter = createEntityListSorter<ISkill>('name');
 
 interface IAilmentEditorRouteProps {
 	ailment: string;
@@ -86,6 +93,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 							<FormGroup label="Items">
 								<EntitySelect
 									config={{
+										itemListPredicate: itemListFilter,
 										multi: true,
 										onClear: this.onRecoveryItemsClear,
 										onItemDeselect: this.onRecoveryItemsDeselect,
@@ -98,6 +106,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 									labelField="name"
 									onSelectionLoad={this.onRecoveryItemsLoad}
 									provider={this.props.client.items}
+									sorter={itemListSorter}
 								/>
 							</FormGroup>
 						</Cell>
@@ -126,6 +135,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 							<FormGroup label="Items">
 								<EntitySelect
 									config={{
+										itemListPredicate: itemListFilter,
 										multi: true,
 										onClear: this.onProtectionItemsClear,
 										onItemDeselect: this.onProtectionItemsDeselect,
@@ -138,6 +148,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 									labelField="name"
 									onSelectionLoad={this.onProtectionItemsLoad}
 									provider={this.props.client.items}
+									sorter={itemListSorter}
 								/>
 							</FormGroup>
 						</Cell>
@@ -146,6 +157,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 							<FormGroup label="Skills">
 								<EntitySelect
 									config={{
+										itemListPredicate: skillListFilter,
 										multi: true,
 										onClear: this.onProtectionSkillsClear,
 										onItemDeselect: this.onProtectionSkillsDeselect,
@@ -158,6 +170,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 									labelField="name"
 									onSelectionLoad={this.onProtectionSkillsLoad}
 									provider={this.props.client.skills}
+									sorter={skillListSorter}
 								/>
 							</FormGroup>
 						</Cell>
