@@ -9,7 +9,7 @@ import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
 import {LinkButton} from '../../Navigation/LinkButton';
 
 const cleanIntegerString = (input: string, max: number = null): string => {
-	let output = parseInt(input.replace(/[^\d.]/, ''));
+	let output = parseInt(input.replace(/[^\d.]/, ''), 10);
 
 	if (isNaN(output))
 		return '';
