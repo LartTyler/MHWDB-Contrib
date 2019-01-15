@@ -1,9 +1,9 @@
 import {Icon} from '@blueprintjs/core';
 import * as React from 'react';
 import {
-	Theme,
 	IThemeAware,
 	IThemeMutatorAware,
+	Theme,
 	ThemeMutatorCallback,
 	withThemeContext,
 	withThemeMutatorContext,
