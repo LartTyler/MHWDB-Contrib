@@ -663,9 +663,9 @@
     tslib "^1.9.0"
 
 "@dbstudios/blueprintjs-components@^1.0.4":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@dbstudios/blueprintjs-components/-/blueprintjs-components-1.2.2.tgz#8656aee813b85d86dfef0eafcfea2d705aada32c"
-  integrity sha512-rbsZM5Zx/yY9T73XbHkwCl6vhB5E2Sysrc/00Tcxwmt8aw1+D5DAgJzoaRZXJN/73vHM7ZJZ73AlBoDmnKGoyA==
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/@dbstudios/blueprintjs-components/-/blueprintjs-components-1.2.5.tgz#aa9430a11ec745c50d359c078e2ff29a8d355499"
+  integrity sha512-Z+c+8ObR1qDXFyxGcMeFX4ThG0rz6WVar8cTfgv3bVCZZ/yrNhKhRKx31NlaqpSeIGQ55vOhfJ16eAPWV1getQ==
   dependencies:
     "@blueprintjs/core" "~3.10"
     "@blueprintjs/select" "~3.4"
