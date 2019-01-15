@@ -48,7 +48,7 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 	public state: Readonly<IItemEditorState> = {
 		carryLimit: '0',
 		description: '',
-		loading: false,
+		loading: true,
 		name: '',
 		rarity: '0',
 		redirect: false,
