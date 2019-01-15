@@ -2,8 +2,8 @@ import * as React from 'react';
 import {Subtract} from 'utility-types';
 
 export enum Theme {
-	DARK = 'dark',
-	LIGHT = 'light',
+	DARK = 'DARK',
+	LIGHT = 'LIGHT',
 }
 
 export const isThemeName = (value: unknown): value is Theme =>
