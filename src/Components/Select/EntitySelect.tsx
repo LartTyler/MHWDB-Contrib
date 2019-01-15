@@ -88,6 +88,7 @@ export class EntitySelect<T extends IEntity, M extends boolean> extends React.Pu
 				items={this.state.entities}
 				itemTextRenderer={this.renderEntityText}
 				loading={this.state.loading}
+				virtual={true}
 			/>
 		);
 	}
