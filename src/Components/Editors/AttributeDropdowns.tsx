@@ -65,7 +65,7 @@ export const AttributeDropdowns: React.FC<IAttributeDropdownsProps> = props => {
 											value = parseInt(value, 10);
 									}
 
-									props.onAttributeValueChange(attribute, value)
+									props.onAttributeValueChange(attribute, value);
 								}}
 								value={attribute.value.toString()}
 							/>
