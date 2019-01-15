@@ -1,6 +1,6 @@
-import * as React from 'react';
 import {Button, FormGroup, InputGroup} from '@blueprintjs/core';
 import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
+import * as React from 'react';
 import {getDisplayName} from '../../Api/Objects/attributes';
 import {numberRegex} from '../../Utility/number';
 import {filterStrings} from '../../Utility/select';
