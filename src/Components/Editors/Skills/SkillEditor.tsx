@@ -2,8 +2,8 @@ import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blu
 import {Cell, Row, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {ISkill, ISkillRank} from '../../../Api/Objects/Skill';
-import {Projection} from '../../../Api/Projection';
+import {ISkill, ISkillRank} from '../../../_Api/Objects/Skill';
+import {Projection} from '../../../_Api/Projection';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
 import {LinkButton} from '../../Navigation/LinkButton';

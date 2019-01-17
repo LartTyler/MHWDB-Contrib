@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {ISkill} from '../../../Api/Objects/Skill';
+import {ISkill} from '../../../_Api/Objects/Skill';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
+import {createEntityFilter, createEntitySorter, entityList} from '../EntityList';
 
 type Skill = Pick<ISkill, 'id' | 'name' | 'description'>;
 
@@ -11,7 +11,7 @@ const filterEntityOnName = createEntityFilter<Skill>('name');
 const filterEntityOnDescription = createEntityFilter<Skill>('description');
 
 const SkillListComponent: React.FC<IApiClientAware> = props => (
-	<EntityList
+	<_EntityList
 		basePath="/edit/skills"
 		projection={{
 			description: true,

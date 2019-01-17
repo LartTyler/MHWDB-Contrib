@@ -10,11 +10,11 @@ import {
 	IArmorCrafting,
 	IArmorDefense,
 	IArmorResistances, isGender,
-} from '../../../Api/Objects/Armor';
-import {IArmorSet} from '../../../Api/Objects/ArmorSet';
-import {getDisplayName} from '../../../Api/Objects/attributes';
-import {ISlot, Rank, rankNames} from '../../../Api/Objects/Entity';
-import {ISkill} from '../../../Api/Objects/Skill';
+} from '../../../_Api/Objects/Armor';
+import {IArmorSet} from '../../../_Api/Objects/ArmorSet';
+import {getDisplayName} from '../../../_Api/Objects/attributes';
+import {ISlot, Rank, rankNames} from '../../../_Api/Objects/Entity';
+import {ISkill} from '../../../_Api/Objects/Skill';
 import {cleanIntegerString} from '../../../Utility/number';
 import {StringValues, toStringValues} from '../../../Utility/object';
 import {filterStrings} from '../../../Utility/select';

@@ -1,8 +1,8 @@
 import * as React from 'react';
-import {IArmor} from '../../../Api/Objects/Armor';
+import {IArmor} from '../../../_Api/Objects/Armor';
 import {ucfirst} from '../../../Utility/string';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
+import {createEntityFilter, createEntitySorter, entityList} from '../EntityList';
 
 type Armor = Pick<IArmor, 'id' | 'name' | 'rank' | 'type' | 'rarity'>;
 
@@ -13,7 +13,7 @@ const filterEntityOnRank = createEntityFilter<Armor>('rank');
 const filterEntityOnType = createEntityFilter<Armor>('type');
 
 const ArmorListComponent: React.FC<IApiClientAware> = props => (
-	<EntityList
+	<_EntityList
 		basePath="/edit/armor"
 		projection={{
 			name: true,

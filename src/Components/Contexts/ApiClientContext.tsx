@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Subtract} from 'utility-types';
-import {ApiClient} from '../../Api/ApiClient';
+import {ApiClient} from '../../_Api/ApiClient';
 
 export const client = new ApiClient(process.env.API_URL);
 

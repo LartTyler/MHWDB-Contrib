@@ -1,7 +1,7 @@
 import * as React from 'react';
-import {IAilment} from '../../../Api/Objects/Ailment';
+import {IAilment} from '../../../_Api/Objects/Ailment';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
+import {createEntityFilter, createEntitySorter, entityList} from '../EntityList';
 
 type Ailment = Pick<IAilment, 'id' | 'name' | 'description'>;
 
@@ -11,7 +11,7 @@ const filterEntityOnName = createEntityFilter<Ailment>('name');
 const filterEntityOnDescription = createEntityFilter<Ailment>('description');
 
 const AilmentListComponent: React.FC<IApiClientAware> = props => (
-	<EntityList
+	<_EntityList
 		basePath="/edit/ailments"
 		projection={{
 			description: true,

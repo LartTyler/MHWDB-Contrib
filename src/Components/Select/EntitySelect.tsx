@@ -1,9 +1,9 @@
 import {ChimeraSelect, ChimeraSelectProps} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Omit} from 'utility-types';
-import {IApiClientModule} from '../../Api/Module';
-import {IEntity} from '../../Api/Objects/Entity';
-import {Projection} from '../../Api/Projection';
+import {IApiClientModule} from '../../_Api/Module';
+import {IEntity} from '../../_Api/Objects/Entity';
+import {Projection} from '../../_Api/Projection';
 
 interface IProps<T extends IEntity> {
 	labelField: keyof T;

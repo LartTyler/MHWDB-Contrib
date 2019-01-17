@@ -2,10 +2,10 @@ import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blu
 import {Cell, MultiSelect, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
-import {IAilment, RecoveryAction} from '../../../Api/Objects/Ailment';
-import {IItem} from '../../../Api/Objects/Item';
-import {ISkill} from '../../../Api/Objects/Skill';
-import {Projection} from '../../../Api/Projection';
+import {IAilment, RecoveryAction} from '../../../_Api/Objects/Ailment';
+import {IItem} from '../../../_Api/Objects/Item';
+import {ISkill} from '../../../_Api/Objects/Skill';
+import {Projection} from '../../../_Api/Projection';
 import {createEntityListFilter, createEntityListSorter} from '../../../Utility/select';
 import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
 import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';

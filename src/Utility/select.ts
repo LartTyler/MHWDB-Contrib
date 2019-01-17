@@ -1,4 +1,4 @@
-import {IEntity} from '../Api/Objects/Entity';
+import {IEntity} from '../_Api/Objects/Entity';
 
 export const filterStrings = (query: string, items: string[]): string[] => {
 	query = query.toLowerCase();

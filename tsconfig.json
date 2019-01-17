@@ -3,6 +3,10 @@
 		"jsx": "react",
 		"noImplicitAny": true,
 		"noImplicitReturns": true,
-		"noImplicitThis": true
+		"noImplicitThis": true,
+		"lib": [
+			"es6",
+			"dom"
+		]
 	}
 }

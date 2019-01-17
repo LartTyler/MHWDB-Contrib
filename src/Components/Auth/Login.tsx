@@ -1,13 +1,11 @@
 import {Button, Classes, FormGroup, InputGroup, Intent} from '@blueprintjs/core';
 import * as React from 'react';
-import {ChangeEvent, FormEvent} from 'react';
-import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {IApiClientAware, withApiClient} from '../Contexts/ApiClientContext';
-import {IToasterAware, withToasterContext} from '../Contexts/ToasterContext';
+import {FormEvent} from 'react';
+import {Redirect} from 'react-router';
+import {login, tokenStore} from '../../Api/client';
+import {history} from '../../history';
+import {toaster} from '../Contexts/ToasterContext';
 import './Login.scss';
-
-interface ILoginProps extends RouteComponentProps<{}>, IToasterAware, IApiClientAware {
-}
 
 interface ILoginState {
 	username: string;
@@ -17,9 +15,7 @@ interface ILoginState {
 	error: string;
 }
 
-type ChangeCallback = (event: ChangeEvent<HTMLInputElement>) => void;
-
-class LoginComponent extends React.Component<ILoginProps, ILoginState> {
+export class Login extends React.Component<{}, ILoginState> {
 	public state: Readonly<ILoginState> = {
 		error: null,
 		password: '',
@@ -29,10 +25,10 @@ class LoginComponent extends React.Component<ILoginProps, ILoginState> {
 	};
 
 	public render(): JSX.Element {
-		if (this.state.redirect || this.props.client.isAuthenticated()) {
-			const {from} = this.props.location.state || {from: {pathname: '/'}};
+		if (this.state.redirect || tokenStore.isAuthenticated()) {
+			const {from} = history.location.state || {from: {pathname: '/'}};
 
-			if (from.pathname === '/login')
+			if (!from.pathname || from.pathname === '/login')
 				from.pathname = '/';
 
 			return <Redirect to={from} />;
@@ -74,7 +70,7 @@ class LoginComponent extends React.Component<ILoginProps, ILoginState> {
 			processing: true,
 		});
 
-		this.props.client.login(this.state.username, this.state.password)
+		login(this.state.username, this.state.password)
 			.then(() => this.setState({
 				redirect: true,
 			}))
@@ -83,7 +79,7 @@ class LoginComponent extends React.Component<ILoginProps, ILoginState> {
 					processing: false,
 				});
 
-				this.props.toaster.show({
+				toaster.show({
 					intent: Intent.WARNING,
 					message: error.message,
 				});
@@ -98,5 +94,3 @@ class LoginComponent extends React.Component<ILoginProps, ILoginState> {
 		password: event.currentTarget.value,
 	});
 }
-
-export const Login = withApiClient(withToasterContext(withRouter(LoginComponent)));
