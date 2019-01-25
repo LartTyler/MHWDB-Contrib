@@ -2,15 +2,15 @@ import {Button} from '@blueprintjs/core';
 import {Cell, IColumn, Row, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
-import {compareFields} from '../../_Api/Objects/Entity';
-import {IEntity} from '../../Api/Model';
+import {Entity} from '../../Api/Model';
+import {compareFields} from '../../Utility/object';
 import {Manager} from '../Manager/Manager';
 import {ManagerHeader} from '../Manager/ManagerHeader';
 import {RefreshButton} from '../Manager/RefreshButton';
 import {RowControls} from '../Manager/RowControls';
 import {SearchInput} from '../Search';
 
-export const createEntityFilter = <T extends IEntity>(key: keyof T) => (record: T, search: string) => {
+export const createEntityFilter = <T extends Entity>(key: keyof T) => (record: T, search: string) => {
 	let value: any = record[key];
 
 	if (typeof value === 'number')
@@ -21,9 +21,9 @@ export const createEntityFilter = <T extends IEntity>(key: keyof T) => (record: 
 	return value.toLowerCase().indexOf(search) > -1;
 };
 
-export const createEntitySorter = <T extends IEntity>(key: keyof T) => (a: T, b: T) => compareFields(key, a, b);
+export const createEntitySorter = <T extends Entity>(key: keyof T) => (a: T, b: T) => compareFields(key, a, b);
 
-interface IProps<T extends IEntity> {
+interface IProps<T extends Entity> {
 	basePath: string;
 	columns: Array<IColumn<T>>;
 	entities: T[];
@@ -40,8 +40,8 @@ interface IState<T> {
 	search: string;
 }
 
-export class EntityList<T extends IEntity> extends React.PureComponent<IProps<T>, IState<T>> {
-	public static defaultProps: Partial<IProps<IEntity>> = {
+export class EntityList<T extends Entity> extends React.PureComponent<IProps<T>, IState<T>> {
+	public static defaultProps: Partial<IProps<Entity>> = {
 		loading: false,
 	};
 
@@ -112,7 +112,7 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IProps<T>
 		search: search.toLowerCase(),
 	});
 
-	public static ofType<T extends IEntity>() {
+	public static ofType<T extends Entity>() {
 		return EntityList as new (props: IProps<T>) => EntityList<T>;
 	}
 }

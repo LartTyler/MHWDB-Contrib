@@ -1,10 +1,9 @@
 import {Button, Classes, FormGroup, InputGroup, Intent} from '@blueprintjs/core';
 import * as React from 'react';
 import {FormEvent} from 'react';
-import {Redirect} from 'react-router';
+import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {login, tokenStore} from '../../Api/client';
-import {history} from '../../history';
-import {toaster} from '../Contexts/ToasterContext';
+import {toaster} from '../../toaster';
 import './Login.scss';
 
 interface ILoginState {
@@ -15,7 +14,7 @@ interface ILoginState {
 	error: string;
 }
 
-export class Login extends React.Component<{}, ILoginState> {
+class LoginComponent extends React.Component<RouteComponentProps<{}>, ILoginState> {
 	public state: Readonly<ILoginState> = {
 		error: null,
 		password: '',
@@ -26,9 +25,11 @@ export class Login extends React.Component<{}, ILoginState> {
 
 	public render(): JSX.Element {
 		if (this.state.redirect || tokenStore.isAuthenticated()) {
-			const {from} = history.location.state || {from: {pathname: '/'}};
+			let {from} = this.props.location.state || {from: {pathname: '/'}};
 
-			if (!from.pathname || from.pathname === '/login')
+			if (typeof from === 'string')
+				from = {pathname: from};
+			else if (!from.pathname || from.pathname === '/login')
 				from.pathname = '/';
 
 			return <Redirect to={from} />;
@@ -94,3 +95,5 @@ export class Login extends React.Component<{}, ILoginState> {
 		password: event.currentTarget.value,
 	});
 }
+
+export const Login = withRouter(LoginComponent);

@@ -1,4 +1,4 @@
-import axios from 'restyped-axios';
+import axios, {TypedAxiosResponse} from 'restyped-axios';
 import {Token} from './Authentication/Token';
 import {TokenStore} from './Authentication/TokenStore';
 import {ApiError, isErrorResponse} from './Error';

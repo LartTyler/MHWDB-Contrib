@@ -13,3 +13,18 @@ export const toStringValues = <T>(object: NumberValues<T>): StringValues<T> => {
 		return output;
 	}, {} as StringValues<T>);
 };
+
+export const compareFields = <T>(key: keyof T, a: T, b: T): number => {
+	if (a === b)
+		return 0;
+
+	const aval = a[key];
+	const bval = b[key];
+
+	if (aval === bval)
+		return 0;
+	else if (aval > bval)
+		return 1;
+
+	return -1;
+};

@@ -15,7 +15,7 @@ export interface IThemeAware {
 	theme: Theme;
 }
 
-export const withThemeContext = <P extends IThemeAware>(Component: React.ComponentType<P>):
+export const withTheme = <P extends IThemeAware>(Component: React.ComponentType<P>):
 	React.ComponentType<Subtract<P, IThemeAware>> => props => (
 		<ThemeContext.Consumer>
 			{theme => <Component theme={theme} {...props} />}
@@ -32,7 +32,7 @@ export interface IThemeMutatorAware {
 	onThemeChange: ThemeMutatorCallback;
 }
 
-export const withThemeMutatorContext = <P extends IThemeMutatorAware>(Component: React.ComponentType<P>):
+export const withThemeMutator = <P extends IThemeMutatorAware>(Component: React.ComponentType<P>):
 	React.ComponentType<Subtract<P, IThemeMutatorAware>> => props => (
 		<ThemeMutatorContext.Consumer>
 			{onThemeChange => <Component onThemeChange={onThemeChange} {...props} />}

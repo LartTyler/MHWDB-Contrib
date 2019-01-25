@@ -15,10 +15,12 @@ export class TokenStore {
 		const jwt = this.getStoredToken();
 		let token: Token = null;
 
-		if (jwt)
+		if (jwt) {
 			token = new Token(jwt);
 
-		this.setToken(token);
+			if (token.isValid())
+				this.setToken(token);
+		}
 	}
 
 	public isAuthenticated(): boolean {
@@ -82,7 +84,7 @@ export class TokenStore {
 		window.setTimeout(() => {
 			client.get('/auth/refresh')
 				.then(response => this.setToken(new Token(response.data.token)));
-		}, Math.max(this.getToken().getTimeToLive() - 5, 1));
+		}, Math.max((this.getToken().getTimeToLive() - 5) * 1000, 1));
 	}
 
 	protected clearRefreshTask(): void {

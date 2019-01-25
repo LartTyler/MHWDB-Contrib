@@ -1,4 +1,8 @@
+import {Id} from './Model';
+import {Ailment, IAilmentPayload} from './Models/Ailment';
+import {Armor, ArmorPayload} from './Models/Armor';
 import {Item, ItemPayload} from './Models/Item';
+import {Skill, SkillPayload} from './Models/Skill';
 
 interface IProjection<T extends boolean> {
 	[key: string]: T;
@@ -28,7 +32,12 @@ export interface IQueryable {
 	q: IQueryDocument;
 }
 
+export interface Identity {
+	id: Id;
+}
+
 export interface IMonHunDBRoutes {
+	// region Authentication
 	'/auth': {
 		POST: {
 			body: {
@@ -40,6 +49,7 @@ export interface IMonHunDBRoutes {
 			};
 		};
 	};
+
 	'/auth/refresh': {
 		GET: {
 			response: {
@@ -47,24 +57,133 @@ export interface IMonHunDBRoutes {
 			};
 		};
 	};
+	// endregion
+
+	// region Ailments
+	'/ailments': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: Ailment[];
+		};
+
+		PUT: {
+			body: IAilmentPayload;
+			query: IProjectable;
+			response: Ailment;
+		};
+	};
+
+	'/ailments/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: Ailment;
+		};
+
+		PATCH: {
+			body: IAilmentPayload;
+			params: Identity;
+			query: IProjectable;
+			response: Ailment;
+		}
+	};
+	// endregion
+
+	// region Armor
+	'/armor': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: Armor[];
+		};
+
+		PUT: {
+			body: ArmorPayload;
+			query: IProjectable;
+			response: Armor;
+		};
+	};
+
+	'/armor/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: Armor;
+		};
+
+		PATCH: {
+			body: ArmorPayload;
+			params: Identity;
+			query: IProjectable;
+			response: Armor;
+		};
+	};
+	// endregion
+
+	// region Items
 	'/items': {
 		GET: {
 			query: IQueryable & IProjectable;
 			response: Item[];
 		};
+
 		PUT: {
 			body: ItemPayload;
 			query: IProjectable;
 			response: Item;
 		};
 	};
+
 	'/items/:id': {
 		GET: {
-			params: {
-				id: string | number;
-			},
+			params: Identity,
 			query: IProjectable;
 			response: Item;
 		};
 	};
+	// endregion
+
+	// region Skills
+	'/skills': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: Skill[];
+		};
+
+		PUT: {
+			body: SkillPayload;
+			query: IProjectable;
+			response: Skill;
+		};
+	};
+
+	'/skills/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: Skill;
+		};
+
+		PATCH: {
+			body: SkillPayload;
+			params: Identity;
+			query: IProjectable;
+			response: Skill;
+		};
+	};
+	// endregion
 }

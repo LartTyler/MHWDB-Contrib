@@ -1,8 +1,10 @@
+import {CancelToken} from 'axios';
 import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 
 interface IItem extends IEntity {
+	carryLimit: number;
 	description: string;
 	id: number;
 	name: string;
@@ -10,7 +12,13 @@ interface IItem extends IEntity {
 	value: number;
 }
 
+interface ICraftingCost {
+	quantity: number;
+	item: Item;
+}
+
 export type Item = Partial<IItem>;
+export type CraftingCost = Partial<ICraftingCost>;
 
 export type ItemPayload = Item & {
 	description: string;
@@ -19,8 +27,9 @@ export type ItemPayload = Item & {
 };
 
 export class ItemModel {
-	public static list(query?: IQueryDocument, projection?: Projection) {
+	public static list(query?: IQueryDocument, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get('/items', {
+			cancelToken,
 			params: {
 				p: projection,
 				q: query,
@@ -36,8 +45,9 @@ export class ItemModel {
 		});
 	}
 
-	public static read(id: Id, projection?: Projection) {
+	public static read(id: Id, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get<'/items/:id'>(`/items/${id}`, {
+			cancelToken,
 			params: {
 				p: projection,
 			},

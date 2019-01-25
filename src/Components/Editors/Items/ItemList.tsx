@@ -1,7 +1,7 @@
 import {Intent} from '@blueprintjs/core';
 import * as React from 'react';
 import {Item as BaseItem, ItemModel} from '../../../Api/Models/Item';
-import {toaster} from '../../Contexts/ToasterContext';
+import {toaster} from '../../../toaster';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
 type Item = Pick<BaseItem, 'id' | 'name' | 'description'>;

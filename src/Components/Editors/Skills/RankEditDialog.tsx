@@ -4,7 +4,7 @@ import * as React from 'react';
 import {getDisplayName} from '../../../_Api/Objects/attributes';
 import {ISkillRank, ISkillRankModifiers, skillAttributeNames} from '../../../_Api/Objects/Skill';
 import {filterStrings} from '../../../Utility/select';
-import {IThemeAware, Theme, withThemeContext} from '../../Contexts/ThemeContext';
+import {IThemeAware, Theme, withTheme} from '../../Contexts/ThemeContext';
 
 const numberRegex = /^-?\d*\.?\d+$/;
 
@@ -191,4 +191,4 @@ class RankEditDialogComponent extends React.PureComponent<IProps, IState> {
 	};
 }
 
-export const RankEditDialog = withThemeContext(RankEditDialogComponent);
+export const RankEditDialog = withTheme(RankEditDialogComponent);

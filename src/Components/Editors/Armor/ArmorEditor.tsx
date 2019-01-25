@@ -2,36 +2,35 @@ import {Button, FormGroup, H2, H3, InputGroup, Intent, Spinner} from '@blueprint
 import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {getAttributeDisplayName, Rank, rankNames, Slot} from '../../../Api/Model';
 import {
 	ArmorAttribute,
 	armorAttributeNames,
+	ArmorCraftingInfo,
+	ArmorModel,
 	ArmorType,
 	armorTypeNames,
-	IArmorCrafting,
-	IArmorDefense,
-	IArmorResistances, isGender,
-} from '../../../_Api/Objects/Armor';
-import {IArmorSet} from '../../../_Api/Objects/ArmorSet';
-import {getDisplayName} from '../../../_Api/Objects/attributes';
-import {ISlot, Rank, rankNames} from '../../../_Api/Objects/Entity';
-import {ISkill} from '../../../_Api/Objects/Skill';
+	Defense,
+	isGender,
+	Resistances,
+} from '../../../Api/Models/Armor';
+import {ArmorSet} from '../../../Api/Models/ArmorSet';
+import {Skill} from '../../../Api/Models/Skill';
 import {cleanIntegerString} from '../../../Utility/number';
 import {StringValues, toStringValues} from '../../../Utility/object';
 import {filterStrings} from '../../../Utility/select';
 import {ucfirst} from '../../../Utility/string';
-import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {IThemeAware, withThemeContext} from '../../Contexts/ThemeContext';
-import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
+import {IThemeAware, withTheme} from '../../Contexts/ThemeContext';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {IAttribute, toAttributes} from '../AttributeDropdowns';
 import {AttributeEditorDialog} from '../AttributeEditorDialog';
 import {AttributeTable} from '../AttributeTable';
 import {createEntitySorter} from '../EntityList';
 
-const armorSetSorter = createEntitySorter<IArmorSet>('name');
-const sortArmorSets = (armorSets: IArmorSet[]) => armorSets.sort(armorSetSorter);
+const armorSetSorter = createEntitySorter<ArmorSet>('name');
+const sortArmorSets = (armorSets: ArmorSet[]) => armorSets.sort(armorSetSorter);
 
-const filterArmorSets = (query: string, armorSets: IArmorSet[]) => {
+const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
 	query = query.toLowerCase();
 
 	return armorSets.filter(armorSet => armorSet.name.toLowerCase().indexOf(query) !== -1);
@@ -41,33 +40,35 @@ interface IRouteProps {
 	armor: string;
 }
 
-interface IProps extends IApiClientAware, IToasterAware, IThemeAware, RouteComponentProps<IRouteProps> {
+interface IProps extends IThemeAware, RouteComponentProps<IRouteProps> {
 }
 
 interface IState {
-	armorSet: IArmorSet;
+	armorSet: ArmorSet;
+	armorSets: ArmorSet[];
 	attributes: IAttribute[];
-	controller: AbortController;
-	crafting: IArmorCrafting;
-	defense: StringValues<IArmorDefense>;
+	crafting: ArmorCraftingInfo;
+	defense: StringValues<Defense>;
 	loading: boolean;
 	name: string;
 	rank: Rank;
 	rarity: string;
 	redirect: boolean;
-	resistances: StringValues<IArmorResistances>;
+	resistances: StringValues<Resistances>;
 	saving: boolean;
 	showAttributeEditorDialog: boolean;
-	skills: ISkill[];
-	slots: ISlot[];
+	skills: Skill[];
+	slots: Slot[];
 	type: ArmorType;
 }
+
+const ArmorSetEntitySelect = EntitySelect.ofType<ArmorSet>();
 
 class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		armorSet: null,
+		armorSets: null,
 		attributes: [],
-		controller: null,
 		crafting: null,
 		defense: {
 			augmented: '0',
@@ -104,31 +105,24 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 			return;
 		}
 
-		const controller = new AbortController();
+		ArmorModel.read(idParam).then(response => {
+			const armor = response.data;
 
-		this.setState({
-			controller,
+			this.setState({
+				armorSet: armor.armorSet,
+				attributes: toAttributes(armor.attributes),
+				crafting: armor.crafting,
+				defense: toStringValues(armor.defense),
+				loading: false,
+				name: armor.name,
+				rank: armor.rank,
+				rarity: armor.rarity.toString(10),
+				resistances: toStringValues(armor.resistances),
+				skills: armor.skills,
+				slots: armor.slots,
+				type: armor.type,
+			});
 		});
-
-		this.props.client.armor.get(parseInt(idParam, 10), null, controller.signal).then(armor => this.setState({
-			armorSet: armor.armorSet,
-			attributes: toAttributes(armor.attributes),
-			crafting: armor.crafting,
-			defense: toStringValues(armor.defense),
-			loading: false,
-			name: armor.name,
-			rank: armor.rank,
-			rarity: armor.rarity.toString(10),
-			resistances: toStringValues(armor.resistances),
-			skills: armor.skills,
-			slots: armor.slots,
-			type: armor.type,
-		}));
-	}
-
-	public componentWillUnmount(): void {
-		if (this.state.controller)
-			this.state.controller.abort();
 	}
 
 	public render(): React.ReactNode {
@@ -191,9 +185,11 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 						<Cell size={5}>
 							<FormGroup label="Armor Set">
-								<EntitySelect
+								<ArmorSetEntitySelect
 									config={{
 										itemListPredicate: filterArmorSets,
+										items: this.state.armorSets || [],
+										loading: this.state.armorSets === null,
 										multi: false,
 										onItemSelect: this.onArmorSetSelect,
 										popoverProps: {
@@ -202,9 +198,6 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 										selected: this.state.armorSet,
 									}}
 									labelField="name"
-									onSelectionLoad={this.onArmorSetsLoad}
-									provider={this.props.client.armorSets}
-									sorter={sortArmorSets}
 								/>
 							</FormGroup>
 						</Cell>
@@ -341,11 +334,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		armorSet: null,
 	});
 
-	private onArmorSetsLoad = (armorSet: IArmorSet) => this.setState({
-		armorSet,
-	});
-
-	private onArmorSetSelect = (armorSet: IArmorSet) => this.setState({
+	private onArmorSetSelect = (armorSet: ArmorSet) => this.setState({
 		armorSet,
 	});
 
@@ -384,7 +373,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 		for (const attribute of this.state.attributes) {
 			if (attribute.key === ArmorAttribute.REQUIRED_GENDER && !isGender(attribute.value))
-				errors.push(`${getDisplayName(attribute.key)} must be either "male" or "female"`);
+				errors.push(`${getAttributeDisplayName(attribute.key)} must be either "male" or "female"`);
 		}
 
 		if (errors.length) {
@@ -399,7 +388,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	};
 
 	private onDefenseBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof IArmorDefense;
+		const key = event.currentTarget.name as keyof Defense;
 
 		if (this.state.defense[key].length > 0 && this.state.defense[key] !== '-')
 			return;
@@ -413,7 +402,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	};
 
 	private onDefenseChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof IArmorDefense;
+		const key = event.currentTarget.name as keyof Defense;
 
 		this.setState({
 			defense: {
@@ -436,7 +425,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	});
 
 	private onResistanceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof IArmorResistances;
+		const key = event.currentTarget.name as keyof Resistances;
 
 		if (this.state.resistances[key].length > 0 && this.state.resistances[key] !== '-')
 			return;
@@ -450,7 +439,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	};
 
 	private onResistanceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof IArmorResistances;
+		const key = event.currentTarget.name as keyof Resistances;
 
 		this.setState({
 			resistances: {
@@ -491,4 +480,4 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	};
 }
 
-export const ArmorEditor = withApiClient(withToasterContext(withThemeContext(withRouter(ArmorEditorComponent))));
+export const ArmorEditor = withTheme(withRouter(ArmorEditorComponent));

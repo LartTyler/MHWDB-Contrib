@@ -2,10 +2,9 @@ import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blu
 import {Cell, Row, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {ISkill, ISkillRank} from '../../../_Api/Objects/Skill';
-import {Projection} from '../../../_Api/Projection';
-import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
+import {SkillModel, SkillPayload, SkillRank} from '../../../Api/Models/Skill';
+import {Projection} from '../../../Api/routes';
+import {toaster} from '../../../toaster';
 import {LinkButton} from '../../Navigation/LinkButton';
 import {RankEditDialog} from './RankEditDialog';
 
@@ -13,15 +12,15 @@ interface IRouteProps {
 	skill: string;
 }
 
-interface ISkillEditorProps extends IApiClientAware, IToasterAware, RouteComponentProps<IRouteProps> {
+interface ISkillEditorProps extends RouteComponentProps<IRouteProps> {
 }
 
 interface ISkillEditorState {
-	activeRank: ISkillRank;
+	activeRank: SkillRank;
 	description: string;
 	loading: boolean;
 	name: string;
-	ranks: ISkillRank[];
+	ranks: SkillRank[];
 	redirect: boolean;
 	saving: boolean;
 	showRankEditDialog: boolean;
@@ -50,12 +49,16 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 			return;
 		}
 
-		this.props.client.skills.get(parseInt(idParam, 10)).then(skill => this.setState({
-			description: skill.description,
-			loading: false,
-			name: skill.name,
-			ranks: skill.ranks,
-		}));
+		SkillModel.read(idParam).then(response => {
+			const skill = response.data;
+
+			this.setState({
+				description: skill.description,
+				loading: false,
+				name: skill.name,
+				ranks: skill.ranks,
+			});
+		});
 	}
 
 	public render(): React.ReactNode {
@@ -197,7 +200,7 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 		showRankEditDialog: false,
 	});
 
-	private onRankDialogCreateRank = (rank: ISkillRank) => {
+	private onRankDialogCreateRank = (rank: SkillRank) => {
 		this.onRankDialogClose();
 
 		rank.level = this.state.ranks.length;
@@ -231,7 +234,7 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 			saving: true,
 		});
 
-		const payload: ISkill = {
+		const payload: SkillPayload = {
 			description: this.state.description,
 			name: this.state.name,
 			ranks: this.state.ranks,
@@ -242,24 +245,24 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 		};
 
 		const idParam = this.props.match.params.skill;
-		let promise: Promise<ISkill>;
+		let promise: Promise<unknown>;
 
 		if (idParam === 'new')
-			promise = this.props.client.skills.create(payload, projection);
+			promise = SkillModel.create(payload, projection);
 		else
-			promise = this.props.client.skills.update(parseInt(idParam, 10), payload, projection);
+			promise = SkillModel.update(parseInt(idParam, 10), payload, projection);
 
-		promise.then(skill => {
-			this.props.toaster.show({
+		promise.then(() => {
+			toaster.show({
 				intent: Intent.SUCCESS,
-				message: `${skill.name} ${idParam === 'new' ? 'created' : 'saved'} successfully.`,
+				message: `${this.state.name} ${idParam === 'new' ? 'created' : 'saved'} successfully.`,
 			});
 
 			this.setState({
 				redirect: true,
 			});
 		}).catch((error: Error) => {
-			this.props.toaster.show({
+			toaster.show({
 				intent: Intent.DANGER,
 				message: error.message,
 			});
@@ -271,4 +274,4 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 	};
 }
 
-export const SkillEditor = withApiClient(withToasterContext(withRouter(SkillEditorComponent)));
+export const SkillEditor = withRouter(SkillEditorComponent);

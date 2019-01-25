@@ -1,5 +1,8 @@
+import {Role} from '../../Components/RequireRole';
+
 export interface IJwtBody {
 	exp: number;
+	roles: Role[];
 }
 
 export class Token {
