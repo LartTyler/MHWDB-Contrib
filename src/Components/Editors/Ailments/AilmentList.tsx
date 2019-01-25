@@ -1,42 +1,84 @@
+import {Intent} from '@blueprintjs/core';
 import * as React from 'react';
-import {IAilment} from '../../../Api/Objects/Ailment';
-import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
+import {Ailment, AilmentModel} from '../../../Api/Models/Ailment';
+import {toaster} from '../../../toaster';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
-
-type Ailment = Pick<IAilment, 'id' | 'name' | 'description'>;
 
 const sorter = createEntitySorter<Ailment>('name');
 
 const filterEntityOnName = createEntityFilter<Ailment>('name');
 const filterEntityOnDescription = createEntityFilter<Ailment>('description');
 
-const AilmentListComponent: React.FC<IApiClientAware> = props => (
-	<EntityList
-		basePath="/edit/ailments"
-		projection={{
-			description: true,
-			name: true,
-		}}
-		provider={props.client.ailments}
-		sorter={sorter}
-		tableColumns={[
-			{
-				dataIndex: 'name',
-				onFilter: filterEntityOnName,
-				style: {
-					minWidth: 250,
-				},
-				title: 'Name',
-			},
-			{
-				dataIndex: 'description',
-				onFilter: filterEntityOnDescription,
-				title: 'Description',
-			},
-		]}
-		tableNoDataPlaceholder={<span>No ailments found.</span>}
-		title="Ailments"
-	/>
-);
+const AilmentEntityList = EntityList.ofType<Ailment>();
 
-export const AilmentList = withApiClient(AilmentListComponent);
+interface IState {
+	ailments: Ailment[];
+	loading: boolean;
+}
+
+export class AilmentList extends React.PureComponent<{}, IState> {
+	public state: Readonly<IState> = {
+		ailments: [],
+		loading: false,
+	};
+
+	public componentDidMount(): void {
+		this.load();
+	}
+
+	public render(): React.ReactNode {
+		return (
+			<AilmentEntityList
+				basePath="/edit/ailments"
+				columns={[
+					{
+						dataIndex: 'name',
+						onFilter: filterEntityOnName,
+						style: {
+							minWidth: 250,
+						},
+						title: 'Name',
+					},
+					{
+						dataIndex: 'description',
+						onFilter: filterEntityOnDescription,
+						title: 'Description',
+					},
+				]}
+				entities={this.state.ailments}
+				noDataPlaceholder={<span>No ailments found.</span>}
+				onDeleteClick={this.onDelete}
+				onRefreshClick={this.load}
+				title="Ailments"
+			/>
+		);
+	}
+
+	private onDelete = (target: Ailment) => {
+		return AilmentModel.delete(target.id).then(() => this.setState({
+			ailments: this.state.ailments.filter(ailment => ailment !== target),
+		})).catch((error: Error) => {
+			toaster.show({
+				intent: Intent.DANGER,
+				message: error.message,
+			});
+		});
+	};
+
+	private load = () => {
+		if (this.state.loading)
+			return;
+
+		this.setState({
+			loading: true,
+		});
+
+		AilmentModel.list(null, {
+			description: true,
+			id: true,
+			name: true,
+		}).then(response => this.setState({
+			ailments: response.data.sort(sorter),
+		}));
+	};
+}

@@ -1,4 +1,4 @@
-import {IEntity} from '../Api/Objects/Entity';
+import {Entity} from '../Api/Model';
 
 export const filterStrings = (query: string, items: string[]): string[] => {
 	query = query.toLowerCase();
@@ -6,7 +6,7 @@ export const filterStrings = (query: string, items: string[]): string[] => {
 	return items.filter(item => item.toLowerCase().indexOf(query) !== -1);
 };
 
-export const createEntityListFilter = <T extends IEntity>(key: keyof T) => (query: string, items: T[]) => {
+export const createEntityListFilter = <T extends Entity>(key: keyof T) => (query: string, items: T[]) => {
 	if (!query)
 		return items;
 
@@ -24,11 +24,3 @@ export const createEntityListFilter = <T extends IEntity>(key: keyof T) => (quer
 	});
 };
 
-export const createEntityListSorter = <T extends IEntity>(key: keyof T) => (items: T[]) => items.sort((a, b) => {
-	if (a[key] < b[key])
-		return -1;
-	else if (a[key] > b[key])
-		return 1;
-
-	return 0;
-});

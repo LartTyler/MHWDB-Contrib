@@ -18,7 +18,7 @@ interface IRowControlsProps<T> {
 	 * A callback to invoke when the delete button is clicked. Success is determined by the resolve / reject state of
 	 * the promise.
 	 */
-	onDelete: (entity: T) => Promise<void>;
+	onDelete?: (entity: T) => Promise<void>;
 }
 
 interface IRowControlsState {
@@ -30,6 +30,10 @@ export class RowControls<T> extends React.Component<IRowControlsProps<T>, IRowCo
 		loading: false,
 	};
 
+	public static ofType<T>() {
+		return RowControls as new (props: IRowControlsProps<T>) => RowControls<T>;
+	}
+
 	public render(): JSX.Element {
 		return (
 			<>
@@ -39,18 +43,20 @@ export class RowControls<T> extends React.Component<IRowControlsProps<T>, IRowCo
 					</Button>
 				</Link>
 
-				<Confirm
-					message={(
-						<span>
-							Are you sure you want to delete this item? This action cannot be undone.
-						</span>
-					)}
-					onConfirm={this.onDeleteButtonClick}
-				>
-					<Button minimal={true} intent={Intent.DANGER} loading={this.state.loading}>
-						Delete
-					</Button>
-				</Confirm>
+				{this.props.onDelete && (
+					<Confirm
+						message={(
+							<span>
+								Are you sure you want to delete this item? This action cannot be undone.
+							</span>
+						)}
+						onConfirm={this.onDeleteButtonClick}
+					>
+						<Button minimal={true} intent={Intent.DANGER} loading={this.state.loading}>
+							Delete
+						</Button>
+					</Confirm>
+				)}
 			</>
 		);
 	}

@@ -2,10 +2,9 @@ import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blu
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {IItem} from '../../../Api/Objects/Item';
-import {Projection} from '../../../Api/Projection';
-import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
+import {ItemModel, ItemPayload} from '../../../Api/Models/Item';
+import {Projection} from '../../../Api/routes';
+import {toaster} from '../../../toaster';
 import {LinkButton} from '../../Navigation/LinkButton';
 
 const cleanIntegerString = (input: string, max: number = null): string => {
@@ -30,7 +29,7 @@ interface IRouteProps {
 	item: string;
 }
 
-interface IItemEditorProps extends IApiClientAware, IToasterAware, RouteComponentProps<IRouteProps> {
+interface IItemEditorProps extends RouteComponentProps<IRouteProps> {
 }
 
 interface IItemEditorState {
@@ -68,7 +67,7 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 
 		return (
 			<>
-				<H2>{this.state.name.length ? this.state.name : 'Unnamed'}</H2>
+				<H2>{this.state.name || 'No Name'}</H2>
 
 				<form>
 					<Row>
@@ -163,14 +162,18 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 			return;
 		}
 
-		this.props.client.items.get(parseInt(idParam, 10)).then(item => this.setState({
-			carryLimit: item.carryLimit.toString(10),
-			description: item.description,
-			loading: false,
-			name: item.name,
-			rarity: item.rarity.toString(10),
-			value: item.value.toString(10),
-		}));
+		ItemModel.read(idParam).then(response => {
+			const item = response.data;
+
+			this.setState({
+				carryLimit: item.carryLimit.toString(10),
+				description: item.description,
+				loading: false,
+				name: item.name,
+				rarity: item.rarity.toString(10),
+				value: item.value.toString(10),
+			});
+		});
 	};
 
 	private save = (event?: React.SyntheticEvent<any>) => {
@@ -184,7 +187,7 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 			saving: true,
 		});
 
-		const payload: IItem = {
+		const payload: ItemPayload = {
 			carryLimit: toInteger(this.state.carryLimit),
 			description: this.state.description,
 			name: this.state.name,
@@ -197,24 +200,24 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 		};
 
 		const idParam = this.props.match.params.item;
-		let promise: Promise<IItem>;
+		let promise: Promise<unknown>;
 
 		if (idParam === 'new')
-			promise = this.props.client.items.create(payload, projection);
+			promise = ItemModel.create(payload, projection);
 		else
-			promise = this.props.client.items.update(parseInt(idParam, 10), payload, projection);
+			promise = ItemModel.update(parseInt(idParam, 10), payload, projection);
 
-		promise.then(item => {
-			this.props.toaster.show({
+		promise.then(() => {
+			toaster.show({
 				intent: Intent.SUCCESS,
-				message: `${item.name} ${idParam === 'new' ? 'created' : 'saved'} successfully.`,
+				message: `${this.state.name} ${idParam === 'new' ? 'created' : 'saved'} successfully.`,
 			});
 
 			this.setState({
 				redirect: true,
 			});
 		}).catch((error: Error) => {
-			this.props.toaster.show({
+			toaster.show({
 				intent: Intent.DANGER,
 				message: error.message,
 			});
@@ -226,4 +229,4 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 	};
 }
 
-export const ItemEditor = withApiClient(withToasterContext(withRouter(ItemEditorComponent)));
+export const ItemEditor = withRouter(ItemEditorComponent);

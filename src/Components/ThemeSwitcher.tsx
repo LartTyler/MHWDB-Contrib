@@ -5,8 +5,8 @@ import {
 	IThemeMutatorAware,
 	Theme,
 	ThemeMutatorCallback,
-	withThemeContext,
-	withThemeMutatorContext,
+	withTheme,
+	withThemeMutator,
 } from './Contexts/ThemeContext';
 import './ThemeSwitcher.scss';
 
@@ -25,4 +25,4 @@ const ThemeSwitcherComponent: React.FC<IThemeSwitcherProps> = props => (
 	</div>
 );
 
-export const ThemeSwitcher = withThemeContext(withThemeMutatorContext(ThemeSwitcherComponent));
+export const ThemeSwitcher = withTheme(withThemeMutator(ThemeSwitcherComponent));

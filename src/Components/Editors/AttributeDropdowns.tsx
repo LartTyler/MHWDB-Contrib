@@ -1,11 +1,11 @@
 import {Button, FormGroup, InputGroup} from '@blueprintjs/core';
 import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {getDisplayName} from '../../Api/Objects/attributes';
+import {getAttributeDisplayName} from '../../Api/Model';
 import {numberRegex} from '../../Utility/number';
 import {filterStrings} from '../../Utility/select';
 
-export const toAttributes = (object: {[key: string]: string | number}): IAttribute[] => {
+export const toAttributes = (object: {[key: string]: any}): IAttribute[] => {
 	return Object.keys(object).map(key => ({
 		key,
 		value: object[key],
@@ -41,7 +41,7 @@ export const AttributeDropdowns: React.FC<IAttributeDropdownsProps> = props => {
 							<Select
 								itemListPredicate={filterStrings}
 								items={props.attributeNames}
-								itemTextRenderer={getDisplayName}
+								itemTextRenderer={getAttributeDisplayName}
 								omit={omit}
 								onItemSelect={(key: string) => props.onAttributeKeyChange(attribute, key)}
 								popoverProps={{

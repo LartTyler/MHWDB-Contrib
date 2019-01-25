@@ -1,10 +1,8 @@
-import {Role} from '../Components/RequireRole';
+import {Role} from '../../Components/RequireRole';
 
-interface IJwtBody {
-	sub: string;
+export interface IJwtBody {
 	exp: number;
 	roles: Role[];
-	username: string;
 }
 
 export class Token {

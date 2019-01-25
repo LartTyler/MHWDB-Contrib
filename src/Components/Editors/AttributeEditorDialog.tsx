@@ -1,6 +1,6 @@
 import {Button, Classes, Dialog, Intent} from '@blueprintjs/core';
 import * as React from 'react';
-import {IThemeAware, Theme, withThemeContext} from '../Contexts/ThemeContext';
+import {IThemeAware, Theme, withTheme} from '../Contexts/ThemeContext';
 import {AttributeDropdowns, IAttribute} from './AttributeDropdowns';
 
 export interface IAttributeEditorDialogProps extends IThemeAware {
@@ -42,4 +42,4 @@ AttributeEditorDialogComponent.defaultProps = {
 	title: 'Attributes',
 };
 
-export const AttributeEditorDialog = withThemeContext(AttributeEditorDialogComponent);
+export const AttributeEditorDialog = withTheme(AttributeEditorDialogComponent);

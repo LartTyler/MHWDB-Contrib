@@ -1,11 +1,10 @@
 import {Classes} from '@blueprintjs/core';
 import * as React from 'react';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {Route, Router, Switch} from 'react-router-dom';
 import {App} from './Components/App';
 import {Login} from './Components/Auth/Login';
-import {ApiClientContext, client} from './Components/Contexts/ApiClientContext';
 import {isThemeName, Theme, ThemeContext, ThemeMutatorContext} from './Components/Contexts/ThemeContext';
-import {toaster, ToasterContext} from './Components/Contexts/ToasterContext';
+import {history} from './history';
 import './Layout.scss';
 import {PrivateRoute} from './Security/PrivateRoute';
 
@@ -42,21 +41,17 @@ export class Layout extends React.Component<{}, ILayoutState> {
 
 		return (
 			<div id="app-root" className={rootClasses.join(' ')}>
-				<ApiClientContext.Provider value={client}>
-					<ThemeContext.Provider value={this.state.theme}>
-						<ThemeMutatorContext.Provider value={this.onThemeChange}>
-							<ToasterContext.Provider value={toaster}>
-								<BrowserRouter>
-									<Switch>
-										<Route path="/login" component={Login} />
+				<ThemeContext.Provider value={this.state.theme}>
+					<ThemeMutatorContext.Provider value={this.onThemeChange}>
+						<Router history={history}>
+							<Switch>
+								<Route path="/login" component={Login} />
 
-										<PrivateRoute path="/" component={App} />
-									</Switch>
-								</BrowserRouter>
-							</ToasterContext.Provider>
-						</ThemeMutatorContext.Provider>
-					</ThemeContext.Provider>
-				</ApiClientContext.Provider>
+								<PrivateRoute path="/" component={App} />
+							</Switch>
+						</Router>
+					</ThemeMutatorContext.Provider>
+				</ThemeContext.Provider>
 			</div>
 		);
 	}

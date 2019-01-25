@@ -1,42 +1,78 @@
 import * as React from 'react';
-import {ISkill} from '../../../Api/Objects/Skill';
-import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
+import {Skill, SkillModel} from '../../../Api/Models/Skill';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
-
-type Skill = Pick<ISkill, 'id' | 'name' | 'description'>;
 
 const sorter = createEntitySorter<Skill>('name');
 
 const filterEntityOnName = createEntityFilter<Skill>('name');
 const filterEntityOnDescription = createEntityFilter<Skill>('description');
 
-const SkillListComponent: React.FC<IApiClientAware> = props => (
-	<EntityList
-		basePath="/edit/skills"
-		projection={{
-			description: true,
-			name: true,
-		}}
-		provider={props.client.skills}
-		sorter={sorter}
-		tableColumns={[
-			{
-				dataIndex: 'name',
-				onFilter: filterEntityOnName,
-				style: {
-					minWidth: 200,
-				},
-				title: 'Name',
-			},
-			{
-				dataIndex: 'description',
-				onFilter: filterEntityOnDescription,
-				title: 'Description',
-			},
-		]}
-		tableNoDataPlaceholder={<span>No skills found.</span>}
-		title="Skills"
-	/>
-);
+interface IState {
+	loading: boolean;
+	skills: Skill[];
+}
 
-export const SkillList = withApiClient(SkillListComponent);
+const SkillEntityList = EntityList.ofType<Skill>();
+
+export class SkillList extends React.PureComponent<{}, IState> {
+	public state: Readonly<IState> = {
+		loading: false,
+		skills: [],
+	};
+
+	public componentDidMount(): void {
+		this.load();
+	}
+
+	public render(): React.ReactNode {
+		return (
+			<SkillEntityList
+				basePath="/edit/skills"
+				columns={[
+					{
+						dataIndex: 'name',
+						onFilter: filterEntityOnName,
+						style: {
+							minWidth: 200,
+						},
+						title: 'Name',
+					},
+					{
+						dataIndex: 'description',
+						onFilter: filterEntityOnDescription,
+						title: 'Description',
+					},
+				]}
+				entities={this.state.skills}
+				noDataPlaceholder={<span>No skills found.</span>}
+				onDeleteClick={this.onDelete}
+				onRefreshClick={this.load}
+				title="Skills"
+			/>
+		);
+	}
+
+	private onDelete = (target: Skill) => {
+		return SkillModel.delete(target.id).then(() => this.setState({
+			skills: this.state.skills.filter(skill => skill !== target),
+		}));
+	};
+
+	private load = () => {
+		if (this.state.loading)
+			return;
+
+		this.setState({
+			loading: true,
+		});
+
+		SkillModel.list(null, {
+			description: true,
+			id: true,
+			name: true,
+		}).then(response => this.setState({
+			loading: false,
+			skills: response.data.sort(sorter),
+		}));
+	};
+}

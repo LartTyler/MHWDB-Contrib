@@ -2,44 +2,50 @@ import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blu
 import {Cell, MultiSelect, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
-import {IAilment, RecoveryAction} from '../../../Api/Objects/Ailment';
-import {IItem} from '../../../Api/Objects/Item';
-import {ISkill} from '../../../Api/Objects/Skill';
-import {Projection} from '../../../Api/Projection';
-import {createEntityListFilter, createEntityListSorter} from '../../../Utility/select';
-import {IApiClientAware, withApiClient} from '../../Contexts/ApiClientContext';
-import {IToasterAware, withToasterContext} from '../../Contexts/ToasterContext';
+import {AilmentModel, IAilmentPayload, RecoveryAction} from '../../../Api/Models/Ailment';
+import {Item, ItemModel} from '../../../Api/Models/Item';
+import {Skill, SkillModel} from '../../../Api/Models/Skill';
+import {Projection} from '../../../Api/routes';
+import {toaster} from '../../../toaster';
+import {createEntityListFilter} from '../../../Utility/select';
 import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
+import {createEntitySorter} from '../EntityList';
 
-const itemListFilter = createEntityListFilter<IItem>('name');
-const skillListFilter = createEntityListFilter<ISkill>('name');
+const itemsFilter = createEntityListFilter<Item>('name');
+const skillsFilter = createEntityListFilter<Skill>('name');
 
-const itemListSorter = createEntityListSorter<IItem>('name');
-const skillListSorter = createEntityListSorter<ISkill>('name');
+const itemSorter = createEntitySorter<Item>('name');
+const skillSorter = createEntitySorter<Skill>('name');
 
 interface IAilmentEditorRouteProps {
 	ailment: string;
 }
 
-interface IAilmentEditorProps extends IApiClientAware, IToasterAware, RouteComponentProps<IAilmentEditorRouteProps> {
+interface IAilmentEditorProps extends RouteComponentProps<IAilmentEditorRouteProps> {
 }
 
 interface IAilmentEditorState {
 	description: string;
+	items: Item[];
 	loading: boolean;
 	name: string;
-	protectionItems: IItem[];
-	protectionSkills: ISkill[];
+	protectionItems: Item[];
+	protectionSkills: Skill[];
 	recoveryActions: RecoveryAction[];
-	recoveryItems: IItem[];
+	recoveryItems: Item[];
 	redirect: boolean;
 	saving: boolean;
+	skills: Skill[];
 }
 
-class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IAilmentEditorState> {
+const ItemEntitySelect = EntitySelect.ofType<Item>();
+const SkillEntitySelect = EntitySelect.ofType<Skill>();
+
+export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAilmentEditorState> {
 	public state: Readonly<IAilmentEditorState> = {
 		description: '',
+		items: null,
 		loading: true,
 		name: '',
 		protectionItems: [],
@@ -48,10 +54,11 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		recoveryItems: [],
 		redirect: false,
 		saving: false,
+		skills: null,
 	};
 
 	public componentDidMount(): void {
-		this.loadAilment();
+		this.load();
 	}
 
 	public render(): JSX.Element {
@@ -62,7 +69,7 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 
 		return (
 			<>
-				<H2>{this.state.name.length ? this.state.name : 'Unnamed'}</H2>
+				<H2>{this.state.name || 'No Name'}</H2>
 
 				<form onSubmit={this.save}>
 					<Row>
@@ -91,9 +98,11 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 					<Row>
 						<Cell size={6}>
 							<FormGroup label="Items">
-								<EntitySelect
+								<ItemEntitySelect
 									config={{
-										itemListPredicate: itemListFilter,
+										itemListPredicate: itemsFilter,
+										items: this.state.items || [],
+										loading: this.state.items === null,
 										multi: true,
 										onClear: this.onRecoveryItemsClear,
 										onItemDeselect: this.onRecoveryItemsDeselect,
@@ -104,9 +113,6 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 										selected: this.state.recoveryItems,
 									}}
 									labelField="name"
-									onSelectionLoad={this.onRecoveryItemsLoad}
-									provider={this.props.client.items}
-									sorter={itemListSorter}
 								/>
 							</FormGroup>
 						</Cell>
@@ -133,9 +139,11 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 					<Row>
 						<Cell size={6}>
 							<FormGroup label="Items">
-								<EntitySelect
+								<ItemEntitySelect
 									config={{
-										itemListPredicate: itemListFilter,
+										itemListPredicate: itemsFilter,
+										items: this.state.items,
+										loading: this.state.items === null,
 										multi: true,
 										onClear: this.onProtectionItemsClear,
 										onItemDeselect: this.onProtectionItemsDeselect,
@@ -146,18 +154,17 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 										selected: this.state.protectionItems,
 									}}
 									labelField="name"
-									onSelectionLoad={this.onProtectionItemsLoad}
-									provider={this.props.client.items}
-									sorter={itemListSorter}
 								/>
 							</FormGroup>
 						</Cell>
 
 						<Cell size={6}>
 							<FormGroup label="Skills">
-								<EntitySelect
+								<SkillEntitySelect
 									config={{
-										itemListPredicate: skillListFilter,
+										itemListPredicate: skillsFilter,
+										items: this.state.skills,
+										loading: this.state.skills === null,
 										multi: true,
 										onClear: this.onProtectionSkillsClear,
 										onItemDeselect: this.onProtectionSkillsDeselect,
@@ -168,9 +175,6 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 										selected: this.state.protectionSkills,
 									}}
 									labelField="name"
-									onSelectionLoad={this.onProtectionSkillsLoad}
-									provider={this.props.client.skills}
-									sorter={skillListSorter}
 								/>
 							</FormGroup>
 						</Cell>
@@ -208,32 +212,24 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		protectionItems: [],
 	});
 
-	private onProtectionItemsDeselect = (removed: IItem) => this.setState({
+	private onProtectionItemsDeselect = (removed: Item) => this.setState({
 		protectionItems: this.state.protectionItems.filter(item => item.id !== removed.id),
 	});
 
-	private onProtectionItemsSelect = (item: IItem) => this.setState({
+	private onProtectionItemsSelect = (item: Item) => this.setState({
 		protectionItems: [...this.state.protectionItems, item],
-	});
-
-	private onProtectionItemsLoad = (selected: IItem[]) => this.setState({
-		protectionItems: selected,
 	});
 
 	private onProtectionSkillsClear = () => this.setState({
 		protectionSkills: [],
 	});
 
-	private onProtectionSkillsDeselect = (removed: ISkill) => this.setState({
+	private onProtectionSkillsDeselect = (removed: Skill) => this.setState({
 		protectionSkills: this.state.protectionSkills.filter(item => item.id !== removed.id),
 	});
 
-	private onProtectionSkillsSelect = (item: ISkill) => this.setState({
+	private onProtectionSkillsSelect = (item: Skill) => this.setState({
 		protectionSkills: [...this.state.protectionSkills, item],
-	});
-
-	private onProtectionSkillsLoad = (selected: ISkill[]) => this.setState({
-		protectionSkills: selected,
 	});
 
 	private onRecoveryActionsClear = () => this.setState({
@@ -252,48 +248,57 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		recoveryItems: [],
 	});
 
-	private onRecoveryItemsDeselect = (removed: IItem) => this.setState({
+	private onRecoveryItemsDeselect = (removed: Item) => this.setState({
 		recoveryItems: this.state.recoveryItems.filter(item => item.id !== removed.id),
 	});
 
-	private onRecoveryItemsSelect = (item: IItem) => this.setState({
+	private onRecoveryItemsSelect = (item: Item) => this.setState({
 		recoveryItems: [...this.state.recoveryItems, item],
 	});
 
-	private onRecoveryItemsLoad = (selected: IItem[]) => this.setState({
-		recoveryItems: selected,
-	});
+	private load(): void {
+		Promise.all([
+			ItemModel.list(null, {
+				id: true,
+				name: true,
+			}).then(response => this.setState({
+				items: response.data.sort(itemSorter),
+			})),
+			SkillModel.list(null, {
+				id: true,
+				name: true,
+			}).then(response => this.setState({
+				skills: response.data.sort(skillSorter),
+			})),
+		]).then(() => {
+			const idParam = this.props.match.params.ailment;
 
-	private loadAilment(): void {
-		const idParam = this.props.match.params.ailment;
+			if (idParam === 'new') {
+				this.setState({
+					loading: false,
+				});
 
-		if (idParam === 'new') {
-			this.setState({
-				loading: false,
+				return;
+			}
+
+			AilmentModel.read(idParam).then(response => {
+				const ailment = response.data;
+
+				const protectionItemIds = ailment.protection.items.map(item => item.id);
+				const protectionSkillIds = ailment.protection.skills.map(skill => skill.id);
+				const recoveryItemIds = ailment.recovery.items.map(item => item.id);
+
+				this.setState({
+					description: ailment.description,
+					loading: false,
+					name: ailment.name,
+					protectionItems: this.state.items.filter(item => protectionItemIds.indexOf(item.id) !== -1),
+					protectionSkills: this.state.skills.filter(skill => protectionSkillIds.indexOf(skill.id) !== -1),
+					recoveryActions: ailment.recovery.actions,
+					recoveryItems: this.state.items.filter(item => recoveryItemIds.indexOf(item.id) !== -1),
+				});
 			});
-
-			return;
-		}
-
-		this.props.client.ailments.get(parseInt(idParam, 10), {
-			description: true,
-			name: true,
-			'protection.items.id': true,
-			'protection.items.name': true,
-			'protection.skills.id': true,
-			'protection.skills.name': true,
-			'recovery.actions': true,
-			'recovery.items.id': true,
-			'recovery.items.name': true,
-		}).then(ailment => this.setState({
-			description: ailment.description,
-			loading: false,
-			name: ailment.name,
-			protectionItems: ailment.protection.items,
-			protectionSkills: ailment.protection.skills,
-			recoveryActions: ailment.recovery.actions,
-			recoveryItems: ailment.recovery.items,
-		}));
+		});
 	}
 
 	private save = (event?: React.SyntheticEvent<any>) => {
@@ -307,16 +312,16 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 			saving: true,
 		});
 
-		const payload: IAilment = {
+		const payload: IAilmentPayload = {
 			description: this.state.description,
 			name: this.state.name,
 			protection: {
-				items: this.state.protectionItems,
-				skills: this.state.protectionSkills,
+				items: this.state.protectionItems.map(item => item.id),
+				skills: this.state.protectionSkills.map(skill => skill.id),
 			},
 			recovery: {
 				actions: this.state.recoveryActions,
-				items: this.state.recoveryItems,
+				items: this.state.recoveryItems.map(item => item.id),
 			},
 		};
 
@@ -325,24 +330,24 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		};
 
 		const ailmentId = this.props.match.params.ailment;
-		let promise: Promise<IAilment>;
+		let promise: Promise<unknown>;
 
 		if (ailmentId === 'new')
-			promise = this.props.client.ailments.create(payload, projection);
+			promise = AilmentModel.create(payload, projection);
 		else
-			promise = this.props.client.ailments.update(parseInt(ailmentId, 10), payload, projection);
+			promise = AilmentModel.update(parseInt(ailmentId, 10), payload, projection);
 
-		promise.then(ailment => {
-			this.props.toaster.show({
+		promise.then(() => {
+			toaster.show({
 				intent: Intent.SUCCESS,
-				message: `${ailment.name} ${ailmentId === 'new' ? 'created' : 'saved'} successfully.`,
+				message: `${this.state.name} ${ailmentId === 'new' ? 'created' : 'saved'} successfully.`,
 			});
 
 			this.setState({
 				redirect: true,
 			});
 		}).catch((error: Error) => {
-			this.props.toaster.show({
+			toaster.show({
 				intent: Intent.DANGER,
 				message: error.message,
 			});
@@ -353,5 +358,3 @@ class AilmentEditorComponent extends React.PureComponent<IAilmentEditorProps, IA
 		});
 	};
 }
-
-export const AilmentEditor = withApiClient(withToasterContext(AilmentEditorComponent));

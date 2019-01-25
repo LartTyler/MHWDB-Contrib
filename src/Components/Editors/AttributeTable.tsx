@@ -1,6 +1,6 @@
 import {Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {getDisplayName} from '../../Api/Objects/attributes';
+import {getDisplayName} from '../../_Api/Objects/attributes';
 import {IAttribute} from './AttributeDropdowns';
 
 export interface IAttributeTableProps {

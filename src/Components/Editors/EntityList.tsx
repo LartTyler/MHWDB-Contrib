@@ -1,18 +1,16 @@
 import {Button} from '@blueprintjs/core';
 import {Cell, IColumn, Row, Table} from '@dbstudios/blueprintjs-components';
-import {debounce} from 'debounce';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
-import {IApiClientModule} from '../../Api/Module';
-import {compareFields, IEntity} from '../../Api/Objects/Entity';
-import {Projection} from '../../Api/Projection';
+import {Entity} from '../../Api/Model';
+import {compareFields} from '../../Utility/object';
 import {Manager} from '../Manager/Manager';
 import {ManagerHeader} from '../Manager/ManagerHeader';
 import {RefreshButton} from '../Manager/RefreshButton';
 import {RowControls} from '../Manager/RowControls';
 import {SearchInput} from '../Search';
 
-export const createEntityFilter = <T extends IEntity>(key: keyof T) => (record: T, search: string) => {
+export const createEntityFilter = <T extends Entity>(key: keyof T) => (record: T, search: string) => {
 	let value: any = record[key];
 
 	if (typeof value === 'number')
@@ -23,44 +21,45 @@ export const createEntityFilter = <T extends IEntity>(key: keyof T) => (record: 
 	return value.toLowerCase().indexOf(search) > -1;
 };
 
-export const createEntitySorter = <T extends IEntity>(key: keyof T) => (a: T, b: T) => compareFields(key, a, b);
+export const createEntitySorter = <T extends Entity>(key: keyof T) => (a: T, b: T) => compareFields(key, a, b);
 
-interface IEntityListProps<T extends IEntity> {
+interface IProps<T extends Entity> {
 	basePath: string;
-	projection: Projection;
-	provider: IApiClientModule<T>;
-	sorter: (a: T, b: T) => -1 | 0 | 1;
-	tableColumns: Array<IColumn<T>>;
-	tableNoDataPlaceholder: React.ReactNode;
+	columns: Array<IColumn<T>>;
+	entities: T[];
+	noDataPlaceholder: React.ReactNode;
 	title: string;
+
+	loading?: boolean;
+	onDeleteClick?: (entity: T) => Promise<void>;
+	onRefreshClick?: () => void;
 }
 
-interface IEntityListState<T extends IEntity> {
+interface IState<T> {
 	columns: Array<IColumn<T>>;
-	controller: AbortController;
-	entities: T[];
-	loading: boolean;
 	search: string;
 }
 
-export class EntityList<T extends IEntity> extends React.PureComponent<IEntityListProps<T>, IEntityListState<T>> {
-	private onSearchInputChange = debounce((search: string) => this.setState({
-		search: search.toLowerCase(),
-	}), 200);
+export class EntityList<T extends Entity> extends React.PureComponent<IProps<T>, IState<T>> {
+	public static defaultProps: Partial<IProps<Entity>> = {
+		loading: false,
+	};
 
-	public constructor(props: IEntityListProps<T>) {
+	public constructor(props: IProps<T>) {
 		super(props);
+
+		const Controls = RowControls.ofType<T>();
 
 		this.state = {
 			columns: [
-				...props.tableColumns,
+				...props.columns,
 				{
 					align: 'right',
 					render: record => (
-						<RowControls
+						<Controls
 							entity={record}
 							editPath={`${props.basePath}/${record.id}`}
-							onDelete={this.onDeleteButtonClick}
+							onDelete={this.props.onDeleteClick}
 						/>
 					),
 					style: {
@@ -69,20 +68,8 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 					title: 'Controls',
 				},
 			],
-			controller: null,
-			entities: [],
-			loading: false,
 			search: '',
 		};
-	}
-
-	public componentDidMount(): void {
-		this.loadEntities();
-	}
-
-	public componentWillUnmount(): void {
-		if (this.state.controller)
-			this.state.controller.abort();
 	}
 
 	public render(): React.ReactNode {
@@ -90,7 +77,7 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 			<Manager>
 				<ManagerHeader
 					title={this.props.title}
-					refresh={<RefreshButton onRefresh={this.loadEntities} />}
+					refresh={this.props.onRefreshClick && <RefreshButton onRefresh={this.props.onRefreshClick} />}
 					search={<SearchInput onSearch={this.onSearchInputChange} />}
 				/>
 
@@ -105,15 +92,15 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 				</Row>
 
 				<Table
-					dataSource={this.state.entities}
+					dataSource={this.props.entities}
 					columns={this.state.columns}
 					fullWidth={true}
 					htmlTableProps={{
 						interactive: true,
 						striped: true,
 					}}
-					loading={this.state.loading}
-					noDataPlaceholder={this.props.tableNoDataPlaceholder}
+					loading={this.props.loading}
+					noDataPlaceholder={this.props.noDataPlaceholder}
 					rowKey="id"
 					searchText={this.state.search}
 				/>
@@ -121,28 +108,11 @@ export class EntityList<T extends IEntity> extends React.PureComponent<IEntityLi
 		);
 	}
 
-	private onDeleteButtonClick = (target: T) => {
-		return this.props.provider.delete(target).then(() => this.setState({
-			entities: this.state.entities.filter(entity => entity.id !== target.id),
-		}));
-	};
+	private onSearchInputChange = (search: string) => this.setState({
+		search: search.toLowerCase(),
+	});
 
-	private loadEntities = () => {
-		if (this.state.controller)
-			this.state.controller.abort();
-
-		const controller = new AbortController();
-
-		this.setState({
-			controller,
-			loading: true,
-		});
-
-		this.props.provider.list(null, {...this.props.projection, id: true}, controller.signal)
-			.then(entities => this.setState({
-				controller: null,
-				entities: entities.sort(this.props.sorter),
-				loading: false,
-			}));
-	};
+	public static ofType<T extends Entity>() {
+		return EntityList as new (props: IProps<T>) => EntityList<T>;
+	}
 }

@@ -46,6 +46,12 @@
 					"esSpecCompliant": false
 				}
 			]
-		}
+		},
+		"member-ordering": [
+			true,
+			{
+				"order": "instance-sandwich"
+			}
+		]
 	}
 }

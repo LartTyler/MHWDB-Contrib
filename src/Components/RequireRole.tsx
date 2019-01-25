@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IApiClientAware, withApiClient} from './Contexts/ApiClientContext';
+import {tokenStore} from '../Api/client';
 
 export enum Role {
 	ADMIN = 'ROLE_ADMIN',
@@ -8,7 +8,7 @@ export enum Role {
 
 type GrantedRoles = Role | Role[];
 
-const hierarchy: {[key in Role]: GrantedRoles} = {
+const hierarchy: { [key in Role]: GrantedRoles } = {
 	[Role.ADMIN]: Role.USER,
 	[Role.USER]: [],
 };
@@ -31,14 +31,13 @@ export const isRoleGranted = (role: Role, roles: Role[]): boolean => {
 	return false;
 };
 
-interface IRequireRoleProps extends IApiClientAware {
+interface IRequireRoleProps {
 	role: Role;
 }
 
-const RequireRoleComponent: React.FC<IRequireRoleProps> = ({client, role, children}) => {
-	if (!client.isAuthenticated() || !isRoleGranted(role, client.getToken().body.roles)) {
+export const RequireRole: React.FC<IRequireRoleProps> = ({role, children}) => {
+	if (!tokenStore.isAuthenticated() || !isRoleGranted(role, tokenStore.getToken().body.roles))
 		return null;
-	}
 
 	return (
 		<>
@@ -46,5 +45,3 @@ const RequireRoleComponent: React.FC<IRequireRoleProps> = ({client, role, childr
 		</>
 	);
 };
-
-export const RequireRole = withApiClient(RequireRoleComponent);
