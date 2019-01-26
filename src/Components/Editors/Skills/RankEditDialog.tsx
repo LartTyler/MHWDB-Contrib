@@ -1,8 +1,8 @@
 import {Button, Classes, Dialog, FormGroup, InputGroup, Intent, TextArea} from '@blueprintjs/core';
 import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {getDisplayName} from '../../../_Api/Objects/attributes';
-import {ISkillRank, ISkillRankModifiers, skillAttributeNames} from '../../../_Api/Objects/Skill';
+import {attributeNames, getAttributeDisplayName, IAttributes} from '../../../Api/Model';
+import {SkillRank} from '../../../Api/Models/Skill';
 import {filterStrings} from '../../../Utility/select';
 import {IThemeAware, Theme, withTheme} from '../../Contexts/ThemeContext';
 
@@ -16,10 +16,10 @@ interface IModifier {
 interface IProps extends IThemeAware {
 	isOpen: boolean;
 	onClose: () => void;
-	onCreate: (rank: ISkillRank) => void;
-	onSave: (rank: ISkillRank) => void;
+	onCreate: (rank: SkillRank) => void;
+	onSave: (rank: SkillRank) => void;
 
-	rank?: ISkillRank;
+	rank?: SkillRank;
 }
 
 interface IState {
@@ -75,8 +75,8 @@ class RankEditDialogComponent extends React.PureComponent<IProps, IState> {
 									<FormGroup label="Modifier">
 										<Select
 											itemListPredicate={filterStrings}
-											items={skillAttributeNames}
-											itemTextRenderer={getDisplayName}
+											items={attributeNames}
+											itemTextRenderer={getAttributeDisplayName}
 											omit={this.state.omitModifiers}
 											onItemSelect={(key: string) => this.onModifierKeyChange(modifier, key)}
 											popoverProps={{
@@ -182,7 +182,7 @@ class RankEditDialogComponent extends React.PureComponent<IProps, IState> {
 			modifiers[modifier.key] = modifier.value;
 
 			return modifiers;
-		}, {} as ISkillRankModifiers);
+		}, {} as IAttributes);
 
 		if (this.props.rank)
 			this.props.onSave(rank);

@@ -14,7 +14,7 @@ import {
 	isGender,
 	Resistances,
 } from '../../../Api/Models/Armor';
-import {ArmorSet} from '../../../Api/Models/ArmorSet';
+import {ArmorSet, ArmorSetModel} from '../../../Api/Models/ArmorSet';
 import {Skill} from '../../../Api/Models/Skill';
 import {cleanIntegerString} from '../../../Utility/number';
 import {StringValues, toStringValues} from '../../../Utility/object';
@@ -28,7 +28,6 @@ import {AttributeTable} from '../AttributeTable';
 import {createEntitySorter} from '../EntityList';
 
 const armorSetSorter = createEntitySorter<ArmorSet>('name');
-const sortArmorSets = (armorSets: ArmorSet[]) => armorSets.sort(armorSetSorter);
 
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
 	query = query.toLowerCase();
@@ -105,11 +104,22 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 			return;
 		}
 
-		ArmorModel.read(idParam).then(response => {
-			const armor = response.data;
+		Promise.all([
+			ArmorModel.read(idParam),
+			ArmorSetModel.list(null, {
+				id: true,
+				name: true,
+			}),
+		]).then(responses => {
+			const armor = responses[0].data;
+			let armorSet: ArmorSet = null;
+
+			if (armor.armorSet !== null)
+				armorSet = responses[1].data.find(value => value.id === armor.armorSet.id) || null;
 
 			this.setState({
-				armorSet: armor.armorSet,
+				armorSet,
+				armorSets: responses[1].data,
 				attributes: toAttributes(armor.attributes),
 				crafting: armor.crafting,
 				defense: toStringValues(armor.defense),

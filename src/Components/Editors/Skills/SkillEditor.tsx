@@ -145,11 +145,15 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 						</Cell>
 
 						<Cell className="text-right" offset={8} size={2}>
-							<LinkButton to="/edit/skills" linkProps={{style: {marginRight: 10}}}>
+							<LinkButton
+								buttonProps={{disabled: this.state.saving}}
+								to="/edit/skills"
+								linkProps={{style: {marginRight: 10}}}
+							>
 								Cancel
 							</LinkButton>
 
-							<Button intent={Intent.PRIMARY} onClick={this.onSave}>
+							<Button loading={this.state.saving} intent={Intent.PRIMARY} onClick={this.onSave}>
 								Save
 							</Button>
 						</Cell>

@@ -115,7 +115,7 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 
 					<Row align="end">
 						<Cell size={1}>
-							<LinkButton to="/edit/items" buttonProps={{fill: true, loading: this.state.saving}}>
+							<LinkButton to="/edit/items" buttonProps={{fill: true, disabled: this.state.saving}}>
 								Cancel
 							</LinkButton>
 						</Cell>

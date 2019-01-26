@@ -55,6 +55,7 @@ export class ArmorList extends React.PureComponent<{}, IState> {
 					},
 				]}
 				entities={this.state.armor}
+				loading={this.state.loading}
 				noDataPlaceholder={<span>No armor found.</span>}
 				onDeleteClick={this.onDelete}
 				onRefreshClick={this.load}
@@ -90,6 +91,7 @@ export class ArmorList extends React.PureComponent<{}, IState> {
 			type: true,
 		}).then(response => this.setState({
 			armor: response.data.sort(sorter),
+			loading: false,
 		}));
 	};
 }

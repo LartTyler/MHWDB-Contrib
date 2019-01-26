@@ -1,6 +1,6 @@
 import {Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {getDisplayName} from '../../_Api/Objects/attributes';
+import {getAttributeDisplayName} from '../../Api/Model';
 import {IAttribute} from './AttributeDropdowns';
 
 export interface IAttributeTableProps {
@@ -13,7 +13,7 @@ export const AttributeTable: React.FC<IAttributeTableProps> = props => (
 	<Table
 		columns={[
 			{
-				render: attribute => getDisplayName(attribute.key),
+				render: attribute => getAttributeDisplayName(attribute.key),
 				title: props.attributeKeyColumnLabel,
 			},
 			{

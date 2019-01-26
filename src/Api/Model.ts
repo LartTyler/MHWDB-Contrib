@@ -20,7 +20,26 @@ interface ISlot {
 
 export type Slot = Partial<ISlot>;
 
+export enum Attribute {
+	AFFINITY = 'affinity',
+	ATTACK = 'attack',
+	DAMAGE_DRAGON = 'damageDragon',
+	DAMAGE_FIRE = 'damageFire',
+	DAMAGE_ICE = 'damageIce',
+	DAMAGE_THUNDER = 'damageThunder',
+	DAMAGE_WATER = 'damageWater',
+	SHARPNESS_BONUS = 'sharpnessBonus',
+	RESIST_ALL = 'resistAll',
+	RESIST_DRAGON = 'resistDragon',
+	RESIST_FIRE = 'resistFire',
+	RESIST_ICE = 'resistIce',
+	RESIST_THUNDER = 'resistThunder',
+	RESIST_WATER = 'resistWater',
+}
+
 export interface IAttributes {
+	[key: string]: any;
+
 	affinity?: string;
 	attack?: number;
 	damageDragon?: number;
@@ -38,6 +57,9 @@ export interface IAttributes {
 	resistThunder?: number;
 	resistWater?: number;
 }
+
+// @ts-ignore
+export const attributeNames = Object.keys(Attribute).map(key => Attribute[key]);
 
 export const getAttributeDisplayName = (key: string): string => {
 	let output = '';

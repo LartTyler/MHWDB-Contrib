@@ -46,6 +46,7 @@ export class AilmentList extends React.PureComponent<{}, IState> {
 					},
 				]}
 				entities={this.state.ailments}
+				loading={this.state.loading}
 				noDataPlaceholder={<span>No ailments found.</span>}
 				onDeleteClick={this.onDelete}
 				onRefreshClick={this.load}
@@ -79,6 +80,7 @@ export class AilmentList extends React.PureComponent<{}, IState> {
 			name: true,
 		}).then(response => this.setState({
 			ailments: response.data.sort(sorter),
+			loading: false,
 		}));
 	};
 }

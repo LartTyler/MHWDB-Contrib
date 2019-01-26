@@ -44,6 +44,7 @@ export class SkillList extends React.PureComponent<{}, IState> {
 					},
 				]}
 				entities={this.state.skills}
+				loading={this.state.loading}
 				noDataPlaceholder={<span>No skills found.</span>}
 				onDeleteClick={this.onDelete}
 				onRefreshClick={this.load}

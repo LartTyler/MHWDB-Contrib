@@ -182,7 +182,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 
 					<Row align="end">
 						<Cell size={1}>
-							<LinkButton to="/edit/ailments" buttonProps={{fill: true, loading: this.state.saving}}>
+							<LinkButton to="/edit/ailments" buttonProps={{fill: true, disabled: this.state.saving}}>
 								Cancel
 							</LinkButton>
 						</Cell>

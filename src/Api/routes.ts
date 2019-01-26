@@ -1,6 +1,8 @@
+import {Omit} from 'utility-types';
 import {Id} from './Model';
 import {Ailment, IAilmentPayload} from './Models/Ailment';
 import {Armor, ArmorPayload} from './Models/Armor';
+import {ArmorSet, IArmorSetCreatePayload, IArmorSetUpdatePayload} from './Models/ArmorSet';
 import {Item, ItemPayload} from './Models/Item';
 import {Skill, SkillPayload} from './Models/Skill';
 
@@ -125,6 +127,41 @@ export interface IMonHunDBRoutes {
 			params: Identity;
 			query: IProjectable;
 			response: Armor;
+		};
+	};
+	// endregion
+
+	// region Armor Sets
+	'/armor/sets': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: ArmorSet[];
+		};
+
+		PUT: {
+			body: IArmorSetCreatePayload;
+			query: IProjectable;
+			response: ArmorSet;
+		};
+	};
+
+	'/armor/sets/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: ArmorSet;
+		};
+
+		PATCH: {
+			body: IArmorSetUpdatePayload;
+			params: Identity;
+			query: IProjectable;
+			response: ArmorSet;
 		};
 	};
 	// endregion
