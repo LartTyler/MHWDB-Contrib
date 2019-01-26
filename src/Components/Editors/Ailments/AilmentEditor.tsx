@@ -2,6 +2,7 @@ import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blu
 import {Cell, MultiSelect, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
+import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {AilmentModel, IAilmentPayload, RecoveryAction} from '../../../Api/Models/Ailment';
 import {Item, ItemModel} from '../../../Api/Models/Item';
 import {Skill, SkillModel} from '../../../Api/Models/Skill';
@@ -10,6 +11,7 @@ import {toaster} from '../../../toaster';
 import {createEntityListFilter} from '../../../Utility/select';
 import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
+import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {createEntitySorter} from '../EntityList';
 
 const itemsFilter = createEntityListFilter<Item>('name');
@@ -37,6 +39,7 @@ interface IAilmentEditorState {
 	redirect: boolean;
 	saving: boolean;
 	skills: Skill[];
+	violations: IConstraintViolations;
 }
 
 const ItemEntitySelect = EntitySelect.ofType<Item>();
@@ -55,6 +58,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 		redirect: false,
 		saving: false,
 		skills: null,
+		violations: null,
 	};
 
 	public componentDidMount(): void {
@@ -74,22 +78,26 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 				<form onSubmit={this.save}>
 					<Row>
 						<Cell size={6}>
-							<FormGroup label="Name" labelFor="name">
+							<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
 								<InputGroup name="name" value={this.state.name} onChange={this.onNameInputChange} />
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
 
 					<Row>
 						<Cell size={12}>
-							<FormGroup label="Description" labelFor="description">
+							<ValidationAwareFormGroup
+								label="Description"
+								labelFor="description"
+								violations={this.state.violations}
+							>
 								<TextArea
 									name="description"
 									value={this.state.description}
 									onChange={this.onDescriptionInputChange}
 									fill={true}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
 
@@ -118,7 +126,11 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 						</Cell>
 
 						<Cell size={6}>
-							<FormGroup label="Actions">
+							<ValidationAwareFormGroup
+								label="Actions"
+								labelFor="actions"
+								violations={this.state.violations}
+							>
 								<MultiSelect
 									items={[RecoveryAction.DODGE]}
 									itemTextRenderer={this.renderRecoveryActionValue}
@@ -130,7 +142,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 									}}
 									selected={this.state.recoveryActions}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
 
@@ -355,6 +367,12 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 			this.setState({
 				saving: false,
 			});
+
+			if (isConstraintViolationError(error)) {
+				this.setState({
+					violations: error.context.violations,
+				});
+			}
 		});
 	};
 }
