@@ -1,7 +1,8 @@
 import {Button, FormGroup, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
-import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
+import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {IConstraintViolations} from '../../../Api/Error';
 import {getAttributeDisplayName, Rank, rankNames, Slot} from '../../../Api/Model';
 import {
 	ArmorAttribute,
@@ -15,19 +16,23 @@ import {
 	Resistances,
 } from '../../../Api/Models/Armor';
 import {ArmorSet, ArmorSetModel} from '../../../Api/Models/ArmorSet';
-import {Skill} from '../../../Api/Models/Skill';
+import {Skill, SkillModel, SkillRank} from '../../../Api/Models/Skill';
 import {cleanIntegerString} from '../../../Utility/number';
 import {StringValues, toStringValues} from '../../../Utility/object';
 import {filterStrings} from '../../../Utility/select';
 import {ucfirst} from '../../../Utility/string';
 import {IThemeAware, withTheme} from '../../Contexts/ThemeContext';
+import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
+import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {IAttribute, toAttributes} from '../AttributeDropdowns';
 import {AttributeEditorDialog} from '../AttributeEditorDialog';
 import {AttributeTable} from '../AttributeTable';
 import {createEntitySorter} from '../EntityList';
+import {SkillDialog} from './SkillDialog';
 
 const armorSetSorter = createEntitySorter<ArmorSet>('name');
+const skillSorter = createEntitySorter<Skill>('name');
 
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
 	query = query.toLowerCase();
@@ -44,21 +49,23 @@ interface IProps extends IThemeAware, RouteComponentProps<IRouteProps> {
 
 interface IState {
 	armorSet: ArmorSet;
-	armorSets: ArmorSet[];
 	attributes: IAttribute[];
 	crafting: ArmorCraftingInfo;
 	defense: StringValues<Defense>;
 	loading: boolean;
 	name: string;
+	omittedSkills: Skill[];
 	rank: Rank;
 	rarity: string;
 	redirect: boolean;
 	resistances: StringValues<Resistances>;
 	saving: boolean;
 	showAttributeEditorDialog: boolean;
-	skills: Skill[];
+	showSkillDialog: boolean;
+	skills: SkillRank[];
 	slots: Slot[];
 	type: ArmorType;
+	violations: IConstraintViolations;
 }
 
 const ArmorSetEntitySelect = EntitySelect.ofType<ArmorSet>();
@@ -66,7 +73,6 @@ const ArmorSetEntitySelect = EntitySelect.ofType<ArmorSet>();
 class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		armorSet: null,
-		armorSets: null,
 		attributes: [],
 		crafting: null,
 		defense: {
@@ -76,6 +82,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		},
 		loading: true,
 		name: '',
+		omittedSkills: [],
 		rank: null,
 		rarity: '1',
 		redirect: false,
@@ -88,47 +95,79 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		},
 		saving: false,
 		showAttributeEditorDialog: false,
+		showSkillDialog: false,
 		skills: [],
 		slots: [],
 		type: null,
+		violations: null,
 	};
+
+	private armorSets: ArmorSet[] = null;
+	private skills: Skill[] = null;
 
 	public componentDidMount(): void {
 		const idParam = this.props.match.params.armor;
 
-		if (idParam === 'new') {
-			this.setState({
-				loading: false,
-			});
-
-			return;
-		}
-
 		Promise.all([
-			ArmorModel.read(idParam),
+			idParam !== 'new' && ArmorModel.read(idParam),
 			ArmorSetModel.list(null, {
 				id: true,
 				name: true,
 			}),
+			SkillModel.list(null, {
+				id: true,
+				name: true,
+				'ranks.id': true,
+				'ranks.level': true,
+				'ranks.skill': true,
+				'ranks.skillName': true,
+			}),
 		]).then(responses => {
+			this.armorSets = responses[1].data.sort(armorSetSorter);
+			this.skills = responses[2].data.sort(skillSorter);
+
+			this.setState({
+				loading: false,
+			});
+
+			if (!responses[0])
+				return;
+
 			const armor = responses[0].data;
 			let armorSet: ArmorSet = null;
 
 			if (armor.armorSet !== null)
-				armorSet = responses[1].data.find(value => value.id === armor.armorSet.id) || null;
+				armorSet = this.armorSets.find(value => value.id === armor.armorSet.id) || null;
+
+			const skills: SkillRank[] = [];
+			const omittedSkills: Skill[] = [];
+
+			for (const skill of this.skills) {
+				const matched = armor.skills.find(rank => rank.skill === skill.id);
+
+				if (!matched)
+					continue;
+
+				const matchedRank = skill.ranks.find(rank => rank.level === matched.level);
+
+				if (matchedRank) {
+					skills.push(matchedRank);
+					omittedSkills.push(skill);
+				}
+			}
 
 			this.setState({
 				armorSet,
-				armorSets: responses[1].data,
 				attributes: toAttributes(armor.attributes),
 				crafting: armor.crafting,
 				defense: toStringValues(armor.defense),
 				loading: false,
 				name: armor.name,
+				omittedSkills,
 				rank: armor.rank,
 				rarity: armor.rarity.toString(10),
 				resistances: toStringValues(armor.resistances),
-				skills: armor.skills,
+				skills,
 				slots: armor.slots,
 				type: armor.type,
 			});
@@ -148,9 +187,9 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 				<form onSubmit={this.onSave}>
 					<Row>
 						<Cell size={6}>
-							<FormGroup label="Name" labelFor="name">
+							<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
 								<InputGroup name="name" onChange={this.onStringInputChange} value={this.state.name} />
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
 
@@ -188,9 +227,13 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 					<Row>
 						<Cell size={6}>
-							<FormGroup label="Rarity">
+							<ValidationAwareFormGroup
+								label="Rarity"
+								labelFor="rarity"
+								violations={this.state.violations}
+							>
 								<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 
 						<Cell size={5}>
@@ -198,8 +241,8 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 								<ArmorSetEntitySelect
 									config={{
 										itemListPredicate: filterArmorSets,
-										items: this.state.armorSets || [],
-										loading: this.state.armorSets === null,
+										items: this.armorSets || [],
+										loading: this.armorSets === null,
 										multi: false,
 										onItemSelect: this.onArmorSetSelect,
 										popoverProps: {
@@ -223,36 +266,48 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 					<Row>
 						<Cell size={4}>
-							<FormGroup label="Base" labelFor="base">
+							<ValidationAwareFormGroup
+								label="Base"
+								labelFor="defense.base"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="base"
+									name="defense.base"
 									onBlur={this.onDefenseBlur}
 									onChange={this.onDefenseChange}
 									value={this.state.defense.base}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 
 						<Cell size={4}>
-							<FormGroup label="Max (Not Augmented)" labelFor="max">
+							<ValidationAwareFormGroup
+								label="Max (Not Augmented)"
+								labelFor="defense.max"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="max"
+									name="defense.max"
 									onBlur={this.onDefenseBlur}
 									onChange={this.onDefenseChange}
 									value={this.state.defense.max}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 
 						<Cell size={4}>
-							<FormGroup label="Max (Augmented)" labelFor="augmented">
+							<ValidationAwareFormGroup
+								label="Max (Augmented)"
+								labelFor="defense.augmented"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="augmented"
+									name="defense.augmented"
 									onBlur={this.onDefenseBlur}
 									onChange={this.onDefenseChange}
 									value={this.state.defense.augmented}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
 
@@ -260,60 +315,80 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 					<Row>
 						<Cell size={4}>
-							<FormGroup label="Fire" labelFor="fire">
+							<ValidationAwareFormGroup
+								label="Fire"
+								labelFor="resistances.fire"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="fire"
+									name="resistances.fire"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
 									value={this.state.resistances.fire}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 
 						<Cell size={4}>
-							<FormGroup label="Water" labelFor="water">
+							<ValidationAwareFormGroup
+								label="Water"
+								labelFor="resistances.water"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="water"
+									name="resistances.water"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
 									value={this.state.resistances.water}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 
 						<Cell size={4}>
-							<FormGroup label="Thunder" labelFor="thunder">
+							<ValidationAwareFormGroup
+								label="Thunder"
+								labelFor="resistances.thunder"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="thunder"
+									name="resistances.thunder"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
 									value={this.state.resistances.thunder}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
 
 					<Row>
 						<Cell offset={2} size={4}>
-							<FormGroup label="Ice" labelFor="ice">
+							<ValidationAwareFormGroup
+								label="Ice"
+								labelFor="resistances.ice"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="ice"
+									name="resistances.ice"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
 									value={this.state.resistances.ice}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 
 						<Cell size={4}>
-							<FormGroup label="Dragon" labelFor="dragon">
+							<ValidationAwareFormGroup
+								label="Dragon"
+								labelFor="resistances.dragon"
+								violations={this.state.violations}
+							>
 								<InputGroup
-									name="dragon"
+									name="resistances.dragon"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
 									value={this.state.resistances.dragon}
 								/>
-							</FormGroup>
+							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
 
@@ -324,6 +399,49 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					<Button icon="edit" onClick={this.onEditAttributesButtonClick}>
 						Edit Attributes
 					</Button>
+
+					<H3 style={{marginTop: 20}}>Skills</H3>
+
+					<Table
+						dataSource={this.state.skills}
+						columns={[
+							{
+								dataIndex: 'skillName',
+								title: 'Name',
+							},
+							{
+								dataIndex: 'level',
+								title: 'Level',
+							},
+							{
+								align: 'right',
+								render: record => (
+									<Button icon="cross" minimal={true} onClick={() => this.onSkillRemove(record)} />
+								),
+								title: <div>&nbsp;</div>,
+							},
+						]}
+						fullWidth={true}
+						noDataPlaceholder="This item has no skills."
+					/>
+
+					<Button icon="plus" onClick={this.onSkillDialogShow}>
+						Add Skill
+					</Button>
+
+					<Row align="end">
+						<Cell size={1}>
+							<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/edit/armor">
+								Cancel
+							</LinkButton>
+						</Cell>
+
+						<Cell size={1}>
+							<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving}>
+								Save
+							</Button>
+						</Cell>
+					</Row>
 				</form>
 
 				<AttributeEditorDialog
@@ -335,6 +453,14 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					onAttributeKeyChange={this.onAttributeKeyChange}
 					onAttributeValueChange={this.onAttributeValueChange}
 					onClose={this.onAttributeEditorClose}
+				/>
+
+				<SkillDialog
+					isOpen={this.state.showSkillDialog}
+					omit={this.state.omittedSkills}
+					onClose={this.onSkillDialogHide}
+					onSave={this.onSkillAdd}
+					skills={this.skills}
 				/>
 			</>
 		);
@@ -458,6 +584,25 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 			},
 		});
 	};
+
+	private onSkillDialogHide = () => this.setState({
+		showSkillDialog: false,
+	});
+
+	private onSkillDialogShow = () => this.setState({
+		showSkillDialog: true,
+	});
+
+	private onSkillAdd = (rank: SkillRank, skill: Skill) => this.setState({
+		omittedSkills: [...this.state.omittedSkills, skill],
+		showSkillDialog: false,
+		skills: [...this.state.skills, rank],
+	});
+
+	private onSkillRemove = (target: SkillRank) => this.setState({
+		omittedSkills: this.state.omittedSkills.filter(skill => skill.id !== target.skill),
+		skills: this.state.skills.filter(rank => rank !== target),
+	});
 
 	// @ts-ignore
 	private onStringInputChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({

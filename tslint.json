@@ -52,6 +52,10 @@
 			{
 				"order": "instance-sandwich"
 			}
+		],
+		"object-literal-key-quotes": [
+			true,
+			"as-needed"
 		]
 	}
 }
