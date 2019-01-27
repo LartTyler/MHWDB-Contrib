@@ -269,46 +269,41 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 	});
 
 	private load(): void {
+		const idParam = this.props.match.params.ailment;
+
 		Promise.all([
 			ItemModel.list(null, {
 				id: true,
 				name: true,
-			}).then(response => this.setState({
-				items: response.data.sort(itemSorter),
-			})),
+			}),
 			SkillModel.list(null, {
 				id: true,
 				name: true,
-			}).then(response => this.setState({
-				skills: response.data.sort(skillSorter),
-			})),
-		]).then(() => {
-			const idParam = this.props.match.params.ailment;
+			}),
+			idParam !== null && AilmentModel.read(idParam),
+		]).then(responses => {
+			this.setState({
+				items: responses[0].data,
+				loading: false,
+				skills: responses[1].data,
+			});
 
-			if (idParam === 'new') {
-				this.setState({
-					loading: false,
-				});
-
+			if (!responses[2])
 				return;
-			}
 
-			AilmentModel.read(idParam).then(response => {
-				const ailment = response.data;
+			const ailment = responses[2].data;
 
-				const protectionItemIds = ailment.protection.items.map(item => item.id);
-				const protectionSkillIds = ailment.protection.skills.map(skill => skill.id);
-				const recoveryItemIds = ailment.recovery.items.map(item => item.id);
+			const protectionItemIds = ailment.protection.items.map(item => item.id);
+			const protectionSkillIds = ailment.protection.skills.map(skill => skill.id);
+			const recoveryItemIds = ailment.recovery.items.map(item => item.id);
 
-				this.setState({
-					description: ailment.description,
-					loading: false,
-					name: ailment.name,
-					protectionItems: this.state.items.filter(item => protectionItemIds.indexOf(item.id) !== -1),
-					protectionSkills: this.state.skills.filter(skill => protectionSkillIds.indexOf(skill.id) !== -1),
-					recoveryActions: ailment.recovery.actions,
-					recoveryItems: this.state.items.filter(item => recoveryItemIds.indexOf(item.id) !== -1),
-				});
+			this.setState({
+				description: ailment.description,
+				name: ailment.name,
+				protectionItems: this.state.items.filter(item => protectionItemIds.indexOf(item.id) !== -1),
+				protectionSkills: this.state.skills.filter(skill => protectionSkillIds.indexOf(skill.id) !== -1),
+				recoveryActions: ailment.recovery.actions,
+				recoveryItems: this.state.items.filter(item => recoveryItemIds.indexOf(item.id) !== -1),
 			});
 		});
 	}
