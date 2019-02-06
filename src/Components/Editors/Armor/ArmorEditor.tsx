@@ -422,7 +422,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							},
 						]}
 						fullWidth={true}
-						noDataPlaceholder="This item has no skills."
+						noDataPlaceholder={<div style={{marginBottom: 10}}>This item has no skills.</div>}
 					/>
 
 					<Button icon="plus" onClick={this.onSkillDialogShow}>
