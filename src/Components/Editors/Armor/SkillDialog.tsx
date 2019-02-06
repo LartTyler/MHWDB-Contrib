@@ -107,7 +107,7 @@ class SkillDialogComponent extends React.PureComponent<IProps, IState> {
 	});
 
 	private onSkillSelect = (skill: Skill) => this.setState({
-		level: null,
+		level: 1,
 		levelChoices: range(1, skill.ranks.length),
 		skill,
 	});
