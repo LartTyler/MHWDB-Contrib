@@ -70,6 +70,7 @@ class SkillDialogComponent extends React.PureComponent<IProps, IState> {
 							}}
 							disabled={this.state.skill === null}
 							filterable={false}
+							itemTextRenderer={this.renderLevelText}
 							items={this.state.levelChoices}
 							onItemSelect={this.onLevelSelect}
 							popoverProps={{
@@ -98,6 +99,8 @@ class SkillDialogComponent extends React.PureComponent<IProps, IState> {
 			</Dialog>
 		);
 	}
+
+	private renderLevelText = (level: number) => `Level ${level}`;
 
 	private onLevelSelect = (level: number) => this.setState({
 		level,
