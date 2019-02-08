@@ -68,6 +68,8 @@ export enum ArmorAttribute {
 }
 
 export interface IArmorAttributes {
+	[key: string]: any;
+
 	requiredGender?: Gender;
 }
 

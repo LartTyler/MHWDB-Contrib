@@ -2,21 +2,23 @@ import {Button, FormGroup, H2, H3, InputGroup, Intent, Spinner} from '@blueprint
 import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {IConstraintViolations} from '../../../Api/Error';
+import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {getAttributeDisplayName, Rank, rankNames, Slot} from '../../../Api/Model';
 import {
 	ArmorAttribute,
 	armorAttributeNames,
 	ArmorCraftingInfo,
-	ArmorModel,
+	ArmorModel, ArmorPayload,
 	ArmorType,
 	armorTypeNames,
-	Defense,
+	Defense, IArmorAttributes,
 	isGender,
 	Resistances,
 } from '../../../Api/Models/Armor';
 import {ArmorSet, ArmorSetModel} from '../../../Api/Models/ArmorSet';
+import {CraftingCost, Item} from '../../../Api/Models/Item';
 import {Skill, SkillModel, SkillRank} from '../../../Api/Models/Skill';
+import {toaster} from '../../../toaster';
 import {cleanIntegerString} from '../../../Utility/number';
 import {StringValues, toStringValues} from '../../../Utility/object';
 import {filterStrings} from '../../../Utility/select';
@@ -28,6 +30,7 @@ import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {IAttribute, toAttributes} from '../AttributeDropdowns';
 import {AttributeEditorDialog} from '../AttributeEditorDialog';
 import {AttributeTable} from '../AttributeTable';
+import {CraftingCostDialog} from '../CraftingCostDialog';
 import {createEntitySorter} from '../EntityList';
 import {SkillDialog} from './SkillDialog';
 
@@ -61,6 +64,7 @@ interface IState {
 	resistances: StringValues<Resistances>;
 	saving: boolean;
 	showAttributeEditorDialog: boolean;
+	showCraftingCostDialog: boolean;
 	showSkillDialog: boolean;
 	skills: SkillRank[];
 	slots: Slot[];
@@ -74,7 +78,9 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		armorSet: null,
 		attributes: [],
-		crafting: null,
+		crafting: {
+			materials: [],
+		},
 		defense: {
 			augmented: '0',
 			base: '0',
@@ -95,6 +101,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		},
 		saving: false,
 		showAttributeEditorDialog: false,
+		showCraftingCostDialog: false,
 		showSkillDialog: false,
 		skills: [],
 		slots: [],
@@ -411,6 +418,9 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							},
 							{
 								dataIndex: 'level',
+								style: {
+									width: 100,
+								},
 								title: 'Level',
 							},
 							{
@@ -423,10 +433,48 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						]}
 						fullWidth={true}
 						noDataPlaceholder={<div style={{marginBottom: 10}}>This item has no skills.</div>}
+						rowKey="id"
 					/>
 
 					<Button icon="plus" onClick={this.onSkillDialogShow}>
 						Add Skill
+					</Button>
+
+					<H3 style={{marginTop: 20}}>Crafting</H3>
+
+					<Table
+						dataSource={this.state.crafting.materials}
+						columns={[
+							{
+								render: cost => cost.item.name,
+								title: 'Item',
+							},
+							{
+								dataIndex: 'quantity',
+								style: {
+									width: 100,
+								},
+								title: 'Quantity',
+							},
+							{
+								align: 'right',
+								render: cost => (
+									<Button
+										icon="cross"
+										minimal={true}
+										onClick={() => this.onCraftingCostRemove(cost)}
+									/>
+								),
+								title: <div>&nbsp;</div>,
+							},
+						]}
+						fullWidth={true}
+						noDataPlaceholder={<div style={{marginBottom: 10}}>This item has no crafting cost.</div>}
+						rowKey={cost => cost.item.id.toString(10)}
+					/>
+
+					<Button icon="plus" onClick={this.onCraftingCostDialogShow}>
+						Add Item
 					</Button>
 
 					<Row align="end">
@@ -437,7 +485,12 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 
 						<Cell size={1}>
-							<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving}>
+							<Button
+								fill={true}
+								intent={Intent.PRIMARY}
+								loading={this.state.saving}
+								onClick={this.onSave}
+							>
 								Save
 							</Button>
 						</Cell>
@@ -461,6 +514,12 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					onClose={this.onSkillDialogHide}
 					onSave={this.onSkillAdd}
 					skills={this.skills}
+				/>
+
+				<CraftingCostDialog
+					isOpen={this.state.showCraftingCostDialog}
+					onClose={this.onCraftingCostDialogHide}
+					onSubmit={this.onCraftingCostAdd}
 				/>
 			</>
 		);
@@ -523,8 +582,30 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		});
 	};
 
+	private onCraftingCostDialogHide = () => this.setState({
+		showCraftingCostDialog: false,
+	});
+
+	private onCraftingCostDialogShow = () => this.setState({
+		showCraftingCostDialog: true,
+	});
+
+	private onCraftingCostAdd = (cost: CraftingCost) => this.setState({
+		crafting: {
+			materials: [...this.state.crafting.materials, cost],
+		},
+		showCraftingCostDialog: false,
+	});
+
+	private onCraftingCostRemove = (target: CraftingCost) => this.setState({
+		crafting: {
+			materials: this.state.crafting.materials.filter(cost => cost !== target),
+		},
+	});
+
 	private onDefenseBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof Defense;
+		const name = event.currentTarget.name;
+		const key = name.substr(name.lastIndexOf('.') + 1) as keyof Defense;
 
 		if (this.state.defense[key].length > 0 && this.state.defense[key] !== '-')
 			return;
@@ -538,7 +619,8 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	};
 
 	private onDefenseChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof Defense;
+		const name = event.currentTarget.name;
+		const key = name.substr(name.lastIndexOf('.') + 1) as keyof Defense;
 
 		this.setState({
 			defense: {
@@ -561,7 +643,8 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	});
 
 	private onResistanceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof Resistances;
+		const name = event.currentTarget.name;
+		const key = name.substr(name.lastIndexOf('.') + 1) as keyof Resistances;
 
 		if (this.state.resistances[key].length > 0 && this.state.resistances[key] !== '-')
 			return;
@@ -575,7 +658,8 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	};
 
 	private onResistanceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const key = event.currentTarget.name as keyof Resistances;
+		const name = event.currentTarget.name;
+		const key = name.substr(name.lastIndexOf('.') + 1) as keyof Resistances;
 
 		this.setState({
 			resistances: {
@@ -622,6 +706,75 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 		this.setState({
 			saving: true,
+		});
+
+		const payload: ArmorPayload = {
+			armorSet: this.state.armorSet ? this.state.armorSet.id : null,
+			attributes: this.state.attributes.reduce((collector, attribute) => {
+				collector[attribute.key] = attribute.value;
+
+				return collector;
+			}, {} as IArmorAttributes),
+			crafting: {
+				materials: this.state.crafting.materials.map(cost => ({
+					item: cost.item.id,
+					quantity: cost.quantity,
+				})),
+			},
+			defense: {
+				augmented: parseInt(this.state.defense.augmented, 10),
+				base: parseInt(this.state.defense.base, 10),
+				max: parseInt(this.state.defense.max, 10),
+			},
+			name: this.state.name,
+			rank: this.state.rank,
+			rarity: parseInt(this.state.rarity, 10),
+			resistances: {
+				dragon: parseInt(this.state.resistances.dragon, 10),
+				fire: parseInt(this.state.resistances.fire, 10),
+				ice: parseInt(this.state.resistances.ice, 10),
+				thunder: parseInt(this.state.resistances.thunder, 10),
+				water: parseInt(this.state.resistances.water, 10),
+			},
+			skills: this.state.skills.map(rank => ({
+				level: rank.level,
+				skill: rank.skill,
+			})),
+			type: this.state.type,
+		};
+
+		const idParam = this.props.match.params.armor;
+		let promise: Promise<unknown>;
+
+		if (idParam === 'new')
+			promise = ArmorModel.create(payload);
+		else
+			promise = ArmorModel.update(idParam, payload);
+
+		promise.then(() => {
+			toaster.show({
+				intent: Intent.SUCCESS,
+				message: `${this.state.name} has been ${idParam === 'new' ? 'created' : 'updated'}.`,
+			});
+
+			this.setState({
+				redirect: true,
+			});
+		}).catch((error: Error) => {
+			toaster.show({
+				intent: Intent.DANGER,
+				message: error.message,
+			});
+
+			if (isConstraintViolationError(error)) {
+				this.setState({
+					violations: error.context.violations,
+				});
+			}
+
+			this.setState({
+				saving: false,
+			});
 		});
 	};
 
