@@ -8,10 +8,12 @@ import {
 	ArmorAttribute,
 	armorAttributeNames,
 	ArmorCraftingInfo,
-	ArmorModel, ArmorPayload,
+	ArmorModel,
+	ArmorPayload,
 	ArmorType,
 	armorTypeNames,
-	Defense, IArmorAttributes,
+	Defense,
+	IArmorAttributes,
 	isGender,
 	Resistances,
 } from '../../../Api/Models/Armor';
@@ -52,6 +54,7 @@ interface IProps extends IThemeAware, RouteComponentProps<IRouteProps> {
 
 interface IState {
 	armorSet: ArmorSet;
+	armorSetList: ArmorSet[];
 	attributes: IAttribute[];
 	crafting: ArmorCraftingInfo;
 	defense: StringValues<Defense>;
@@ -66,6 +69,7 @@ interface IState {
 	showAttributeEditorDialog: boolean;
 	showCraftingCostDialog: boolean;
 	showSkillDialog: boolean;
+	skillList: Skill[];
 	skills: SkillRank[];
 	slots: Slot[];
 	type: ArmorType;
@@ -77,6 +81,7 @@ const ArmorSetEntitySelect = EntitySelect.ofType<ArmorSet>();
 class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		armorSet: null,
+		armorSetList: null,
 		attributes: [],
 		crafting: {
 			materials: [],
@@ -103,24 +108,62 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		showAttributeEditorDialog: false,
 		showCraftingCostDialog: false,
 		showSkillDialog: false,
+		skillList: null,
 		skills: [],
 		slots: [],
 		type: null,
 		violations: null,
 	};
 
-	private armorSets: ArmorSet[] = null;
-	private skills: Skill[] = null;
-
 	public componentDidMount(): void {
 		const idParam = this.props.match.params.armor;
 
-		Promise.all([
-			idParam !== 'new' && ArmorModel.read(idParam),
+		let promise: Promise<unknown>;
+
+		if (idParam === 'new')
+			promise = Promise.resolve();
+		else {
+			promise = ArmorModel.read(idParam).then(response => {
+				const armor = response.data;
+
+				this.setState({
+					armorSet: armor.armorSet,
+					attributes: toAttributes(armor.attributes),
+					crafting: armor.crafting,
+					defense: toStringValues(armor.defense),
+					loading: false,
+					name: armor.name,
+					rank: armor.rank,
+					rarity: armor.rarity.toString(10),
+					resistances: toStringValues(armor.resistances),
+					skills: armor.skills,
+					slots: armor.slots,
+					type: armor.type,
+				});
+			});
+		}
+
+		promise.then(() => {
+			this.setState({
+				loading: false,
+			});
+
 			ArmorSetModel.list(null, {
 				id: true,
 				name: true,
-			}),
+			}).then(response => {
+				const armorSetList = response.data;
+				let armorSet = this.state.armorSet;
+
+				if (armorSet)
+					armorSet = armorSetList.find(set => set.id === armorSet.id) || null;
+
+				this.setState({
+					armorSet,
+					armorSetList,
+				});
+			});
+
 			SkillModel.list(null, {
 				id: true,
 				name: true,
@@ -128,55 +171,29 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 				'ranks.level': true,
 				'ranks.skill': true,
 				'ranks.skillName': true,
-			}),
-		]).then(responses => {
-			this.armorSets = responses[1].data.sort(armorSetSorter);
-			this.skills = responses[2].data.sort(skillSorter);
+			}).then(response => {
+				const skills: SkillRank[] = [];
+				const omittedSkills: Skill[] = [];
 
-			this.setState({
-				loading: false,
-			});
+				for (const skill of response.data) {
+					const matched = this.state.skills.find(rank => rank.skill === skill.id);
 
-			if (!responses[0])
-				return;
+					if (!matched)
+						continue;
 
-			const armor = responses[0].data;
-			let armorSet: ArmorSet = null;
+					const matchedRank = skill.ranks.find(rank => rank.level === matched.level);
 
-			if (armor.armorSet !== null)
-				armorSet = this.armorSets.find(value => value.id === armor.armorSet.id) || null;
-
-			const skills: SkillRank[] = [];
-			const omittedSkills: Skill[] = [];
-
-			for (const skill of this.skills) {
-				const matched = armor.skills.find(rank => rank.skill === skill.id);
-
-				if (!matched)
-					continue;
-
-				const matchedRank = skill.ranks.find(rank => rank.level === matched.level);
-
-				if (matchedRank) {
-					skills.push(matchedRank);
-					omittedSkills.push(skill);
+					if (matchedRank) {
+						skills.push(matchedRank);
+						omittedSkills.push(skill);
+					}
 				}
-			}
 
-			this.setState({
-				armorSet,
-				attributes: toAttributes(armor.attributes),
-				crafting: armor.crafting,
-				defense: toStringValues(armor.defense),
-				loading: false,
-				name: armor.name,
-				omittedSkills,
-				rank: armor.rank,
-				rarity: armor.rarity.toString(10),
-				resistances: toStringValues(armor.resistances),
-				skills,
-				slots: armor.slots,
-				type: armor.type,
+				this.setState({
+					omittedSkills,
+					skillList: response.data,
+					skills,
+				});
 			});
 		});
 	}
@@ -248,8 +265,8 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 								<ArmorSetEntitySelect
 									config={{
 										itemListPredicate: filterArmorSets,
-										items: this.armorSets || [],
-										loading: this.armorSets === null,
+										items: this.state.armorSetList || [],
+										loading: this.state.armorSetList === null,
 										multi: false,
 										onItemSelect: this.onArmorSetSelect,
 										popoverProps: {
@@ -432,6 +449,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							},
 						]}
 						fullWidth={true}
+						loading={this.state.skillList === null}
 						noDataPlaceholder={<div style={{marginBottom: 10}}>This item has no skills.</div>}
 						rowKey="id"
 					/>
@@ -513,7 +531,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					omit={this.state.omittedSkills}
 					onClose={this.onSkillDialogHide}
 					onSave={this.onSkillAdd}
-					skills={this.skills}
+					skills={this.state.skillList}
 				/>
 
 				<CraftingCostDialog
