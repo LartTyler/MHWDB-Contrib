@@ -101,6 +101,7 @@ export class EntityList<T extends Entity> extends React.PureComponent<IProps<T>,
 					}}
 					loading={this.props.loading}
 					noDataPlaceholder={this.props.noDataPlaceholder}
+					pageSize={20}
 					rowKey="id"
 					searchText={this.state.search}
 				/>
