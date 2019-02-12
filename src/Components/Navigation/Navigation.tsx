@@ -10,7 +10,7 @@ export const Navigation: React.FC<{}> = () => (
 		<NavbarGroup align={Alignment.LEFT}>
 			<NavbarHeading>
 				<Link to="/" className="plain-link">
-					Title
+					Monster Hunter: World DB
 				</Link>
 			</NavbarHeading>
 
