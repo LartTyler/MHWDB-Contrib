@@ -5,6 +5,7 @@ import {Switch} from '../Navigation/Switch';
 import {Ailments} from './Ailments';
 import {Armor} from './Armor';
 import {Items} from './Items';
+import {Locations} from './Locations';
 import {Skills} from './Skills';
 
 export const Editors: React.FC<{}> = () => (
@@ -13,6 +14,7 @@ export const Editors: React.FC<{}> = () => (
 			<Route path="/edit/ailments" component={Ailments} />
 			<Route path="/edit/armor" component={Armor} />
 			<Route path="/edit/items" component={Items} />
+			<Route path="/edit/locations" component={Locations} />
 			<Route path="/edit/skills" component={Skills} />
 		</Switch>
 	</ContentContainer>
