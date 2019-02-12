@@ -1,9 +1,9 @@
-import {Omit} from 'utility-types';
 import {Id} from './Model';
 import {Ailment, IAilmentPayload} from './Models/Ailment';
 import {Armor, ArmorPayload} from './Models/Armor';
 import {ArmorSet, IArmorSetCreatePayload, IArmorSetUpdatePayload} from './Models/ArmorSet';
 import {Item, ItemPayload} from './Models/Item';
+import {Location, LocationPayload} from './Models/Location';
 import {Skill, SkillPayload} from './Models/Skill';
 
 interface IProjection<T extends boolean> {
@@ -88,7 +88,7 @@ export interface IMonHunDBRoutes {
 		};
 
 		PATCH: {
-			body: IAilmentPayload;
+			body: Partial<IAilmentPayload>;
 			params: Identity;
 			query: IProjectable;
 			response: Ailment;
@@ -181,10 +181,57 @@ export interface IMonHunDBRoutes {
 	};
 
 	'/items/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
 		GET: {
 			params: Identity,
 			query: IProjectable;
 			response: Item;
+		};
+
+		PATCH: {
+			body: ItemPayload;
+			params: Identity;
+			query: IProjectable;
+			response: Item;
+		}
+	};
+	// endregion
+
+	// region Locations
+	'/locations': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: Location[];
+		};
+
+		PUT: {
+			body: LocationPayload;
+			query: IProjectable;
+			response: Location;
+		};
+	};
+
+	'/locations/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			query: IProjectable;
+			params: Identity;
+			response: Location;
+		};
+
+		PATCH: {
+			body: Partial<LocationPayload>;
+			params: Identity;
+			query: IProjectable;
+			response: Location;
 		};
 	};
 	// endregion
