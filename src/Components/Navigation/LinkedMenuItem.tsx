@@ -1,37 +1,30 @@
 import {IMenuItemProps, MenuItem} from '@blueprintjs/core';
 import * as React from 'react';
-import {RouteComponentProps, withRouter} from 'react-router';
+import {history} from '../../history';
 
-interface ILinkedMenuItemProps extends IMenuItemProps, RouteComponentProps<{}> {
+interface IProps extends IMenuItemProps {
 	href: string;
 }
 
 /**
  * A BlueprintJS menu item component that uses React Router instead of allowing the browser to handle it's anchor tag.
  *
- * @param {ILinkedMenuItemProps & {children?: React.ReactNode}} props
+ * @param {IProps & {children?: React.ReactNode}} props
  * @returns {JSX.Element}
  * @constructor
  */
-const LinkedMenuItemComponent: React.FC<ILinkedMenuItemProps> = props => {
-	// The extra de-referenced properties MUST be included, since they need to be extracted and not passed up to the
-	// enclosing MenuItem component.
-	const {history, location, match, staticContext, ...rest} = props;
+export const LinkedMenuItem: React.FC<IProps> = props => {
+	const {href, onClick, ...rest} = props;
 
 	return (
 		<MenuItem
-			onClick={<T extends HTMLElement>(event: React.MouseEvent<T>) => {
-				if (props.onClick)
-					props.onClick(event);
-
-				event.preventDefault();
-				event.stopPropagation();
-
-				history.push(props.href);
-			}}
 			{...rest}
+			onClick={<T extends HTMLElement>(event: React.MouseEvent<T>) => {
+				if (onClick)
+					onClick(event);
+
+				history.push(href);
+			}}
 		/>
 	);
 };
-
-export const LinkedMenuItem = withRouter(LinkedMenuItemComponent);
