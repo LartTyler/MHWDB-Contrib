@@ -34,6 +34,7 @@ import {AttributeEditorDialog} from '../AttributeEditorDialog';
 import {AttributeTable} from '../AttributeTable';
 import {CraftingCostDialog} from '../CraftingCostDialog';
 import {createEntitySorter} from '../EntityList';
+import {Slots} from '../Slots';
 import {SkillDialog} from './SkillDialog';
 
 const armorSetSorter = createEntitySorter<ArmorSet>('name');
@@ -215,6 +216,31 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 								<InputGroup name="name" onChange={this.onStringInputChange} value={this.state.name} />
 							</ValidationAwareFormGroup>
 						</Cell>
+
+						<Cell size={5}>
+							<FormGroup label="Armor Set">
+								<ArmorSetEntitySelect
+									config={{
+										itemListPredicate: filterArmorSets,
+										items: this.state.armorSetList || [],
+										loading: this.state.armorSetList === null,
+										multi: false,
+										onItemSelect: this.onArmorSetSelect,
+										popoverProps: {
+											targetClassName: 'full-width',
+										},
+										selected: this.state.armorSet,
+									}}
+									labelField="name"
+								/>
+							</FormGroup>
+						</Cell>
+
+						<Cell className="text-right" size={1}>
+							<FormGroup label={<span>&nbsp;</span>}>
+								<Button icon="cross" onClick={this.onArmorSetClear} />
+							</FormGroup>
+						</Cell>
 					</Row>
 
 					<Row>
@@ -258,31 +284,6 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							>
 								<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
 							</ValidationAwareFormGroup>
-						</Cell>
-
-						<Cell size={5}>
-							<FormGroup label="Armor Set">
-								<ArmorSetEntitySelect
-									config={{
-										itemListPredicate: filterArmorSets,
-										items: this.state.armorSetList || [],
-										loading: this.state.armorSetList === null,
-										multi: false,
-										onItemSelect: this.onArmorSetSelect,
-										popoverProps: {
-											targetClassName: 'full-width',
-										},
-										selected: this.state.armorSet,
-									}}
-									labelField="name"
-								/>
-							</FormGroup>
-						</Cell>
-
-						<Cell className="text-right" size={1}>
-							<FormGroup label={<span>&nbsp;</span>}>
-								<Button icon="cross" onClick={this.onArmorSetClear} />
-							</FormGroup>
 						</Cell>
 					</Row>
 
@@ -416,7 +417,14 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					</Row>
 
-					<H3 style={{marginTop: 10}}>Attributes</H3>
+					<H3 style={{marginTop: 10}}>Slots</H3>
+
+					<Slots
+						slots={this.state.slots}
+						onChange={this.onSlotsChange}
+					/>
+
+					<H3 style={{marginTop: 20}}>Attributes</H3>
 
 					<AttributeTable attributes={this.state.attributes} />
 
@@ -706,6 +714,10 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		skills: this.state.skills.filter(rank => rank !== target),
 	});
 
+	private onSlotsChange = (slots: Slot[]) => this.setState({
+		slots,
+	});
+
 	// @ts-ignore
 	private onStringInputChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		[event.currentTarget.name]: event.currentTarget.value,
@@ -758,6 +770,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 				level: rank.level,
 				skill: rank.skill,
 			})),
+			slots: this.state.slots,
 			type: this.state.type,
 		};
 
