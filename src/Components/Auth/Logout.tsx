@@ -1,3 +1,4 @@
+import {Intent} from '@blueprintjs/core';
 import * as React from 'react';
 import {logout} from '../../Api/client';
 import {toaster} from '../../toaster';
@@ -8,6 +9,7 @@ export const Logout: React.FC<{}> = props => (
 			logout();
 
 			toaster.show({
+				intent: Intent.PRIMARY,
 				message: 'You have been logged out.',
 			});
 		}}
