@@ -20,6 +20,16 @@ interface ISlot {
 
 export type Slot = Partial<ISlot>;
 
+export interface ISimpleSkillRank {
+	skill: number;
+	level: number;
+}
+
+export interface ISimpleCraftingCost {
+	quantity: number;
+	item: number;
+}
+
 export enum Attribute {
 	AFFINITY = 'affinity',
 	ATTACK = 'attack',

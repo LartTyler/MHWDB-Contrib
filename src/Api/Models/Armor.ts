@@ -1,7 +1,7 @@
 import {CancelToken} from 'axios';
 import {Omit} from 'utility-types';
 import {client} from '../client';
-import {Id, IEntity, Rank, Slot} from '../Model';
+import {Id, IEntity, ISimpleCraftingCost, ISimpleSkillRank, Rank, Slot} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {ArmorSet} from './ArmorSet';
 import {CraftingCost} from './Item';
@@ -89,15 +89,9 @@ export type Armor = Partial<IArmor>;
 export type ArmorPayload = Omit<Armor, 'armorSet' | 'assets' | 'crafting' | 'skills'> & {
 	armorSet?: number;
 	crafting?: {
-		materials: Array<{
-			quantity: number;
-			item: number;
-		}>;
+		materials: ISimpleCraftingCost[];
 	};
-	skills?: Array<{
-		skill: number;
-		level: number;
-	}>;
+	skills?: ISimpleSkillRank[];
 };
 
 export class ArmorModel {
