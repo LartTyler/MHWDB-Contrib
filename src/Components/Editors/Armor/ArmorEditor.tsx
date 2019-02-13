@@ -21,7 +21,7 @@ import {ArmorSet, ArmorSetModel} from '../../../Api/Models/ArmorSet';
 import {CraftingCost, Item} from '../../../Api/Models/Item';
 import {Skill, SkillModel, SkillRank} from '../../../Api/Models/Skill';
 import {toaster} from '../../../toaster';
-import {cleanIntegerString} from '../../../Utility/number';
+import {cleanPositiveIntegerString} from '../../../Utility/number';
 import {StringValues, toStringValues} from '../../../Utility/object';
 import {filterStrings} from '../../../Utility/select';
 import {ucfirst} from '../../../Utility/string';
@@ -665,7 +665,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 	});
 
 	private onRarityChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		rarity: cleanIntegerString(event.currentTarget.value),
+		rarity: cleanPositiveIntegerString(event.currentTarget.value),
 	});
 
 	private onResistanceBlur = (event: React.FocusEvent<HTMLInputElement>) => {
