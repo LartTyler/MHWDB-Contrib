@@ -1,4 +1,5 @@
 import {CancelToken} from 'axios';
+import {Omit} from 'utility-types';
 import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
@@ -17,7 +18,7 @@ interface ICamp extends IEntity {
 export type Location = Partial<ILocation>;
 export type Camp = Partial<ICamp>;
 
-export type LocationPayload = ILocation;
+export type LocationPayload = Omit<ILocation, 'id'>;
 
 export class LocationModel {
 	public static list(query?: IQueryDocument, projection?: Projection, cancelToken?: CancelToken) {

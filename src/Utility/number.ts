@@ -11,3 +11,16 @@ export const cleanPositiveIntegerString = (value: string, max: number = null): s
 
 	return Math.abs(output).toString(10);
 };
+
+export const cleanNumberString = (
+	value: string,
+	allowNegative: boolean = true,
+	sanitizeRegex: RegExp = /[^\d]/g,
+): string => {
+	let output = value.replace(sanitizeRegex, '');
+
+	if (allowNegative && value.charAt(0) === '-')
+		output = `-${output}`;
+
+	return output;
+};
