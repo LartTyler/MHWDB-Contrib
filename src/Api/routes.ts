@@ -2,6 +2,7 @@ import {Id} from './Model';
 import {Ailment, IAilmentPayload} from './Models/Ailment';
 import {Armor, ArmorPayload} from './Models/Armor';
 import {ArmorSet, IArmorSetCreatePayload, IArmorSetUpdatePayload} from './Models/ArmorSet';
+import {Decoration, DecorationUpdatePayload, IDecorationCreatePayload} from './Models/Decoration';
 import {Item, ItemPayload} from './Models/Item';
 import {Location, LocationPayload} from './Models/Location';
 import {Skill, SkillPayload} from './Models/Skill';
@@ -163,6 +164,41 @@ export interface IMonHunDBRoutes {
 			query: IProjectable;
 			response: ArmorSet;
 		};
+	};
+	// endregion
+
+	// region Decorations
+	'/decorations': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: Decoration[];
+		};
+
+		PUT: {
+			body: IDecorationCreatePayload;
+			query: IProjectable;
+			response: Decoration;
+		};
+	};
+
+	'/decorations/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: Decoration;
+		};
+
+		PATCH: {
+			body: DecorationUpdatePayload;
+			params: Identity;
+			query: IProjectable;
+			response: Decoration;
+		}
 	};
 	// endregion
 
