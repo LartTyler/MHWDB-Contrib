@@ -10,6 +10,7 @@ export const ContributeButton: React.FC<{}> = () => {
 			<Menu>
 				<LinkedMenuItem href="/edit/ailments" text="Ailments" />
 				<LinkedMenuItem href="/edit/armor" text="Armor" />
+				<LinkedMenuItem href="/edit/decorations" text="Decorations" />
 				<LinkedMenuItem href="/edit/items" text="Items" />
 				<LinkedMenuItem href="/edit/locations" text="Locations" />
 				<LinkedMenuItem href="/edit/skills" text="Skills" />

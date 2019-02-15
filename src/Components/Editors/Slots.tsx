@@ -4,7 +4,7 @@ import * as React from 'react';
 import {Slot} from '../../Api/Model';
 import {Theme, ThemeContext} from '../Contexts/ThemeContext';
 
-const ranks = [
+export const slotRanks = [
 	1,
 	2,
 	3,
@@ -59,7 +59,7 @@ export const Slots: React.FC<IProps> = props => {
 						<div className={Classes.DIALOG_BODY}>
 							<FormGroup label="Rank">
 								<Select
-									items={ranks}
+									items={slotRanks}
 									onItemSelect={rank => setSelectedRank(rank)}
 									selected={selectedRank}
 									popoverProps={{
