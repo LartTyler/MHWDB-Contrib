@@ -1,11 +1,11 @@
 import {Button, Classes, Dialog, FormGroup, Intent} from '@blueprintjs/core';
 import {Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {Skill, SkillRank} from '../../../Api/Models/Skill';
-import {range} from '../../../Utility/array';
-import {createEntityListFilter} from '../../../Utility/select';
-import {IThemeAware, Theme, withTheme} from '../../Contexts/ThemeContext';
-import {EntitySelect} from '../../Select/EntitySelect';
+import {Skill, SkillRank} from '../../Api/Models/Skill';
+import {range} from '../../Utility/array';
+import {createEntityListFilter} from '../../Utility/select';
+import {IThemeAware, Theme, withTheme} from '../Contexts/ThemeContext';
+import {EntitySelect} from '../Select/EntitySelect';
 
 const skillFilter = createEntityListFilter<Skill>('name');
 

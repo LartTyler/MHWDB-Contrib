@@ -33,12 +33,8 @@ import {IAttribute, toAttributes} from '../AttributeDropdowns';
 import {AttributeEditorDialog} from '../AttributeEditorDialog';
 import {AttributeTable} from '../AttributeTable';
 import {CraftingCostDialog} from '../CraftingCostDialog';
-import {createEntitySorter} from '../EntityList';
+import {SkillDialog} from '../SkillDialog';
 import {Slots} from '../Slots';
-import {SkillDialog} from './SkillDialog';
-
-const armorSetSorter = createEntitySorter<ArmorSet>('name');
-const skillSorter = createEntitySorter<Skill>('name');
 
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
 	query = query.toLowerCase();
@@ -132,7 +128,6 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					attributes: toAttributes(armor.attributes),
 					crafting: armor.crafting,
 					defense: toStringValues(armor.defense),
-					loading: false,
 					name: armor.name,
 					rank: armor.rank,
 					rarity: armor.rarity.toString(10),
