@@ -453,11 +453,11 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						]}
 						fullWidth={true}
 						loading={this.state.skillList === null}
-						noDataPlaceholder={<div style={{marginBottom: 10}}>This item has no skills.</div>}
+						noDataPlaceholder={<div>This item has no skills.</div>}
 						rowKey="id"
 					/>
 
-					<Button icon="plus" onClick={this.onSkillDialogShow}>
+					<Button icon="plus" onClick={this.onSkillDialogShow} style={{marginTop: 10}}>
 						Add Skill
 					</Button>
 
