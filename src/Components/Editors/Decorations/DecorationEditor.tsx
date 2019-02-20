@@ -197,7 +197,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 					</Cell>
 
 					<Cell size={1}>
-						<Button intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
+						<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
 							Save
 						</Button>
 					</Cell>
