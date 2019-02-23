@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Skill, SkillModel} from '../../../Api/Models/Skill';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
-const sorter = createEntitySorter<Skill>('name');
+export const skillSorter = createEntitySorter<Skill>('name');
 
 const filterEntityOnName = createEntityFilter<Skill>('name');
 const filterEntityOnDescription = createEntityFilter<Skill>('description');
@@ -73,7 +73,7 @@ export class SkillList extends React.PureComponent<{}, IState> {
 			name: true,
 		}).then(response => this.setState({
 			loading: false,
-			skills: response.data.sort(sorter),
+			skills: response.data.sort(skillSorter),
 		}));
 	};
 }
