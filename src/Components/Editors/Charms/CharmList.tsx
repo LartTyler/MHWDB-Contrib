@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Link} from 'react-router-dom';
 import {Charm, CharmModel} from '../../../Api/Models/Charm';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
@@ -34,7 +35,11 @@ export class CharmList extends React.PureComponent<{}, IState> {
 						title: 'Name',
 					},
 					{
-						render: charm => `${charm.ranks.length} Rank${charm.ranks.length !== 1 ? 's' : ''}`,
+						render: charm => (
+							<Link to={`/edit/${charm.id}/ranks`}>
+								{charm.ranks.length} Skill{charm.ranks.length !== 1 ? 's' : ''}
+							</Link>
+						),
 						title: 'Ranks',
 					},
 				]}

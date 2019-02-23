@@ -1,9 +1,10 @@
-import {H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {Button, H2, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {RouteComponentProps, withRouter} from 'react-router';
+import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {IConstraintViolations} from '../../../Api/Error';
 import {CharmModel, CharmRank} from '../../../Api/Models/Charm';
+import {history} from '../../../history';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 
 interface IRouteProps {
@@ -53,6 +54,8 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 	public render(): React.ReactNode {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
+		else if (this.state.redirect)
+			return <Redirect to="/edit/charms" />;
 
 		return (
 			<>
@@ -67,11 +70,33 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					</Row>
 
-					<H3>Ranks</H3>
+					<Row>
+						<Cell size={2}>
+							<Button onClick={this.onViewRanksClick}>
+								View Ranks
+							</Button>
+						</Cell>
+
+						<Cell offset={8} size={1}>
+							<Button fill={true} onClick={this.onCancelClick}>
+								Cancel
+							</Button>
+						</Cell>
+
+						<Cell size={1}>
+							<Button intent={Intent.PRIMARY} fill={true} onClick={this.save}>
+								Save
+							</Button>
+						</Cell>
+					</Row>
 				</form>
 			</>
 		);
 	}
+
+	private onCancelClick = () => this.setState({
+		redirect: true,
+	});
 
 	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		name: event.currentTarget.value,
@@ -81,6 +106,8 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 			return rank;
 		}),
 	});
+
+	private onViewRanksClick = () => history.push(`/edit/charms/${this.props.match.params.charm}/ranks`);
 
 	private save = (event?: React.SyntheticEvent<any>) => {
 		if (event)
