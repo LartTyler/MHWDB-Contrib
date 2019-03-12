@@ -7,7 +7,7 @@ import {Theme, ThemeContext} from '../Contexts/ThemeContext';
 import {ValidationAwareFormGroup} from '../ValidationAwareFormGroup';
 import {createEntitySorter} from './EntityList';
 
-const itemSorter = createEntitySorter<Item>('name');
+export const itemSorter = createEntitySorter<Item>('name');
 
 interface IProps {
 	isOpen: boolean;
