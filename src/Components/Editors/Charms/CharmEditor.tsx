@@ -1,4 +1,4 @@
-import {Button, H2, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {Button, H2, InputGroup, Intent, Spinner, H3} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
@@ -6,6 +6,7 @@ import {IConstraintViolations} from '../../../Api/Error';
 import {CharmModel, CharmRank} from '../../../Api/Models/Charm';
 import {history} from '../../../history';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
+import {CharmRanksTable} from './CharmRanksTable';
 
 interface IRouteProps {
 	charm: string;
@@ -70,14 +71,18 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					</Row>
 
-					<Row>
-						<Cell size={2}>
-							<Button onClick={this.onViewRanksClick}>
-								View Ranks
-							</Button>
-						</Cell>
+					<H3>Ranks</H3>
 
-						<Cell offset={8} size={1}>
+					<CharmRanksTable
+						baseCharmName={this.state.name}
+						onAdd={this.onCharmRankAdd}
+						onDelete={this.onCharmRankDelete}
+						onUpdate={this.onCharmRankUpdate}
+						ranks={this.state.ranks}
+					/>
+
+					<Row align="end">
+						<Cell size={1}>
 							<Button fill={true} onClick={this.onCancelClick}>
 								Cancel
 							</Button>
@@ -98,6 +103,29 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 		redirect: true,
 	});
 
+	private onCharmRankAdd = (rank: CharmRank) => this.setState({
+		ranks: [...this.state.ranks, rank],
+	});
+
+	private onCharmRankDelete = (target: CharmRank) => {
+		const ranks = this.state.ranks.filter(rank => rank !== target);
+
+		for (const rank of ranks) {
+			if (rank.level < target.level)
+				continue;
+
+			rank.name = `${this.state.name} ${--rank.level}`;
+		}
+
+		this.setState({
+			ranks,
+		});
+	};
+
+	private onCharmRankUpdate = () => this.setState({
+		ranks: [...this.state.ranks],
+	});
+
 	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		name: event.currentTarget.value,
 		ranks: this.state.ranks.map(rank => {
@@ -106,8 +134,6 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 			return rank;
 		}),
 	});
-
-	private onViewRanksClick = () => history.push(`/edit/charms/${this.props.match.params.charm}/ranks`);
 
 	private save = (event?: React.SyntheticEvent<any>) => {
 		if (event)

@@ -35,11 +35,7 @@ export class CharmList extends React.PureComponent<{}, IState> {
 						title: 'Name',
 					},
 					{
-						render: charm => (
-							<Link to={`/edit/${charm.id}/ranks`}>
-								{charm.ranks.length} Skill{charm.ranks.length !== 1 ? 's' : ''}
-							</Link>
-						),
+						render: charm => `${charm.ranks.length} Rank${charm.ranks.length !== 1 ? 's' : ''}`,
 						title: 'Ranks',
 					},
 				]}
