@@ -8,6 +8,7 @@ import {Charms} from './Charms';
 import {Decorations} from './Decorations';
 import {Items} from './Items';
 import {Locations} from './Locations';
+import {MotionValues} from './MotionValues';
 import {Skills} from './Skills';
 
 export const Editors: React.FC<{}> = () => (
@@ -19,6 +20,7 @@ export const Editors: React.FC<{}> = () => (
 			<Route path="/edit/decorations" component={Decorations} />
 			<Route path="/edit/items" component={Items} />
 			<Route path="/edit/locations" component={Locations} />
+			<Route path="/edit/motion-values" component={MotionValues} />
 			<Route path="/edit/skills" component={Skills} />
 		</Switch>
 	</ContentContainer>

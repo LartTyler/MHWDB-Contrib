@@ -6,7 +6,9 @@ import {Charm, ICharmCreatePayload, ICharmUpdatePayload} from './Models/Charm';
 import {Decoration, DecorationUpdatePayload, IDecorationCreatePayload} from './Models/Decoration';
 import {Item, ItemPayload} from './Models/Item';
 import {Location, LocationPayload} from './Models/Location';
+import {MotionValue, MotionValuePayload} from './Models/MotionValue';
 import {Skill, SkillPayload} from './Models/Skill';
+import {WeaponType} from './Models/Weapon';
 
 interface IProjection<T extends boolean> {
 	[key: string]: T;
@@ -304,6 +306,50 @@ export interface IMonHunDBRoutes {
 			params: Identity;
 			query: IProjectable;
 			response: Location;
+		};
+	};
+	// endregion
+
+	// region Motion Values
+	'/motion-values': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: MotionValue[];
+		};
+
+		PUT: {
+			body: MotionValuePayload;
+			query: IProjectable;
+			response: MotionValue;
+		};
+	};
+
+	'/motion-values/:weaponType': {
+		GET: {
+			query: IProjectable;
+			params: {
+				weaponType: WeaponType;
+			};
+			response: MotionValue[];
+		};
+	};
+
+	'/motion-values/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			query: IProjectable;
+			params: Identity;
+			response: MotionValue;
+		};
+
+		PATCH: {
+			query: IProjectable;
+			params: Identity;
+			response: MotionValue;
 		};
 	};
 	// endregion

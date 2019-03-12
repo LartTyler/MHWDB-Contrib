@@ -1,10 +1,11 @@
-import {Button, Menu, Popover, Position} from '@blueprintjs/core';
+import {Button, Menu, MenuItem, Popover, Position} from '@blueprintjs/core';
 import * as React from 'react';
+import {weaponTypeLabels} from '../../Api/Models/Weapon';
 import {LinkedMenuItem} from './LinkedMenuItem';
 
 export const ContributeButton: React.FC<{}> = () => {
 	return (
-		<Popover position={Position.BOTTOM_LEFT}>
+		<Popover autoFocus={false} position={Position.BOTTOM_LEFT}>
 			<Button minimal={true}>Contribute</Button>
 
 			<Menu>
@@ -14,6 +15,17 @@ export const ContributeButton: React.FC<{}> = () => {
 				<LinkedMenuItem href="/edit/decorations" text="Decorations" />
 				<LinkedMenuItem href="/edit/items" text="Items" />
 				<LinkedMenuItem href="/edit/locations" text="Locations" />
+
+				<MenuItem text="Motion Values">
+					{Object.entries(weaponTypeLabels).map(pair => (
+						<LinkedMenuItem
+							href={`/edit/motion-values/${pair[0]}`}
+							key={pair[0]}
+							text={pair[1]}
+						/>
+					))}
+				</MenuItem>
+
 				<LinkedMenuItem href="/edit/skills" text="Skills" />
 			</Menu>
 		</Popover>
