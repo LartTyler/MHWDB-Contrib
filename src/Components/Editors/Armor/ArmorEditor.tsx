@@ -35,6 +35,7 @@ import {AttributeTable} from '../AttributeTable';
 import {CraftingCostDialog} from '../CraftingCostDialog';
 import {SkillDialog} from '../SkillDialog';
 import {Slots} from '../Slots';
+import {skillSorter} from '../Skills/SkillList';
 
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
 	query = query.toLowerCase();
@@ -187,7 +188,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 				this.setState({
 					omittedSkills,
-					skillList: response.data,
+					skillList: response.data.sort(skillSorter),
 					skills,
 				});
 			});
