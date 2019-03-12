@@ -1,10 +1,10 @@
-import {Button, H2, InputGroup, Intent, Spinner, H3} from '@blueprintjs/core';
+import {Button, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {IConstraintViolations} from '../../../Api/Error';
 import {CharmModel, CharmRank} from '../../../Api/Models/Charm';
-import {history} from '../../../history';
+import {toaster} from '../../../toaster';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {CharmRanksTable} from './CharmRanksTable';
 
@@ -83,13 +83,13 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 
 					<Row align="end">
 						<Cell size={1}>
-							<Button fill={true} onClick={this.onCancelClick}>
+							<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
 								Cancel
 							</Button>
 						</Cell>
 
 						<Cell size={1}>
-							<Button intent={Intent.PRIMARY} fill={true} onClick={this.save}>
+							<Button intent={Intent.PRIMARY} fill={true} loading={this.state.saving} onClick={this.save}>
 								Save
 							</Button>
 						</Cell>
@@ -144,6 +144,53 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 
 		this.setState({
 			saving: true,
+		});
+
+		const payload = {
+			name: this.state.name,
+			ranks: this.state.ranks.map(rank => ({
+				crafting: {
+					craftable: rank.level === 1,
+					materials: rank.crafting.materials.map(cost => ({
+						item: cost.item.id,
+						quantity: cost.quantity,
+					})),
+				},
+				level: rank.level,
+				rarity: rank.rarity,
+				skills: rank.skills.map(skillRank => ({
+					level: skillRank.level,
+					skill: skillRank.skill,
+				})),
+			})),
+		};
+
+		const idParam = this.props.match.params.charm;
+		let promise: Promise<unknown> = null;
+
+		if (idParam === 'new')
+			promise = CharmModel.create(payload, {id: true});
+		else
+			promise = CharmModel.update(idParam, payload, {id: true});
+
+		promise.then(() => {
+			toaster.show({
+				intent: Intent.SUCCESS,
+				message: `${this.state.name} ${idParam === 'new' ? 'created' : 'updated'}.`,
+			});
+
+			this.setState({
+				redirect: true,
+			});
+		}).catch((error: Error) => {
+			toaster.show({
+				intent: Intent.DANGER,
+				message: error.message,
+			});
+
+			this.setState({
+				saving: false,
+			});
 		});
 	};
 }
