@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {Link} from 'react-router-dom';
 import {Charm, CharmModel} from '../../../Api/Models/Charm';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 

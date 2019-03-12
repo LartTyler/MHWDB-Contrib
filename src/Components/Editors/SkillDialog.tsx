@@ -45,7 +45,6 @@ class SkillDialogComponent extends React.PureComponent<IProps, IState> {
 					<FormGroup label="Skill">
 						<SkillEntitySelect
 							config={{
-								itemKey: 'id',
 								itemListPredicate: skillFilter,
 								items: this.props.skills,
 								multi: false,

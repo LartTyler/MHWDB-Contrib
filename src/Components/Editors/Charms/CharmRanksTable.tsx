@@ -203,7 +203,6 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 								<Button
 									className={Classes.POPOVER_DISMISS_OVERRIDE}
 									icon="cross"
-									loading={this.state.items.length === 0}
 									minimal={true}
 									onClick={() => this.onCraftingCostDelete(rank, cost)}
 									small={true}

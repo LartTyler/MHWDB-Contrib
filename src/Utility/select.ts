@@ -23,4 +23,3 @@ export const createEntityListFilter = <T extends Entity>(key: keyof T) => (query
 		return value.toLowerCase().indexOf(query) !== -1;
 	});
 };
-
