@@ -2,7 +2,7 @@ import {Button, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {IConstraintViolations} from '../../../Api/Error';
+import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {CharmModel, CharmRank} from '../../../Api/Models/Charm';
 import {toaster} from '../../../toaster';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
@@ -187,6 +187,12 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 				intent: Intent.DANGER,
 				message: error.message,
 			});
+
+			if (isConstraintViolationError(error)) {
+				this.setState({
+					violations: error.context.violations,
+				});
+			}
 
 			this.setState({
 				saving: false,
