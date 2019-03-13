@@ -34,6 +34,6 @@ export const weaponTypeLabels: {[key in WeaponType]: string} = {
 
 export enum DamageType {
 	BLUNT = 'blunt',
-	PIERCING = 'piercing',
+	PROJECTILE = 'projectile',
 	SEVER = 'sever',
 }

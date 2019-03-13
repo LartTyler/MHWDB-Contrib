@@ -21,8 +21,8 @@ export const damageTypes: IDamageTypeItem[] = [
 		type: DamageType.BLUNT,
 	},
 	{
-		label: 'Piercing',
-		type: DamageType.PIERCING,
+		label: 'Projectile',
+		type: DamageType.PROJECTILE,
 	},
 	{
 		label: 'Sever',
