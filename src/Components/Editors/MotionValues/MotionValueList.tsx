@@ -7,6 +7,7 @@ import {ucfirst} from '../../../Utility/string';
 import {Manager} from '../../Manager/Manager';
 import {ManagerHeader} from '../../Manager/ManagerHeader';
 import {RefreshButton} from '../../Manager/RefreshButton';
+import {RowControls} from '../../Manager/RowControls';
 import {SearchInput} from '../../Search';
 import {createEntityFilter} from '../EntityList';
 
@@ -44,7 +45,10 @@ class MotionValueListComponent extends React.PureComponent<IProps, IState> {
 	}
 
 	public render(): React.ReactNode {
-		const label = weaponTypeLabels[this.props.match.params.weaponType];
+		const type = this.props.match.params.weaponType;
+		const label = weaponTypeLabels[type];
+
+		const Controls = RowControls.ofType<MotionValue>();
 
 		return (
 			<Manager>
@@ -69,6 +73,17 @@ class MotionValueListComponent extends React.PureComponent<IProps, IState> {
 							render: mv => `${mv.hits.length} Hit${mv.hits.length !== 1 ? 's' : ''}`,
 							title: 'Hits',
 						},
+						{
+							align: 'right',
+							render: mv => (
+								<Controls
+									entity={mv}
+									editPath={`/edit/motion-values/${type}/${mv.id}`}
+									onDelete={this.onMotionValueDelete}
+								/>
+							),
+							title: <span>&nbsp;</span>,
+						},
 					]}
 					dataSource={this.state.motionValues}
 					fullWidth={true}
@@ -85,6 +100,10 @@ class MotionValueListComponent extends React.PureComponent<IProps, IState> {
 			</Manager>
 		);
 	}
+
+	private onMotionValueDelete = (target: MotionValue) => MotionValueModel.delete(target.id).then(() => this.setState({
+		motionValues: this.state.motionValues.filter(mv => mv !== target),
+	}));
 
 	private onSearchInputChange = (query: string) => this.setState({
 		search: query.toLowerCase(),
