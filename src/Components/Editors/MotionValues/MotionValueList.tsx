@@ -53,7 +53,7 @@ class MotionValueListComponent extends React.PureComponent<IProps, IState> {
 		return (
 			<Manager>
 				<ManagerHeader
-					title={`Motion Values (${label})`}
+					title={`${label} Motion Values`}
 					refresh={<RefreshButton onRefresh={this.load} />}
 					search={<SearchInput onSearch={this.onSearchInputChange} />}
 				/>
