@@ -30,10 +30,6 @@ export class RowControls<T> extends React.Component<IRowControlsProps<T>, IRowCo
 		loading: false,
 	};
 
-	public static ofType<T>() {
-		return RowControls as new (props: IRowControlsProps<T>) => RowControls<T>;
-	}
-
 	public render(): JSX.Element {
 		return (
 			<>
@@ -70,4 +66,8 @@ export class RowControls<T> extends React.Component<IRowControlsProps<T>, IRowCo
 			loading: false,
 		}));
 	};
+
+	public static ofType<T>() {
+		return RowControls as new (props: IRowControlsProps<T>) => RowControls<T>;
+	}
 }
