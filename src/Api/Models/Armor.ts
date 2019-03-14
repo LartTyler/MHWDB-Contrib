@@ -4,6 +4,7 @@ import {client} from '../client';
 import {Id, IEntity, ISimpleCraftingCost, ISimpleSkillRank, Rank, Slot} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {ArmorSet} from './ArmorSet';
+import {AttributeName} from './attributes';
 import {CraftingCost} from './Item';
 import {SkillRank} from './Skill';
 
@@ -63,22 +64,11 @@ interface IArmorCraftingInfo {
 	materials: CraftingCost[];
 }
 
-export enum ArmorAttribute {
-	REQUIRED_GENDER = 'requiredGender',
-}
-
 export interface IArmorAttributes {
 	[key: string]: any;
 
-	requiredGender?: Gender;
+	[AttributeName.GENDER]?: Gender;
 }
-
-// @ts-ignore
-export const armorAttributeNames = Object.keys(ArmorAttribute).map(key => ArmorAttribute[key]);
-
-export const isGender = (value: any): value is Gender => {
-	return value === Gender.MALE || value === Gender.FEMALE;
-};
 
 export type Defense = Partial<IDefense>;
 export type Resistances = Partial<IResistances>;
