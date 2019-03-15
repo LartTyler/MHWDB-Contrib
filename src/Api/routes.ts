@@ -398,9 +398,11 @@ export interface IMonHunDBRoutes {
 	};
 
 	'/weapons/:id': {
-		params: Identity;
-		query: IProjectable;
-		response: Weapon;
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: Weapon;
+		};
 	};
 	// endregion
 }

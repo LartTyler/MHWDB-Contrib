@@ -1,7 +1,7 @@
 import {CancelToken} from 'axios';
 import {client} from '../client';
-import {IEntity, Slot} from '../Model';
-import {Identity, IQueryDocument, Projection} from '../routes';
+import {Id, IEntity, Slot} from '../Model';
+import {IQueryDocument, Projection} from '../routes';
 import {AttributeName} from './attributes';
 import {CraftingCost} from './Item';
 
@@ -189,28 +189,18 @@ interface IAmmoCapacities {
 }
 
 interface IWeaponAttributes {
+	[key: string]: any;
+
 	[AttributeName.AFFINITY]: string;
 	[AttributeName.AMMO_CAPACITIES]: AmmoCapacities;
 	[AttributeName.COATINGS]: Coating[];
-	[AttributeName.DAMAGE_DRAGON]: number;
-	[AttributeName.DAMAGE_FIRE]: number;
-	[AttributeName.DAMAGE_ICE]: number;
-	[AttributeName.DAMAGE_THUNDER]: number;
-	[AttributeName.DAMAGE_WATER]: number;
 	[AttributeName.DAMAGE_TYPE]: DamageType;
+	[AttributeName.DEFENSE]: number;
 	[AttributeName.ELDERSEAL]: Elderseal;
 	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
-	[AttributeName.HEALTH]: number;
 	[AttributeName.IG_BOOST_TYPE]: BoostType;
 	[AttributeName.PHIAL_TYPE]: PhialType | DamagePhialType;
-	[AttributeName.RESIST_ALL]: number;
-	[AttributeName.RESIST_DRAGON]: number;
-	[AttributeName.RESIST_FIRE]: number;
-	[AttributeName.RESIST_ICE]: number;
-	[AttributeName.RESIST_THUNDER]: number;
-	[AttributeName.RESIST_WATER]: number;
 	[AttributeName.SPECIAL_AMMO]: SpecialAmmo;
-	[AttributeName.STAMINA]: number;
 }
 
 interface IWeapon extends IEntity {
@@ -250,14 +240,13 @@ export class WeaponModel {
 		projection?: Projection,
 		cancelToken?: CancelToken,
 	) {
-		query = query || {
-			type,
-		};
+		query = query || {};
+		query.type = type;
 
 		return WeaponModel.list(query, projection, cancelToken);
 	}
 
-	public static read(id: Identity, projection?: Projection, cancelToken?: CancelToken) {
+	public static read(id: Id, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get<'/weapons/:id'>(`/weapons/:id`, {
 			cancelToken,
 			params: {
