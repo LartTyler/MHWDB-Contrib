@@ -48,28 +48,14 @@ export class EntityList<T extends Entity> extends React.PureComponent<IProps<T>,
 	public constructor(props: IProps<T>) {
 		super(props);
 
-		const Controls = RowControls.ofType<T>();
+		this.state = this.getBaseState();
+	}
 
-		this.state = {
-			columns: [
-				...props.columns,
-				{
-					align: 'right',
-					render: record => (
-						<Controls
-							entity={record}
-							editPath={`${props.basePath}/${record.id}`}
-							onDelete={this.props.onDeleteClick}
-						/>
-					),
-					style: {
-						width: 200,
-					},
-					title: 'Controls',
-				},
-			],
-			search: '',
-		};
+	public componentDidUpdate(prevProps: Readonly<IProps<T>>): void {
+		if (this.props.entities === prevProps.entities && this.props.columns === prevProps.columns)
+			return;
+
+		this.setState(this.getBaseState());
 	}
 
 	public render(): React.ReactNode {
@@ -112,6 +98,31 @@ export class EntityList<T extends Entity> extends React.PureComponent<IProps<T>,
 	private onSearchInputChange = (search: string) => this.setState({
 		search: search.toLowerCase(),
 	});
+
+	private getBaseState = (): IState<T> => {
+		const Controls = RowControls.ofType<T>();
+
+		return {
+			columns: [
+				...this.props.columns,
+				{
+					align: 'right',
+					render: record => (
+						<Controls
+							entity={record}
+							editPath={`${this.props.basePath}/${record.id}`}
+							onDelete={this.props.onDeleteClick}
+						/>
+					),
+					style: {
+						width: 200,
+					},
+					title: 'Controls',
+				},
+			],
+			search: '',
+		};
+	};
 
 	public static ofType<T extends Entity>() {
 		return EntityList as new (props: IProps<T>) => EntityList<T>;
