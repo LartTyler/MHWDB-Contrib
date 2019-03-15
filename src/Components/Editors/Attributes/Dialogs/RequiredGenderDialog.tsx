@@ -1,11 +1,11 @@
 import {FormGroup} from '@blueprintjs/core';
 import {Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {Gender} from '../../../Api/Models/Armor';
-import {AttributeName} from '../../../Api/Models/attributes';
-import {ucfirst} from '../../../Utility/string';
-import {AttributeDialog} from './AttributeDialog';
-import {IAttributeDialogProps} from './AttributesEditor';
+import {Gender} from '../../../../Api/Models/Armor';
+import {AttributeName} from '../../../../Api/Models/attributes';
+import {ucfirst} from '../../../../Utility/string';
+import {AttributeDialog} from '../AttributeDialog';
+import {IAttributeDialogProps} from '../AttributesEditor';
 
 interface IProps extends IAttributeDialogProps<Gender> {
 }

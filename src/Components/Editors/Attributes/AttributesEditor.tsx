@@ -2,7 +2,7 @@ import {Button, Menu, MenuItem, Popover} from '@blueprintjs/core';
 import {Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {attributeLabels, AttributeName, IAttribute} from '../../../Api/Models/attributes';
-import {dialogs} from './dialogs';
+import {dialogs} from './Dialogs/dialogs';
 
 export interface IAttributeDialogProps<T> {
 	attribute: AttributeName;
