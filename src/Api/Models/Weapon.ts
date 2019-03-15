@@ -1,4 +1,7 @@
+import {CancelToken} from 'axios';
+import {client} from '../client';
 import {IEntity, Slot} from '../Model';
+import {Identity, IQueryDocument, Projection} from '../routes';
 import {AttributeName} from './attributes';
 import {CraftingCost} from './Item';
 
@@ -228,3 +231,38 @@ export type WeaponCrafting = Partial<IWeaponCrafting>;
 export type Durability = Partial<IDurability>;
 export type AmmoCapacities = Partial<IAmmoCapacities>;
 export type WeaponAttributes = Partial<IWeaponAttributes>;
+export type Weapon = Partial<IWeapon>;
+
+export class WeaponModel {
+	public static list(query?: IQueryDocument, projection?: Projection, cancelToken?: CancelToken) {
+		return client.get('/weapons', {
+			cancelToken,
+			params: {
+				p: projection,
+				q: query,
+			},
+		});
+	}
+
+	public static listByType(
+		type: WeaponType,
+		query?: IQueryDocument,
+		projection?: Projection,
+		cancelToken?: CancelToken,
+	) {
+		query = query || {
+			type,
+		};
+
+		return WeaponModel.list(query, projection, cancelToken);
+	}
+
+	public static read(id: Identity, projection?: Projection, cancelToken?: CancelToken) {
+		return client.get<'/weapons/:id'>(`/weapons/:id`, {
+			cancelToken,
+			params: {
+				p: projection,
+			},
+		});
+	}
+}

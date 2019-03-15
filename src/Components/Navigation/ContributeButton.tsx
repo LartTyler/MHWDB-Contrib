@@ -3,6 +3,27 @@ import * as React from 'react';
 import {weaponTypeLabels} from '../../Api/Models/Weapon';
 import {LinkedMenuItem} from './LinkedMenuItem';
 
+const motionValueMenuItems: React.ReactNode[] = [];
+const weaponMenuItems: React.ReactNode[] = [];
+
+Object.entries(weaponTypeLabels).map(([type, label]) => {
+	motionValueMenuItems.push((
+		<LinkedMenuItem
+			href={`/edit/motion-values/${type}`}
+			key={type}
+			text={label}
+		/>
+	));
+
+	weaponMenuItems.push((
+		<LinkedMenuItem
+			href={`/edit/weapons/${type}`}
+			key={type}
+			text={label}
+		/>
+	));
+});
+
 export const ContributeButton: React.FC<{}> = () => {
 	return (
 		<Popover autoFocus={false} position={Position.BOTTOM_LEFT}>
@@ -17,16 +38,14 @@ export const ContributeButton: React.FC<{}> = () => {
 				<LinkedMenuItem href="/edit/locations" text="Locations" />
 
 				<MenuItem text="Motion Values">
-					{Object.entries(weaponTypeLabels).map(pair => (
-						<LinkedMenuItem
-							href={`/edit/motion-values/${pair[0]}`}
-							key={pair[0]}
-							text={pair[1]}
-						/>
-					))}
+					{motionValueMenuItems}
 				</MenuItem>
 
 				<LinkedMenuItem href="/edit/skills" text="Skills" />
+
+				<MenuItem text="Weapons">
+					{weaponMenuItems}
+				</MenuItem>
 			</Menu>
 		</Popover>
 	);

@@ -8,7 +8,7 @@ import {Item, ItemPayload} from './Models/Item';
 import {Location, LocationPayload} from './Models/Location';
 import {MotionValue, MotionValuePayload} from './Models/MotionValue';
 import {Skill, SkillPayload} from './Models/Skill';
-import {WeaponType} from './Models/Weapon';
+import {Weapon, WeaponType} from './Models/Weapon';
 
 interface IProjection<T extends boolean> {
 	[key: string]: T;
@@ -386,6 +386,21 @@ export interface IMonHunDBRoutes {
 			query: IProjectable;
 			response: Skill;
 		};
+	};
+	// endregion
+
+	// region Weapons
+	'/weapons': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: Weapon[];
+		};
+	};
+
+	'/weapons/:id': {
+		params: Identity;
+		query: IProjectable;
+		response: Weapon;
 	};
 	// endregion
 }
