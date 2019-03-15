@@ -3,10 +3,8 @@ import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
-import {getAttributeDisplayName, Rank, rankNames, Slot} from '../../../Api/Model';
+import {Rank, rankNames, Slot} from '../../../Api/Model';
 import {
-	ArmorAttribute,
-	armorAttributeNames,
 	ArmorCraftingInfo,
 	ArmorModel,
 	ArmorPayload,
@@ -14,10 +12,10 @@ import {
 	armorTypeNames,
 	Defense,
 	IArmorAttributes,
-	isGender,
 	Resistances,
 } from '../../../Api/Models/Armor';
 import {ArmorSet, ArmorSetModel} from '../../../Api/Models/ArmorSet';
+import {AttributeName, IAttribute} from '../../../Api/Models/attributes';
 import {CraftingCost, Item} from '../../../Api/Models/Item';
 import {Skill, SkillModel, SkillRank} from '../../../Api/Models/Skill';
 import {toaster} from '../../../toaster';
@@ -29,13 +27,15 @@ import {IThemeAware, withTheme} from '../../Contexts/ThemeContext';
 import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
-import {IAttribute, toAttributes} from '../AttributeDropdowns';
-import {AttributeEditorDialog} from '../AttributeEditorDialog';
-import {AttributeTable} from '../AttributeTable';
+import {AttributesEditor} from '../Attributes/AttributesEditor';
 import {CraftingCostDialog} from '../CraftingCostDialog';
 import {SkillDialog} from '../SkillDialog';
-import {Slots} from '../Slots';
 import {skillSorter} from '../Skills/SkillList';
+import {Slots} from '../Slots';
+
+const armorAttributes = [
+	AttributeName.GENDER,
+];
 
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
 	query = query.toLowerCase();
@@ -126,7 +126,10 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 				this.setState({
 					armorSet: armor.armorSet,
-					attributes: toAttributes(armor.attributes),
+					attributes: Object.entries(armor.attributes).map(([key, value]) => ({
+						key: key as AttributeName,
+						value,
+					})),
 					crafting: armor.crafting,
 					defense: toStringValues(armor.defense),
 					name: armor.name,
@@ -422,11 +425,11 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 					<H3 style={{marginTop: 20}}>Attributes</H3>
 
-					<AttributeTable attributes={this.state.attributes} />
-
-					<Button icon="edit" onClick={this.onEditAttributesButtonClick}>
-						Edit Attributes
-					</Button>
+					<AttributesEditor
+						accepted={armorAttributes}
+						attributes={this.state.attributes}
+						onChange={this.onAttributesChange}
+					/>
 
 					<H3 style={{marginTop: 20}}>Skills</H3>
 
@@ -519,17 +522,6 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					</Row>
 				</form>
 
-				<AttributeEditorDialog
-					attributes={this.state.attributes}
-					attributeNames={armorAttributeNames}
-					isOpen={this.state.showAttributeEditorDialog}
-					onAttributeAdd={this.onAttributeAdd}
-					onAttributeDelete={this.onAttributeDelete}
-					onAttributeKeyChange={this.onAttributeKeyChange}
-					onAttributeValueChange={this.onAttributeValueChange}
-					onClose={this.onAttributeEditorClose}
-				/>
-
 				<SkillDialog
 					isOpen={this.state.showSkillDialog}
 					omit={this.state.omittedSkills}
@@ -555,54 +547,9 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		armorSet,
 	});
 
-	private onAttributeAdd = () => this.setState({
-		attributes: [
-			...this.state.attributes,
-			{
-				key: '',
-				value: '',
-			},
-		],
+	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
+		attributes,
 	});
-
-	private onAttributeDelete = (attribute: IAttribute) => this.setState({
-		attributes: this.state.attributes.filter(item => item !== attribute),
-	});
-
-	private onAttributeKeyChange = (attribute: IAttribute, newKey: string) => {
-		attribute.key = newKey;
-
-		this.setState({
-			attributes: [...this.state.attributes],
-		});
-	};
-
-	private onAttributeValueChange = (attribute: IAttribute, newValue: string | number) => {
-		attribute.value = newValue;
-
-		this.setState({
-			attributes: [...this.state.attributes],
-		});
-	};
-
-	private onAttributeEditorClose = () => {
-		const errors = [];
-
-		for (const attribute of this.state.attributes) {
-			if (attribute.key === ArmorAttribute.REQUIRED_GENDER && !isGender(attribute.value))
-				errors.push(`${getAttributeDisplayName(attribute.key)} must be either "male" or "female"`);
-		}
-
-		if (errors.length) {
-			alert(errors.map(error => `- ${error}`).join('\n'));
-
-			return;
-		}
-
-		this.setState({
-			showAttributeEditorDialog: false,
-		});
-	};
 
 	private onCraftingCostDialogHide = () => this.setState({
 		showCraftingCostDialog: false,
@@ -651,10 +598,6 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 			},
 		});
 	};
-
-	private onEditAttributesButtonClick = () => this.setState({
-		showAttributeEditorDialog: true,
-	});
 
 	private onRankSelect = (rank: Rank) => this.setState({
 		rank,

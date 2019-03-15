@@ -10,6 +10,7 @@ import {Items} from './Items';
 import {Locations} from './Locations';
 import {MotionValues} from './MotionValues';
 import {Skills} from './Skills';
+import {Weapons} from './Weapons';
 
 export const Editors: React.FC<{}> = () => (
 	<ContentContainer>
@@ -22,6 +23,7 @@ export const Editors: React.FC<{}> = () => (
 			<Route path="/edit/locations" component={Locations} />
 			<Route path="/edit/motion-values" component={MotionValues} />
 			<Route path="/edit/skills" component={Skills} />
+			<Route path="/edit/weapons" component={Weapons} />
 		</Switch>
 	</ContentContainer>
 );
