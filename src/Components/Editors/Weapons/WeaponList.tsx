@@ -1,6 +1,8 @@
+import {Intent} from '@blueprintjs/core';
 import * as React from 'react';
 import {RouteComponentProps, withRouter} from 'react-router';
 import {Weapon, WeaponModel, WeaponType, weaponTypeLabels} from '../../../Api/Models/Weapon';
+import {toaster} from '../../../toaster';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
 export const weaponSorter = createEntitySorter<Weapon>('name');
@@ -65,9 +67,23 @@ class WeaponListComponent extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private onWeaponDelete = (target: Weapon) => Promise.resolve().then(() => this.setState({
-		weapons: this.state.weapons.filter(weapon => weapon !== target),
-	}));
+	private onWeaponDelete = (target: Weapon) => {
+		return WeaponModel.delete(target.id).then(() => {
+			toaster.show({
+				intent: Intent.SUCCESS,
+				message: `${target.name} deleted.`
+			});
+
+			this.setState({
+				weapons: this.state.weapons.filter(weapon => weapon !== target),
+			});
+		}).catch((error: Error) => {
+			toaster.show({
+				intent: Intent.DANGER,
+				message: error.message,
+			});
+		});
+	};
 
 	private load = () => {
 		if (this.state.loading)

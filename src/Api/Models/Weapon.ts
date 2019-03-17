@@ -1,6 +1,7 @@
 import {CancelToken} from 'axios';
+import {Omit} from 'utility-types';
 import {client} from '../client';
-import {Id, IEntity, Slot} from '../Model';
+import {Id, IEntity, ISimpleCraftingCost, Slot} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {AttributeName} from './attributes';
 import {CraftingCost} from './Item';
@@ -223,6 +224,19 @@ export type AmmoCapacities = Partial<IAmmoCapacities>;
 export type WeaponAttributes = Partial<IWeaponAttributes>;
 export type Weapon = Partial<IWeapon>;
 
+export type WeaponPayload = Omit<Weapon, 'crafting'> & {
+	crafting?: Omit<WeaponCrafting, 'craftingMaterials' | 'upgradeMaterials'> & {
+		craftingMaterials?: ISimpleCraftingCost[];
+		upgradeMaterials?: ISimpleCraftingCost[];
+	};
+};
+
+export type WeaponCreatePayload = Omit<WeaponPayload, 'name' | 'rarity' | 'type'> & {
+	name: string;
+	rarity: number;
+	type: WeaponType;
+};
+
 export class WeaponModel {
 	public static list(query?: IQueryDocument, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get('/weapons', {
@@ -246,6 +260,14 @@ export class WeaponModel {
 		return WeaponModel.list(query, projection, cancelToken);
 	}
 
+	public static create(payload: WeaponCreatePayload, projection?: Projection) {
+		return client.put('/weapons', payload, {
+			params: {
+				p: projection,
+			},
+		});
+	}
+
 	public static read(id: Id, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get<'/weapons/:id'>(`/weapons/:id`, {
 			cancelToken,
@@ -253,5 +275,17 @@ export class WeaponModel {
 				p: projection,
 			},
 		});
+	}
+
+	public static update(id: Id, payload: WeaponPayload, projection?: Projection) {
+		return client.patch<'/weapons/:id'>(`/weapons/${id}`, payload, {
+			params: {
+				p: projection,
+			},
+		});
+	}
+
+	public static delete(id: Id) {
+		return client.delete<'/weapons/:id'>(`/weapons/${id}`);
 	}
 }
