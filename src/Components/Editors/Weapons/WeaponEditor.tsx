@@ -1,7 +1,7 @@
 import {H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {Redirect, RouteComponentProps} from 'react-router';
+import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {IConstraintViolations} from '../../../Api/Error';
 import {Slot} from '../../../Api/Model';
 import {AttributeName, IAttribute} from '../../../Api/Models/attributes';
@@ -52,7 +52,7 @@ interface IState {
 	violations: IConstraintViolations;
 }
 
-class WeaponEditor extends React.PureComponent<IProps, IState> {
+class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		attributes: [],
 		crafting: {
@@ -164,3 +164,5 @@ class WeaponEditor extends React.PureComponent<IProps, IState> {
 		});
 	};
 }
+
+export const WeaponEditor = withRouter(WeaponEditorComponent);

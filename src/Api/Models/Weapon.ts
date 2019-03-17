@@ -269,7 +269,7 @@ export class WeaponModel {
 	}
 
 	public static read(id: Id, projection?: Projection, cancelToken?: CancelToken) {
-		return client.get<'/weapons/:id'>(`/weapons/:id`, {
+		return client.get<'/weapons/:id'>(`/weapons/${id}`, {
 			cancelToken,
 			params: {
 				p: projection,
