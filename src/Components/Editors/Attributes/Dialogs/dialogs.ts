@@ -4,6 +4,7 @@ import {IAttributeDialogProps} from '../AttributesEditor';
 import {AffinityDialog} from './AffinityDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {DeviationDialog} from './DeviationDialog';
+import {EldersealDialog} from './EldersealDialog';
 import {RequiredGenderDialog} from './RequiredGenderDialog';
 
 type DialogMap = {
@@ -14,5 +15,6 @@ export const dialogs: DialogMap = {
 	[AttributeName.AFFINITY]: AffinityDialog,
 	[AttributeName.DEFENSE]: DefenseDialog,
 	[AttributeName.DEVIATION]: DeviationDialog,
+	[AttributeName.ELDERSEAL]: EldersealDialog,
 	[AttributeName.GENDER]: RequiredGenderDialog,
 };
