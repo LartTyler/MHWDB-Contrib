@@ -2,7 +2,7 @@ import {Button, Menu, MenuItem, Popover} from '@blueprintjs/core';
 import {Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {attributeLabels, AttributeName, IAttribute} from '../../../Api/Models/attributes';
-import {dialogs} from './Dialogs/dialogs';
+import {dialogs, isAttributeValueRenderer} from './Dialogs/dialogs';
 
 export interface IAttributeDialogProps<T> {
 	attribute: AttributeName;
@@ -49,10 +49,14 @@ export class AttributesEditor extends React.PureComponent<IProps, IState> {
 						},
 						{
 							render: attribute => {
-								if (typeof attribute.value !== 'object')
+								const dialog = dialogs[attribute.key];
+
+								if (isAttributeValueRenderer(dialog))
+									return dialog.renderAttributeValue(attribute);
+								else if (typeof attribute.value !== 'object')
 									return attribute.value;
 
-								return <em>Complex</em>;
+								return <span>&mdash;</span>;
 							},
 							title: 'Value',
 						},
