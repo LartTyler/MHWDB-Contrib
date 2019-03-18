@@ -2,6 +2,7 @@ import * as React from 'react';
 import {AttributeName, IAttribute} from '../../../../Api/Models/attributes';
 import {IAttributeDialogProps} from '../AttributesEditor';
 import {AffinityDialog} from './AffinityDialog';
+import {BoostTypeDialog} from './BoostTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {DeviationDialog} from './DeviationDialog';
 import {EldersealDialog} from './EldersealDialog';
@@ -27,4 +28,5 @@ export const dialogs: DialogMap = {
 	[AttributeName.ELDERSEAL]: EldersealDialog,
 	[AttributeName.GENDER]: RequiredGenderDialog,
 	[AttributeName.GL_SHELLING_TYPE]: ShellingTypeDialog,
+	[AttributeName.IG_BOOST_TYPE]: BoostTypeDialog,
 };
