@@ -26,12 +26,19 @@ export class ShellingTypeDialog extends React.PureComponent<IProps, IState> {
 	public constructor(props: IProps) {
 		super(props);
 
-		const parts = props.value.split(' Lv');
+		if (props.value) {
+			const parts = props.value.split(' Lv');
 
-		this.state = {
-			level: parseInt(parts[1].trim(), 10),
-			type: parts[0].trim() as ShellingType,
-		};
+			this.state = {
+				level: parseInt(parts[1].trim(), 10),
+				type: parts[0].trim() as ShellingType,
+			};
+		} else {
+			this.state = {
+				level: 1,
+				type: null,
+			};
+		}
 	}
 
 	public render(): React.ReactNode {
