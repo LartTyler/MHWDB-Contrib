@@ -2,6 +2,7 @@ import * as React from 'react';
 import {AttributeName, IAttribute} from '../../../../Api/Models/attributes';
 import {IAttributeDialogProps} from '../AttributesEditor';
 import {AffinityDialog} from './AffinityDialog';
+import {AmmoCapacitiesDialog} from './AmmoCapacitiesDialog';
 import {BoostTypeDialog} from './BoostTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {DeviationDialog} from './DeviationDialog';
@@ -24,6 +25,7 @@ type DialogMap = {
 
 export const dialogs: DialogMap = {
 	[AttributeName.AFFINITY]: AffinityDialog,
+	[AttributeName.AMMO_CAPACITIES]: AmmoCapacitiesDialog,
 	[AttributeName.DEFENSE]: DefenseDialog,
 	[AttributeName.DEVIATION]: DeviationDialog,
 	[AttributeName.ELDERSEAL]: EldersealDialog,

@@ -166,7 +166,7 @@ interface IDurability {
 	white: number;
 }
 
-interface IAmmoCapacities {
+export interface IAmmoCapacities {
 	[AmmoType.NORMAL]: [number, number, number];
 	[AmmoType.PIERCING]: [number, number, number];
 	[AmmoType.SPREAD]: [number, number, number];
