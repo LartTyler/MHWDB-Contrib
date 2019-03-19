@@ -24,12 +24,19 @@ export class PhialTypeDialog extends React.PureComponent<IProps, IState> {
 	public constructor(props: IProps) {
 		super(props);
 
-		const parts = props.value.match(/^([a-zA-Z ]+)(\d+)$/);
+		if (props.value) {
+			const parts = props.value.match(/^([a-zA-Z ]+)(\d+)?$/);
 
-		this.state = {
-			damage: parts[2] || null,
-			type: parts[1] as PhialTypes,
-		};
+			this.state = {
+				damage: parts[2] || '',
+				type: parts[1].trim() as PhialTypes,
+			};
+		} else {
+			this.state = {
+				damage: '',
+				type: null,
+			};
+		}
 	}
 
 	public render(): React.ReactNode {
@@ -72,7 +79,7 @@ export class PhialTypeDialog extends React.PureComponent<IProps, IState> {
 
 		if (damagePhialTypes.indexOf(type) === -1) {
 			this.setState({
-				damage: null,
+				damage: '',
 			});
 		}
 	};
