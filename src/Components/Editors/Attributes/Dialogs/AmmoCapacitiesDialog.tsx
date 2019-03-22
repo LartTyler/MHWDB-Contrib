@@ -1,14 +1,18 @@
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {AmmoCapacities, AmmoType, IAmmoCapacities} from '../../../../Api/Models/Weapon';
+import {AmmoCapacities, AmmoType} from '../../../../Api/Models/Weapon';
+import {ucfirst} from '../../../../Utility/string';
 import {AttributeDialog} from '../AttributeDialog';
 import {IAttributeDialogProps} from '../AttributesEditor';
-import {CapacityInputsLevel2, CapacityInputsLevel3, NumberTuple} from './AmmoCapacities/CapacityInputs';
+import {capacityInputsMap} from './AmmoCapacities';
+import {NumberTuple} from './AmmoCapacities/CapacityInputs';
 
 interface IProps extends IAttributeDialogProps<AmmoCapacities> {
 }
 
 interface IState {
+	[key: string]: NumberTuple<any>;
+
 	[AmmoType.NORMAL]: NumberTuple<3>;
 	[AmmoType.PIERCING]: NumberTuple<3>;
 	[AmmoType.SPREAD]: NumberTuple<3>;
@@ -40,7 +44,7 @@ export class AmmoCapacitiesDialog extends React.PureComponent<IProps, IState> {
 		for (const type of Object.values(AmmoType) as AmmoType[])
 			types[type] = props.value[type];
 
-		this.state = types as IAmmoCapacities;
+		this.state = types as IState;
 	}
 
 	public render(): React.ReactNode {
@@ -48,119 +52,28 @@ export class AmmoCapacitiesDialog extends React.PureComponent<IProps, IState> {
 			<AttributeDialog onClose={this.props.onClose} onSave={this.save} title="Ammo Capacities">
 				<>
 					<Row>
-						<Cell size={6}>
-							<CapacityInputsLevel3
-								label="Normal"
-								onChange={this.onNormalChange}
-								type={AmmoType.NORMAL}
-								values={this.state[AmmoType.NORMAL]}
-							/>
-						</Cell>
+						{Object.values(AmmoType).map((type: AmmoType) => {
+							const CapacityInputs = capacityInputsMap[type];
 
-						<Cell size={6}>
-							<CapacityInputsLevel3
-								label="Piercing"
-								onChange={this.onPiercingChange}
-								type={AmmoType.PIERCING}
-								values={this.state[AmmoType.PIERCING]}
-							/>
-						</Cell>
-					</Row>
-
-					<Row>
-						<Cell size={6}>
-							<CapacityInputsLevel3
-								label="Spread"
-								onChange={this.onSpreadChange}
-								type={AmmoType.SPREAD}
-								values={this.state[AmmoType.SPREAD]}
-							/>
-						</Cell>
-
-						<Cell size={6}>
-							<CapacityInputsLevel3
-								label="Sticky"
-								onChange={this.onStickyChange}
-								type={AmmoType.STICKY}
-								values={this.state[AmmoType.STICKY]}
-							/>
-						</Cell>
-					</Row>
-
-					<Row>
-						<Cell size={6}>
-							<CapacityInputsLevel3
-								label="Cluster"
-								onChange={this.onClusterChange}
-								type={AmmoType.CLUSTER}
-								values={this.state[AmmoType.CLUSTER]}
-							/>
-						</Cell>
-
-						<Cell size={6}>
-							<CapacityInputsLevel2
-								label="Recover"
-								onChange={this.onRecoverChange}
-								type={AmmoType.RECOVER}
-								values={this.state[AmmoType.RECOVER]}
-							/>
-						</Cell>
-					</Row>
-
-					<Row>
-						<Cell size={6}>
-							<CapacityInputsLevel2
-								label="Poison"
-								onChange={this.onPoisonChange}
-								type={AmmoType.POISON}
-								values={this.state[AmmoType.POISON]}
-							/>
-						</Cell>
-
-						<Cell size={6}>
-							<CapacityInputsLevel2
-								label="Paralysis"
-								onChange={this.onParalysisChange}
-								type={AmmoType.PARALYSIS}
-								values={this.state[AmmoType.PARALYSIS]}
-							/>
-						</Cell>
+							return (
+								<Cell key={type} size={6}>
+									<CapacityInputs
+										label={ucfirst(type)}
+										onChange={values => this.onCapacityChange(type, values)}
+										type={type}
+										values={this.state[type]}
+									/>
+								</Cell>
+							);
+						})}
 					</Row>
 				</>
 			</AttributeDialog>
 		);
 	}
 
-	private onNormalChange = (values: NumberTuple<3>) => this.setState({
-		[AmmoType.NORMAL]: values,
-	});
-
-	private onPiercingChange = (values: NumberTuple<3>) => this.setState({
-		[AmmoType.PIERCING]: values,
-	});
-
-	private onSpreadChange = (values: NumberTuple<3>) => this.setState({
-		[AmmoType.SPREAD]: values,
-	});
-
-	private onStickyChange = (values: NumberTuple<3>) => this.setState({
-		[AmmoType.STICKY]: values,
-	});
-
-	private onClusterChange = (values: NumberTuple<3>) => this.setState({
-		[AmmoType.CLUSTER]: values,
-	});
-
-	private onRecoverChange = (values: NumberTuple<2>) => this.setState({
-		[AmmoType.RECOVER]: values,
-	});
-
-	private onPoisonChange = (values: NumberTuple<2>) => this.setState({
-		[AmmoType.POISON]: values,
-	});
-
-	private onParalysisChange = (values: NumberTuple<2>) => this.setState({
-		[AmmoType.PARALYSIS]: values,
+	private onCapacityChange = (type: AmmoType, values: NumberTuple<1 | 2 | 3>) => this.setState({
+		[type]: values,
 	});
 
 	private save = () => this.props.onSave(this.props.attribute, this.state);

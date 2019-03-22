@@ -59,13 +59,11 @@ export class CapacityInputs<N extends number, R extends NumberTuple<N> = NumberT
 	}
 
 	public render(): React.ReactNode {
-		const cellSize = this.state.values.length / 12;
-
 		return (
 			<FormGroup label={this.props.label}>
 				<Row>
 					{this.state.values.map((value, index) => (
-						<Cell size={cellSize}>
+						<Cell size={3}>
 							<InputGroup
 								key={index}
 								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
