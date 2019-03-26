@@ -45,6 +45,9 @@ export class AttributesEditor extends React.PureComponent<IProps, IState> {
 					columns={[
 						{
 							render: attribute => attributeLabels[attribute.key],
+							style: {
+								width: '40%',
+							},
 							title: 'Name',
 						},
 						{
