@@ -22,6 +22,7 @@ export const dialogs: DialogMap = {
 	[AttributeName.AFFINITY]: AffinityDialog,
 	[AttributeName.AMMO_CAPACITIES]: AmmoCapacitiesDialog,
 	[AttributeName.COATINGS]: CoatingsDialog,
+	[AttributeName.DAMAGE_TYPE]: DamageTypeDialog,
 	[AttributeName.DEFENSE]: DefenseDialog,
 	[AttributeName.DEVIATION]: DeviationDialog,
 	[AttributeName.ELDERSEAL]: EldersealDialog,
