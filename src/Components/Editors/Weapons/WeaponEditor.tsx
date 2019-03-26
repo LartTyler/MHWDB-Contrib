@@ -17,19 +17,6 @@ import {cleanNumberString} from '../../../Utility/number';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
 
-const weaponAttributes = [
-	AttributeName.AFFINITY,
-	AttributeName.AMMO_CAPACITIES,
-	AttributeName.COATINGS,
-	AttributeName.DEFENSE,
-	AttributeName.DEVIATION,
-	AttributeName.ELDERSEAL,
-	AttributeName.GL_SHELLING_TYPE,
-	AttributeName.IG_BOOST_TYPE,
-	AttributeName.PHIAL_TYPE,
-	AttributeName.SPECIAL_AMMO,
-];
-
 interface IRouteProps {
 	weaponType: WeaponType;
 	weapon: string;
@@ -39,6 +26,7 @@ interface IProps extends RouteComponentProps<IRouteProps> {
 }
 
 interface IState {
+	allowedAttributes: AttributeName[];
 	attributes: IAttribute[];
 	crafting: WeaponCrafting;
 	durability: Durability[];
@@ -54,6 +42,7 @@ interface IState {
 
 class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
+		allowedAttributes: [],
 		attributes: [],
 		crafting: {
 			branches: [],
@@ -74,10 +63,53 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 	};
 
 	public componentDidMount(): void {
+		const allowedAttributes = [
+			AttributeName.AFFINITY,
+			AttributeName.DAMAGE_TYPE,
+			AttributeName.DEFENSE,
+			AttributeName.ELDERSEAL,
+		];
+
+		switch (this.props.match.params.weaponType) {
+			case WeaponType.BOW:
+				allowedAttributes.push(
+					AttributeName.COATINGS,
+				);
+
+				break;
+
+			case WeaponType.GUNLANCE:
+				allowedAttributes.push(AttributeName.GL_SHELLING_TYPE);
+
+				break;
+
+			case WeaponType.INSECT_GLAIVE:
+				allowedAttributes.push(AttributeName.IG_BOOST_TYPE);
+
+				break;
+
+			case WeaponType.LIGHT_BOWGUN:
+			case WeaponType.HEAVY_BOWGUN:
+				allowedAttributes.push(
+					AttributeName.AMMO_CAPACITIES,
+					AttributeName.DEVIATION,
+					AttributeName.SPECIAL_AMMO,
+				);
+
+				break;
+
+			case WeaponType.CHARGE_BLADE:
+			case WeaponType.SWITCH_AXE:
+				allowedAttributes.push(AttributeName.PHIAL_TYPE);
+
+				break;
+		}
+
 		const id = this.props.match.params.weapon;
 
 		if (id === 'new') {
 			this.setState({
+				allowedAttributes,
 				loading: false,
 			});
 
@@ -88,6 +120,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			const weapon = response.data;
 
 			this.setState({
+				allowedAttributes,
 				attributes: Object.entries(weapon.attributes).map(([attribute, value]) => ({
 					key: attribute as AttributeName,
 					value,
@@ -132,7 +165,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				<H3>Attributes</H3>
 
 				<AttributesEditor
-					accepted={weaponAttributes}
+					accepted={this.state.allowedAttributes}
 					attributes={this.state.attributes}
 					onChange={this.onAttributesChange}
 				/>
