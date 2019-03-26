@@ -30,4 +30,5 @@ export const dialogs: DialogMap = {
 	[AttributeName.GL_SHELLING_TYPE]: ShellingTypeDialog,
 	[AttributeName.IG_BOOST_TYPE]: BoostTypeDialog,
 	[AttributeName.PHIAL_TYPE]: PhialTypeDialog,
+	[AttributeName.SPECIAL_AMMO]: SpecialAmmoDialog,
 };
