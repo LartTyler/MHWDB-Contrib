@@ -39,10 +39,11 @@ export class AmmoCapacitiesDialog extends React.PureComponent<IProps, IState> {
 	public constructor(props: IProps) {
 		super(props);
 
+		const input = props.value || {};
 		const types: AmmoCapacities = {};
 
 		for (const type of Object.values(AmmoType) as AmmoType[])
-			types[type] = props.value[type];
+			types[type] = input[type];
 
 		this.state = types as IState;
 	}
