@@ -16,6 +16,7 @@ import {
 import {cleanNumberString} from '../../../Utility/number';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
+import {WeaponCraftingEditor} from './WeaponCraftingEditor';
 
 interface IRouteProps {
 	weaponType: WeaponType;
@@ -169,12 +170,20 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					attributes={this.state.attributes}
 					onChange={this.onAttributesChange}
 				/>
+
+				<H3 style={{marginTop: 10}}>Crafting</H3>
+
+				<WeaponCraftingEditor crafting={this.state.crafting} onChange={this.onCraftingChange} />
 			</form>
 		);
 	}
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
+	});
+
+	private onCraftingChange = (crafting: WeaponCrafting) => this.setState({
+		crafting: {...crafting},
 	});
 
 	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
