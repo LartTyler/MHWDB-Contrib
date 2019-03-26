@@ -1,23 +1,18 @@
 import * as React from 'react';
-import {AttributeName, IAttribute} from '../../../../Api/Models/attributes';
+import {AttributeName} from '../../../../Api/Models/attributes';
 import {IAttributeDialogProps} from '../AttributesEditor';
 import {AffinityDialog} from './AffinityDialog';
 import {AmmoCapacitiesDialog} from './AmmoCapacitiesDialog';
 import {BoostTypeDialog} from './BoostTypeDialog';
+import {CoatingsDialog} from './CoatingsDialog';
+import {DamageTypeDialog} from './DamageTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {DeviationDialog} from './DeviationDialog';
 import {EldersealDialog} from './EldersealDialog';
 import {PhialTypeDialog} from './PhialTypeDialog';
 import {RequiredGenderDialog} from './RequiredGenderDialog';
 import {ShellingTypeDialog} from './ShellingTypeDialog';
-
-export interface IAttributeValueRenderer {
-	renderAttributeValue: (attribute: IAttribute) => React.ReactNode;
-}
-
-export const isAttributeValueRenderer = (subject: any): subject is IAttributeValueRenderer => {
-	return typeof subject === 'object' && 'renderAttributeValue' in subject;
-};
+import {SpecialAmmoDialog} from './SpecialAmmoDialog';
 
 type DialogMap = {
 	[P in AttributeName]?: React.ComponentType<IAttributeDialogProps<any>>;
