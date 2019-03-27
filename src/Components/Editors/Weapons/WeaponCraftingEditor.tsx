@@ -1,9 +1,10 @@
 import {Button, ButtonGroup, Checkbox, Classes, FormGroup, H4} from '@blueprintjs/core';
-import {Cell, MultiSelect, Row, Select, Table} from '@dbstudios/blueprintjs-components';
+import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {CraftingCost, Item, ItemModel} from '../../../Api/Models/Item';
 import {Weapon, WeaponCrafting, WeaponModel, WeaponType} from '../../../Api/Models/Weapon';
-import {itemSorter} from '../CraftingCostDialog';
+import {CraftingCostTable} from '../../CraftingCostsTable';
+import {CraftingCostDialog, itemSorter} from '../CraftingCostDialog';
 import './WeaponCraftingEditor.scss';
 import {weaponSorter} from './WeaponList';
 
@@ -16,6 +17,7 @@ interface IProps {
 interface IState {
 	branches: Weapon[];
 	craftable: boolean;
+	craftingCostDialogType: 'crafting' | 'upgrade';
 	craftingMaterials: CraftingCost[];
 	items: Item[];
 	previous: Weapon;
@@ -30,6 +32,7 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		this.state = {
 			branches: [],
 			craftable: props.crafting.craftable || false,
+			craftingCostDialogType: null,
 			craftingMaterials: [],
 			items: null,
 			previous: null,
@@ -73,9 +76,40 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		ItemModel.list(null, {
 			id: true,
 			name: true,
-		}).then(response => this.setState({
-			items: response.data.sort(itemSorter),
-		}));
+		}).then(response => {
+			const craftingMaterials: CraftingCost[] = [];
+			const upgradeMaterials: CraftingCost[] = [];
+
+			for (const item of response.data) {
+				for (const cost of this.props.crafting.craftingMaterials) {
+					if (cost.item.id === item.id) {
+						craftingMaterials.push({
+							item,
+							quantity: cost.quantity,
+						});
+
+						break;
+					}
+				}
+
+				for (const cost of this.props.crafting.upgradeMaterials) {
+					if (cost.item.id === item.id) {
+						upgradeMaterials.push({
+							item,
+							quantity: cost.quantity,
+						});
+
+						break;
+					}
+				}
+			}
+
+			this.setState({
+				craftingMaterials,
+				items: response.data.sort(itemSorter),
+				upgradeMaterials,
+			});
+		});
 	}
 
 	public render(): React.ReactNode {
@@ -137,45 +171,44 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 
 				{this.state.craftable && (
 					<>
-						<H4>Crafting Costs</H4>
+						<H4 style={{marginTop: 10}}>Crafting Costs</H4>
 
-						<Table
-							columns={[
-								{
-									render: cost => cost.item.name,
-									title: 'Name',
-								},
-								{
-									dataIndex: 'quantity',
-									style: {
-										width: 100,
-									},
-									title: 'Quantity',
-								},
-								{
-									align: 'right',
-									render: cost => (
-										<Button
-											icon="cross"
-											minimal={true}
-											onClick={() => this.onCraftingCostRemove(cost)}
-										/>
-									),
-									title: <span>&nbsp;</span>,
-								},
-							]}
-							dataSource={this.state.craftingMaterials}
-							fullWidth={true}
+						<CraftingCostTable
+							costs={this.state.craftingMaterials}
 							loading={this.state.items === null}
 							noDataPlaceholder={<div>Use the button below to add crafting material costs.</div>}
-							rowKey={cost => cost.item.id.toString(10)}
+							onRemove={this.onCraftingCostRemove}
 						/>
 
-						<Button icon="plus" style={{marginTop: 10}}>
+						<Button icon="plus" onClick={this.onCraftingCostAddClick} style={{marginTop: 10}}>
 							Add Item
 						</Button>
 					</>
 				)}
+
+				{this.state.previous !== null && (
+					<>
+						<H4 style={{marginTop: 15}}>Upgrade Costs</H4>
+
+						<CraftingCostTable
+							costs={this.state.upgradeMaterials}
+							loading={this.state.items === null}
+							noDataPlaceholder={<div>Use the button below to add upgrade material costs.</div>}
+							onRemove={this.onUpgradeCostRemove}
+						/>
+
+						<Button icon="plus" onClick={this.onUpgradeCostAddClick} style={{marginTop: 10}}>
+							Add Item
+						</Button>
+					</>
+				)}
+
+				<CraftingCostDialog
+					isOpen={this.state.craftingCostDialogType !== null}
+					items={this.state.items}
+					onClose={this.onCraftingCostDialogClose}
+					onSubmit={this.onCraftingCostDialogSave}
+				/>
 			</>
 		);
 	}
@@ -234,6 +267,36 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		this.props.crafting.craftable = craftable;
 	};
 
+	private onCraftingCostAddClick = () => this.setState({
+		craftingCostDialogType: 'crafting',
+	});
+
+	private onCraftingCostDialogClose = () => this.setState({
+		craftingCostDialogType: null,
+	});
+
+	private onCraftingCostDialogSave = (cost: CraftingCost) => {
+		if (this.state.craftingCostDialogType === 'crafting') {
+			const craftingMaterials = [...this.state.craftingMaterials, cost];
+
+			this.setState({
+				craftingMaterials,
+			});
+
+			this.props.crafting.craftingMaterials = craftingMaterials;
+		} else {
+			const upgradeMaterials = [...this.state.upgradeMaterials, cost];
+
+			this.setState({
+				upgradeMaterials,
+			});
+
+			this.props.crafting.upgradeMaterials = upgradeMaterials;
+		}
+
+		this.onCraftingCostDialogClose();
+	};
+
 	private onCraftingCostRemove = (target: CraftingCost) => {
 		const craftingMaterials = this.state.craftingMaterials.filter(cost => cost !== target);
 
@@ -260,5 +323,19 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		});
 
 		this.props.crafting.previous = previous ? previous.id : null;
+	};
+
+	private onUpgradeCostAddClick = () => this.setState({
+		craftingCostDialogType: 'upgrade',
+	});
+
+	private onUpgradeCostRemove = (target: CraftingCost) => {
+		const upgradeMaterials = this.state.upgradeMaterials.filter(cost => cost !== target);
+
+		this.setState({
+			upgradeMaterials,
+		});
+
+		this.props.crafting.upgradeMaterials = upgradeMaterials;
 	};
 }
