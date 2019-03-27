@@ -1,0 +1,7 @@
+@import '../../../../node_modules/@blueprintjs/core/lib/scss/variables.scss';
+
+.branches-popover {
+	&.#{$ns}-popover {
+		min-width: 250px;
+	}
+}

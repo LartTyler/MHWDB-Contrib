@@ -171,19 +171,19 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					onChange={this.onAttributesChange}
 				/>
 
-				<H3 style={{marginTop: 10}}>Crafting</H3>
+				<H3 style={{marginTop: 15}}>Crafting</H3>
 
-				<WeaponCraftingEditor crafting={this.state.crafting} onChange={this.onCraftingChange} />
+				<WeaponCraftingEditor
+					crafting={this.state.crafting}
+					weaponId={this.props.match.params.weapon}
+					weaponType={type}
+				/>
 			</form>
 		);
 	}
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
-	});
-
-	private onCraftingChange = (crafting: WeaponCrafting) => this.setState({
-		crafting: {...crafting},
 	});
 
 	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
