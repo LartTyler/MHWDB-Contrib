@@ -288,4 +288,8 @@ export class WeaponModel {
 	public static delete(id: Id) {
 		return client.delete<'/weapons/:id'>(`/weapons/${id}`);
 	}
+
+	public static isRanged(type: WeaponType) {
+		return type === WeaponType.LIGHT_BOWGUN || type === WeaponType.HEAVY_BOWGUN || type === WeaponType.BOW;
+	}
 }

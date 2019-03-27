@@ -1,0 +1,20 @@
+@import '../../../../node_modules/@blueprintjs/core/lib/scss/variables.scss';
+
+$sharpnessColors: (
+	'red': #be3843,
+	'orange': #d3673d,
+	'yellow': #c9b232,
+	'green': #81b034,
+	'blue': #3a58d7,
+	'white': #e2e2e2,
+);
+
+.#{$ns}-slider {
+	@each $key, $color in $sharpnessColors {
+		&.sharpness-#{$key}-slider {
+			.#{$ns}-slider-track > .#{$ns}-slider-progress:nth-child(2) {
+				background: $color;
+			}
+		}
+	}
+}

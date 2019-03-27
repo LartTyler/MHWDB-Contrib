@@ -16,6 +16,7 @@ import {
 import {cleanNumberString} from '../../../Utility/number';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
+import {DurabilityEditor} from './DurabilityEditor';
 import {WeaponCraftingEditor} from './WeaponCraftingEditor';
 
 interface IRouteProps {
@@ -114,11 +115,43 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				loading: false,
 			});
 
+			if (WeaponModel.isRanged(this.props.match.params.weaponType)) {
+				this.setState({
+					durability: (new Array(6) as Durability[]).fill({
+						blue: 0,
+						green: 0,
+						orange: 0,
+						red: 0,
+						white: 0,
+						yellow: 0,
+					}),
+				});
+			}
+
 			return;
 		}
 
 		WeaponModel.read(id).then(response => {
 			const weapon = response.data;
+
+			if (!WeaponModel.isRanged(weapon.type)) {
+				const durability = weapon.durability;
+
+				for (let i = durability.length; i < 6; i++) {
+					durability.push({
+						blue: 0,
+						green: 0,
+						orange: 0,
+						red: 0,
+						white: 0,
+						yellow: 0,
+					});
+				}
+
+				this.setState({
+					durability,
+				});
+			}
 
 			this.setState({
 				allowedAttributes,
@@ -127,7 +160,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					value,
 				})),
 				crafting: weapon.crafting,
-				durability: weapon.durability,
 				elements: weapon.elements,
 				loading: false,
 				name: weapon.name,
@@ -178,6 +210,14 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					weaponId={this.props.match.params.weapon}
 					weaponType={type}
 				/>
+
+				{!WeaponModel.isRanged(type) && (
+					<>
+						<H3 style={{marginTop: 15}}>Durability</H3>
+
+						<DurabilityEditor durability={this.state.durability} />
+					</>
+				)}
 			</form>
 		);
 	}
