@@ -179,7 +179,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 			<Popover>
 				<Tooltip content="Edit crafting..." hoverOpenDelay={1000}>
 					<Button minimal={true}>
-						{rank.crafting.materials.length} Material{rank.skills.length !== 1 ? 's' : ''}
+						{rank.crafting.materials.length} Material{rank.crafting.materials.length !== 1 ? 's' : ''}
 					</Button>
 				</Tooltip>
 
