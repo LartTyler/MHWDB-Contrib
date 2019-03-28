@@ -15,7 +15,6 @@ interface IProps {
 }
 
 interface IState {
-	branches: Weapon[];
 	craftable: boolean;
 	craftingCostDialogType: 'crafting' | 'upgrade';
 	craftingMaterials: CraftingCost[];
@@ -30,7 +29,6 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		super(props);
 
 		this.state = {
-			branches: [],
 			craftable: props.crafting.craftable || false,
 			craftingCostDialogType: null,
 			craftingMaterials: [],
@@ -49,16 +47,12 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 			name: true,
 		}).then(response => {
 			const weapons: Weapon[] = [];
-			const branches: Weapon[] = [];
 			let previous: Weapon = null;
 
 			for (const item of response.data) {
 				// tslint:disable-next-line:triple-equals
 				if (item.id == this.props.weaponId)
 					continue;
-
-				if (this.props.crafting.branches.indexOf(item.id) !== -1)
-					branches.push(item);
 
 				if (this.props.crafting.previous === item.id)
 					previous = item;
@@ -67,7 +61,6 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 			}
 
 			this.setState({
-				branches,
 				previous,
 				weapons: weapons.sort(weaponSorter),
 			});
@@ -116,7 +109,7 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		return (
 			<>
 				<Row>
-					<Cell size={2}>
+					<Cell size={6}>
 						<FormGroup label="Craftable">
 							<Checkbox checked={this.state.craftable} onChange={this.onCraftableChange}>
 								Is Craftable
@@ -124,7 +117,7 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 						</FormGroup>
 					</Cell>
 
-					<Cell size={4}>
+					<Cell size={6}>
 						<FormGroup label="Built From (Previous)">
 							<ButtonGroup fill={true}>
 								<Select
@@ -145,26 +138,6 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 									<Button className={Classes.FIXED} icon="cross" onClick={this.onPreviousReset} />
 								)}
 							</ButtonGroup>
-						</FormGroup>
-					</Cell>
-
-					<Cell size={6}>
-						<FormGroup label="Upgrades Into (Branches)">
-							<MultiSelect
-								itemListPredicate={this.filterWeaponList}
-								items={this.state.weapons}
-								itemTextRenderer={this.renderWeaponText}
-								loading={this.state.weapons === null}
-								onClear={this.onBranchClear}
-								onItemDeselect={this.onBranchDeselect}
-								onItemSelect={this.onBranchSelect}
-								popoverProps={{
-									popoverClassName: 'branches-popover',
-									targetClassName: 'full-width',
-								}}
-								selected={this.state.branches}
-								virtual={true}
-							/>
 						</FormGroup>
 					</Cell>
 				</Row>
