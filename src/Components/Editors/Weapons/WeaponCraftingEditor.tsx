@@ -171,7 +171,7 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 
 				<Row>
 					{this.state.craftable && (
-						<Cell size={6}>
+						<Cell size={this.state.previous !== null ? 6 : 12}>
 							<H4>Crafting Costs</H4>
 
 							<CraftingCostTable
@@ -181,14 +181,19 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 								onRemove={this.onCraftingCostRemove}
 							/>
 
-							<Button icon="plus" onClick={this.onCraftingCostAddClick} style={{marginTop: 10}}>
+							<Button
+								disabled={this.state.items === null}
+								icon="plus"
+								onClick={this.onCraftingCostAddClick}
+								style={{marginTop: 10}}
+							>
 								Add Item
 							</Button>
 						</Cell>
 					)}
 
 					{this.state.previous !== null && (
-						<Cell size={6}>
+						<Cell size={this.state.craftable ? 6 : 12}>
 							<H4>Upgrade Costs</H4>
 
 							<CraftingCostTable
@@ -198,7 +203,12 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 								onRemove={this.onUpgradeCostRemove}
 							/>
 
-							<Button icon="plus" onClick={this.onUpgradeCostAddClick} style={{marginTop: 10}}>
+							<Button
+								disabled={this.state.items === null}
+								icon="plus"
+								onClick={this.onUpgradeCostAddClick}
+								style={{marginTop: 10}}
+							>
 								Add Item
 							</Button>
 						</Cell>
