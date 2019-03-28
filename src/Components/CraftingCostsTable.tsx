@@ -19,6 +19,7 @@ export const CraftingCostTable: React.FC<IProps> = props => (
 				title: 'Name',
 			},
 			{
+				align: 'center',
 				dataIndex: 'quantity',
 				style: {
 					width: 100,
