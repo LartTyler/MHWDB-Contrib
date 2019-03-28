@@ -14,6 +14,7 @@ import {
 	WeaponType,
 	weaponTypeLabels,
 } from '../../../Api/Models/Weapon';
+import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
@@ -324,6 +325,65 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		this.setState({
 			saving: true,
+		});
+
+		const crafting = this.state.crafting;
+
+		const payload = {
+			attack: {
+				display: parseInt(this.state.attack, 10),
+			},
+			attributes: this.state.attributes.reduce((collector, attribute) => {
+				collector[attribute.key] = attribute.value;
+
+				return collector;
+			}, {} as WeaponAttributes),
+			crafting: {
+				craftable: crafting.craftable,
+				craftingMaterials: crafting.craftingMaterials.map(cost => ({
+					item: cost.item.id,
+					quantity: cost.quantity,
+				})),
+				previous: crafting.previous,
+				upgradeMaterials: crafting.upgradeMaterials.map(cost => ({
+					item: cost.item.id,
+					quantity: cost.quantity,
+				})),
+			},
+			durability: this.state.durability,
+			elements: this.state.elements,
+			name: this.state.name,
+			rarity: parseInt(this.state.rarity, 10),
+			slots: this.state.slots,
+			type: this.props.match.params.weaponType,
+		};
+
+		const idParam = this.props.match.params.weapon;
+		let promise: Promise<unknown>;
+
+		if (idParam === 'new')
+			promise = WeaponModel.create(payload, {id: true});
+		else
+			promise = WeaponModel.update(idParam, payload, {id: true});
+
+		promise.then(() => {
+			toaster.show({
+				intent: Intent.SUCCESS,
+				message: `${this.state.name} ${idParam === 'new' ? 'created' : 'saved'}.`,
+			});
+
+			this.setState({
+				redirect: true,
+			});
+		}).catch((error: Error) => {
+			toaster.show({
+				intent: Intent.DANGER,
+				message: error.message,
+			});
+
+			this.setState({
+				saving: false,
+			});
 		});
 	};
 }
