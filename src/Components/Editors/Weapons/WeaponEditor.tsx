@@ -7,6 +7,7 @@ import {Slot} from '../../../Api/Model';
 import {AttributeName, IAttribute} from '../../../Api/Models/attributes';
 import {
 	Durability,
+	WeaponAttributes,
 	WeaponCrafting,
 	WeaponElement,
 	WeaponModel,
@@ -31,6 +32,7 @@ interface IProps extends RouteComponentProps<IRouteProps> {
 
 interface IState {
 	allowedAttributes: AttributeName[];
+	attack: string;
 	attributes: IAttribute[];
 	crafting: WeaponCrafting;
 	durability: Durability[];
@@ -47,6 +49,7 @@ interface IState {
 class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		allowedAttributes: [],
+		attack: '',
 		attributes: [],
 		crafting: {
 			branches: [],
@@ -157,6 +160,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 			this.setState({
 				allowedAttributes,
+				attack: weapon.attack.display.toString(10),
 				attributes: Object.entries(weapon.attributes).map(([attribute, value]) => ({
 					key: attribute as AttributeName,
 					value,
@@ -184,15 +188,29 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				<H2>{weaponTypeLabels[type]}: {this.state.name || 'No Name'}</H2>
 
 				<Row>
-					<Cell size={8}>
+					<Cell size={5}>
 						<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
 							<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
 						</ValidationAwareFormGroup>
 					</Cell>
 
-					<Cell size={4}>
+					<Cell size={3}>
 						<ValidationAwareFormGroup label="Rarity" labelFor="rarity" violations={this.state.violations}>
 							<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
+						</ValidationAwareFormGroup>
+					</Cell>
+
+					<Cell size={4}>
+						<ValidationAwareFormGroup
+							label="Attack (In-Game Value)"
+							labelFor="attack.dispaly"
+							violations={this.state.violations}
+						>
+							<InputGroup
+								name="attack.display"
+								onChange={this.onAttackChange}
+								value={this.state.attack}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 				</Row>
@@ -260,6 +278,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			</form>
 		);
 	}
+
+	private onAttackChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		attack: cleanNumberString(event.currentTarget.value, false),
+	});
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
