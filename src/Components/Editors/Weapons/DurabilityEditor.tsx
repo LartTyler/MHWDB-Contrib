@@ -38,7 +38,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 						{
 							render: (durability, index) => `Handicraft +${index}`,
 							style: {
-								width: 350,
+								width: 150,
 							},
 							title: 'Level',
 						},
