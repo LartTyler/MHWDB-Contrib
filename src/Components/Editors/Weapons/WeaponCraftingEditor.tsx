@@ -169,39 +169,41 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 					</Cell>
 				</Row>
 
-				{this.state.craftable && (
-					<>
-						<H4 style={{marginTop: 10}}>Crafting Costs</H4>
+				<Row>
+					{this.state.craftable && (
+						<Cell size={6}>
+							<H4>Crafting Costs</H4>
 
-						<CraftingCostTable
-							costs={this.state.craftingMaterials}
-							loading={this.state.items === null}
-							noDataPlaceholder={<div>Use the button below to add crafting material costs.</div>}
-							onRemove={this.onCraftingCostRemove}
-						/>
+							<CraftingCostTable
+								costs={this.state.craftingMaterials}
+								loading={this.state.items === null}
+								noDataPlaceholder={<div>Use the button below to add crafting material costs.</div>}
+								onRemove={this.onCraftingCostRemove}
+							/>
 
-						<Button icon="plus" onClick={this.onCraftingCostAddClick} style={{marginTop: 10}}>
-							Add Item
-						</Button>
-					</>
-				)}
+							<Button icon="plus" onClick={this.onCraftingCostAddClick} style={{marginTop: 10}}>
+								Add Item
+							</Button>
+						</Cell>
+					)}
 
-				{this.state.previous !== null && (
-					<>
-						<H4 style={{marginTop: 15}}>Upgrade Costs</H4>
+					{this.state.previous !== null && (
+						<Cell size={6}>
+							<H4>Upgrade Costs</H4>
 
-						<CraftingCostTable
-							costs={this.state.upgradeMaterials}
-							loading={this.state.items === null}
-							noDataPlaceholder={<div>Use the button below to add upgrade material costs.</div>}
-							onRemove={this.onUpgradeCostRemove}
-						/>
+							<CraftingCostTable
+								costs={this.state.upgradeMaterials}
+								loading={this.state.items === null}
+								noDataPlaceholder={<div>Use the button below to add upgrade material costs.</div>}
+								onRemove={this.onUpgradeCostRemove}
+							/>
 
-						<Button icon="plus" onClick={this.onUpgradeCostAddClick} style={{marginTop: 10}}>
-							Add Item
-						</Button>
-					</>
-				)}
+							<Button icon="plus" onClick={this.onUpgradeCostAddClick} style={{marginTop: 10}}>
+								Add Item
+							</Button>
+						</Cell>
+					)}
+				</Row>
 
 				<CraftingCostDialog
 					isOpen={this.state.craftingCostDialogType !== null}
