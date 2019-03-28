@@ -16,7 +16,9 @@ import {
 import {cleanNumberString} from '../../../Utility/number';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
+import {Slots} from '../Slots';
 import {DurabilityEditor} from './DurabilityEditor';
+import {ElementEditor} from './ElementEditor';
 import {WeaponCraftingEditor} from './WeaponCraftingEditor';
 
 interface IRouteProps {
@@ -182,26 +184,36 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				<H2>{weaponTypeLabels[type]}: {this.state.name || 'No Name'}</H2>
 
 				<Row>
-					<Cell size={6}>
+					<Cell size={8}>
 						<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
 							<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
 						</ValidationAwareFormGroup>
 					</Cell>
 
-					<Cell size={6}>
+					<Cell size={4}>
 						<ValidationAwareFormGroup label="Rarity" labelFor="rarity" violations={this.state.violations}>
 							<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
 						</ValidationAwareFormGroup>
 					</Cell>
 				</Row>
 
-				<H3>Attributes</H3>
+				<Row>
+					<Cell size={8}>
+						<H3>Attributes</H3>
 
-				<AttributesEditor
-					accepted={this.state.allowedAttributes}
-					attributes={this.state.attributes}
-					onChange={this.onAttributesChange}
-				/>
+						<AttributesEditor
+							accepted={this.state.allowedAttributes}
+							attributes={this.state.attributes}
+							onChange={this.onAttributesChange}
+						/>
+					</Cell>
+
+					<Cell size={4}>
+						<H3>Slots</H3>
+
+						<Slots slots={this.state.slots} onChange={this.onSlotsChange} />
+					</Cell>
+				</Row>
 
 				<H3 style={{marginTop: 15}}>Crafting</H3>
 
@@ -211,13 +223,26 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					weaponType={type}
 				/>
 
-				{!WeaponModel.isRanged(type) && (
-					<>
-						<H3 style={{marginTop: 15}}>Durability</H3>
+				<Row>
+					{!WeaponModel.isRanged(type) && (
+						<Cell size={6}>
+							<H3 style={{marginTop: 15}}>Durability</H3>
 
-						<DurabilityEditor durability={this.state.durability} />
-					</>
-				)}
+							<DurabilityEditor durability={this.state.durability} />
+						</Cell>
+					)}
+
+					<Cell size={WeaponModel.isRanged(type) ? 12 : 6}>
+						<H3 style={{marginTop: 15}}>Elements</H3>
+
+						<ElementEditor
+							elements={this.state.elements}
+							onElementAdd={this.onElementAdd}
+							onElementChange={this.onElementChange}
+							onElementRemove={this.onElementRemove}
+						/>
+					</Cell>
+				</Row>
 			</form>
 		);
 	}
@@ -226,12 +251,28 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		attributes,
 	});
 
+	private onElementAdd = (element: WeaponElement) => this.setState({
+		elements: [...this.state.elements, element],
+	});
+
+	private onElementChange = () => this.setState({
+		elements: [...this.state.elements],
+	});
+
+	private onElementRemove = (target: WeaponElement) => this.setState({
+		elements: this.state.elements.filter(element => element !== target),
+	});
+
 	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		name: event.currentTarget.value,
 	});
 
 	private onRarityChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		rarity: cleanNumberString(event.currentTarget.value, false),
+	});
+
+	private onSlotsChange = (slots: Slot[]) => this.setState({
+		slots,
 	});
 
 	private save = (event?: React.SyntheticEvent<any>) => {
