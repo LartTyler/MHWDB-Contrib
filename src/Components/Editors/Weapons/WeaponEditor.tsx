@@ -1,4 +1,4 @@
-import {H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {Button, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
@@ -243,12 +243,30 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 						/>
 					</Cell>
 				</Row>
+
+				<Row align="end">
+					<Cell size={1}>
+						<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
+							Cancel
+						</Button>
+					</Cell>
+
+					<Cell size={1}>
+						<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
+							Save
+						</Button>
+					</Cell>
+				</Row>
 			</form>
 		);
 	}
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
+	});
+
+	private onCancelClick = () => this.setState({
+		redirect: true,
 	});
 
 	private onElementAdd = (element: WeaponElement) => this.setState({
