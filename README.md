@@ -1,6 +1,6 @@
 ## Contributing
 Feel free to open an issue with any requests or issues. If you'd like to submit pull requests, they'd be more than
-welcome!
+welcome! For a list of pending and in-progress items, please check out [the Trello board](https://trello.com/b/mAlyiAZz/mhw-contrib).
 
 If you'd like to discuss anything related to the project, or if you just wanna say hi, feel free to join the project's
 [Gitter](https://gitter.im/mhw-db/general) chat.
