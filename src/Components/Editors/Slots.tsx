@@ -86,6 +86,7 @@ export const Slots: React.FC<IProps> = props => {
 										]);
 
 										setShowDialog(false);
+										setSelectedRank(1);
 									}}
 								>
 									Save
