@@ -33,6 +33,7 @@ export const ContributeButton: React.FC<{}> = () => {
 				<LinkedMenuItem href="/edit/ailments" text="Ailments" />
 				<LinkedMenuItem href="/edit/armor" text="Armor" />
 				<LinkedMenuItem href="/edit/armor-sets" text="Armor Sets" />
+				<LinkedMenuItem href="/edit/armor-sets/bonuses" text="Armor Set Bonuses" />
 				<LinkedMenuItem href="/edit/charms" text="Charms" />
 				<LinkedMenuItem href="/edit/decorations" text="Decorations" />
 				<LinkedMenuItem href="/edit/items" text="Items" />

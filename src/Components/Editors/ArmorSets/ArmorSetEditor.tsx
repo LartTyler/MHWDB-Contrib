@@ -12,10 +12,8 @@ import {createEntityListFilter} from '../../../Utility/select';
 import {ucfirst} from '../../../Utility/string';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {armorSorter} from '../Armor/ArmorList';
-import {createEntitySorter} from '../EntityList';
+import {armorSetBonusSorter} from '../ArmorSetBonuses/ArmorSetBonusList';
 import './ArmorSetEditor.scss';
-
-export const armorSetBonusSorter = createEntitySorter<ArmorSetBonus>('name');
 
 const filterArmorList = createEntityListFilter<Armor>('name');
 const filterBonusList = createEntityListFilter<ArmorSetBonus>('name');
