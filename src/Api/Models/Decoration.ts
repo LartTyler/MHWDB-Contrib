@@ -25,11 +25,10 @@ export type DecorationUpdatePayload = Omit<Decoration, 'id' | 'skills'> & {
 	skills?: ISimpleSkillRank[];
 };
 
-export type DecorationPayload = IDecorationCreatePayload | DecorationUpdatePayload;
-
 export class DecorationModel {
 	public static list(query?: IQueryDocument, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get('/decorations', {
+			cancelToken,
 			params: {
 				p: projection,
 				q: query,
@@ -47,6 +46,7 @@ export class DecorationModel {
 
 	public static read(id: Id, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get<'/decorations/:id'>(`/decorations/${id}`, {
+			cancelToken,
 			params: {
 				p: projection,
 			},

@@ -54,6 +54,7 @@ export class ArmorSetBonusModel {
 
 	public static read(id: Id, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get<'/armor/sets/bonuses/:id'>(`/armor/sets/bonuses/${id}`, {
+			cancelToken,
 			params: {
 				p: projection,
 			},

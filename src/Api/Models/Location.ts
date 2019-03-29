@@ -41,6 +41,7 @@ export class LocationModel {
 
 	public static read(id: Id, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get<'/locations/:id'>(`/locations/${id}`, {
+			cancelToken,
 			params: {
 				p: projection,
 			},

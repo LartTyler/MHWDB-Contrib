@@ -12,13 +12,9 @@ import {createEntityListFilter} from '../../../Utility/select';
 import {LinkButton} from '../../Navigation/LinkButton';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
-import {createEntitySorter} from '../EntityList';
 
 const itemsFilter = createEntityListFilter<Item>('name');
 const skillsFilter = createEntityListFilter<Skill>('name');
-
-const itemSorter = createEntitySorter<Item>('name');
-const skillSorter = createEntitySorter<Skill>('name');
 
 interface IAilmentEditorRouteProps {
 	ailment: string;

@@ -71,7 +71,7 @@ class WeaponListComponent extends React.PureComponent<IProps, IState> {
 		return WeaponModel.delete(target.id).then(() => {
 			toaster.show({
 				intent: Intent.SUCCESS,
-				message: `${target.name} deleted.`
+				message: `${target.name} deleted.`,
 			});
 
 			this.setState({

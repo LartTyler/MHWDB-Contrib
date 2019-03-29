@@ -32,12 +32,4 @@ export class SearchInput extends React.Component<ISearchInputProps, ISearchInput
 			this.props.onSearch(this.state.text);
 		});
 	};
-
-	private onInputClear = () => {
-		this.setState({
-			text: '',
-		}, () => {
-			this.props.onSearch(this.state.text);
-		});
-	};
 }

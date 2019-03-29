@@ -1,5 +1,5 @@
 import {Button, ButtonGroup, Checkbox, Classes, FormGroup, H4} from '@blueprintjs/core';
-import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components';
+import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {CraftingCost, Item, ItemModel} from '../../../Api/Models/Item';
 import {Weapon, WeaponCrafting, WeaponModel, WeaponType} from '../../../Api/Models/Weapon';

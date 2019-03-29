@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {AmmoType} from '../../../../../Api/Models/Weapon';
 import {CapacityInputsLevel1, CapacityInputsLevel2, CapacityInputsLevel3, ICapacityInputsProps} from './CapacityInputs';
 

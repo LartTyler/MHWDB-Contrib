@@ -1,5 +1,3 @@
-export const numberRegex = /^-?\d*\.?\d+$/;
-
 export const cleanPositiveIntegerString = (value: string, max: number = null): string => {
 	let output = parseInt(value.replace(/[^\d.]/, ''), 10);
 
