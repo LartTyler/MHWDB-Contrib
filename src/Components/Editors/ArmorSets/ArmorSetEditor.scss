@@ -1,0 +1,7 @@
+@import '../../../../node_modules/@blueprintjs/core/lib/scss/variables.scss';
+
+.armor-set-pieces-popover {
+	&.#{$ns}-popover {
+		min-width: 250px;
+	}
+}

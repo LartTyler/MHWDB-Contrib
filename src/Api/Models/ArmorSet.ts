@@ -24,7 +24,7 @@ export interface IArmorSetCreatePayload {
 
 export interface IArmorSetUpdatePayload {
 	bonus?: number;
-	name?: number;
+	name?: string;
 	pieces?: number[];
 	rank?: Rank;
 }
@@ -40,8 +40,8 @@ export class ArmorSetModel {
 		});
 	}
 
-	public static create(data: IArmorSetCreatePayload, projection?: Projection) {
-		return client.put('/armor/sets', data, {
+	public static create(payload: IArmorSetCreatePayload, projection?: Projection) {
+		return client.put('/armor/sets', payload, {
 			params: {
 				p: projection,
 			},
@@ -57,8 +57,8 @@ export class ArmorSetModel {
 		});
 	}
 
-	public static update(id: Id, data: IArmorSetUpdatePayload, projection?: Projection) {
-		return client.patch<'/armor/sets/:id'>(`/armor/sets/${id}`, data, {
+	public static update(id: Id, payload: IArmorSetUpdatePayload, projection?: Projection) {
+		return client.patch<'/armor/sets/:id'>(`/armor/sets/${id}`, payload, {
 			params: {
 				p: projection,
 			},
