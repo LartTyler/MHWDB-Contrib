@@ -1,8 +1,10 @@
 import * as React from 'react';
 import {ArmorSetBonus, ArmorSetBonusModel} from '../../../Api/Models/ArmorSetBonus';
-import {createEntitySorter, EntityList} from '../EntityList';
+import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
 export const armorSetBonusSorter = createEntitySorter<ArmorSetBonus>('name');
+
+const filterOnName = createEntityFilter<ArmorSetBonus>('name');
 
 interface IState {
 	bonuses: ArmorSetBonus[];
@@ -28,6 +30,7 @@ export class ArmorSetBonusList extends React.PureComponent<{}, IState> {
 				columns={[
 					{
 						dataIndex: 'name',
+						onFilter: filterOnName,
 						title: 'Name',
 					},
 					{
