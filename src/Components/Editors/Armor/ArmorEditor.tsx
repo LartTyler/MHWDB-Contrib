@@ -417,20 +417,26 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					</Row>
 
-					<H3 style={{marginTop: 10}}>Slots</H3>
+					<Row style={{marginTop: 10}}>
+						<Cell size={6}>
+							<H3>Slots</H3>
 
-					<Slots
-						slots={this.state.slots}
-						onChange={this.onSlotsChange}
-					/>
+							<Slots
+								slots={this.state.slots}
+								onChange={this.onSlotsChange}
+							/>
+						</Cell>
 
-					<H3 style={{marginTop: 20}}>Attributes</H3>
+						<Cell size={6}>
+							<H3>Attributes</H3>
 
-					<AttributesEditor
-						accepted={armorAttributes}
-						attributes={this.state.attributes}
-						onChange={this.onAttributesChange}
-					/>
+							<AttributesEditor
+								accepted={armorAttributes}
+								attributes={this.state.attributes}
+								onChange={this.onAttributesChange}
+							/>
+						</Cell>
+					</Row>
 
 					<H3 style={{marginTop: 20}}>Skills</H3>
 
