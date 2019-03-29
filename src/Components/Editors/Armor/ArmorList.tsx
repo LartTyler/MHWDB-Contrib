@@ -5,7 +5,7 @@ import {toaster} from '../../../toaster';
 import {ucfirst} from '../../../Utility/string';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
-const sorter = createEntitySorter<Armor>('name');
+export const armorSorter = createEntitySorter<Armor>('name');
 
 const filterEntityOnName = createEntityFilter<Armor>('name');
 const filterEntityOnRank = createEntityFilter<Armor>('rank');
@@ -90,7 +90,7 @@ export class ArmorList extends React.PureComponent<{}, IState> {
 			rarity: true,
 			type: true,
 		}).then(response => this.setState({
-			armor: response.data.sort(sorter),
+			armor: response.data.sort(armorSorter),
 			loading: false,
 		}));
 	};
