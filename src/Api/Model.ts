@@ -21,8 +21,8 @@ interface ISlot {
 export type Slot = Partial<ISlot>;
 
 export interface ISimpleSkillRank {
-	skill: number;
 	level: number;
+	skill: number;
 }
 
 export interface ISimpleCraftingCost {
