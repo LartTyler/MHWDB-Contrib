@@ -1,4 +1,4 @@
-import {Button, FormGroup, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {Button, ButtonGroup, Classes, FormGroup, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
@@ -216,28 +216,29 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							</ValidationAwareFormGroup>
 						</Cell>
 
-						<Cell size={5}>
+						<Cell size={6}>
 							<FormGroup label="Armor Set">
-								<ArmorSetEntitySelect
-									config={{
-										itemListPredicate: filterArmorSets,
-										items: this.state.armorSetList || [],
-										loading: this.state.armorSetList === null,
-										multi: false,
-										onItemSelect: this.onArmorSetSelect,
-										popoverProps: {
-											targetClassName: 'full-width',
-										},
-										selected: this.state.armorSet,
-									}}
-									labelField="name"
-								/>
-							</FormGroup>
-						</Cell>
+								<ButtonGroup fill={true}>
+									<ArmorSetEntitySelect
+										config={{
+											itemListPredicate: filterArmorSets,
+											items: this.state.armorSetList || [],
+											loading: this.state.armorSetList === null,
+											multi: false,
+											onItemSelect: this.onArmorSetSelect,
+											popoverProps: {
+												className: 'full-width',
+												targetClassName: 'full-width',
+											},
+											selected: this.state.armorSet,
+										}}
+										labelField="name"
+									/>
 
-						<Cell className="text-right" size={1}>
-							<FormGroup label={<span>&nbsp;</span>}>
-								<Button icon="cross" onClick={this.onArmorSetClear} />
+									{this.state.armorSetList !== null && (
+										<Button className={Classes.FIXED} icon="cross" onClick={this.onArmorSetClear} />
+									)}
+								</ButtonGroup>
 							</FormGroup>
 						</Cell>
 					</Row>
