@@ -3,7 +3,7 @@ import {client} from '../client';
 import {Id, IEntity, Rank} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {Armor} from './Armor';
-import {SkillRank} from './Skill';
+import {ArmorSetBonus} from './ArmorSetBonus';
 
 interface IArmorSet extends IEntity {
 	bonus: ArmorSetBonus;
@@ -12,18 +12,6 @@ interface IArmorSet extends IEntity {
 	rank: Rank;
 }
 
-interface IArmorSetBonus extends IEntity {
-	name: string;
-	ranks: ArmorSetBonusRank[];
-}
-
-interface IArmorSetBonusRank {
-	pieces: number;
-	skill: SkillRank;
-}
-
-export type ArmorSetBonus = Partial<IArmorSetBonus>;
-export type ArmorSetBonusRank = Partial<IArmorSetBonusRank>;
 export type ArmorSet = Partial<IArmorSet>;
 
 export interface IArmorSetCreatePayload {
