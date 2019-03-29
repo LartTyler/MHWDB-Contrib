@@ -206,34 +206,6 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		return weapons.filter(weapon => weapon.name.toLowerCase().indexOf(query) !== -1);
 	};
 
-	private onBranchClear = () => {
-		this.setState({
-			branches: [],
-		});
-
-		this.props.crafting.branches = [];
-	};
-
-	private onBranchDeselect = (target: Weapon) => {
-		const branches = this.state.branches.filter(weapon => weapon !== target);
-
-		this.setState({
-			branches,
-		});
-
-		this.props.crafting.branches = branches.map(weapon => weapon.id);
-	};
-
-	private onBranchSelect = (weapon: Weapon) => {
-		const branches = [...this.state.branches, weapon];
-
-		this.setState({
-			branches,
-		});
-
-		this.props.crafting.branches = branches.map(branch => branch.id);
-	};
-
 	private onCraftableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const craftable = event.currentTarget.checked;
 
