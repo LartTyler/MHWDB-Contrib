@@ -121,7 +121,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				loading: false,
 			});
 
-			if (WeaponModel.isRanged(this.props.match.params.weaponType)) {
+			if (!WeaponModel.isRanged(this.props.match.params.weaponType)) {
 				this.setState({
 					durability: (new Array(6) as Durability[]).fill({
 						blue: 0,
