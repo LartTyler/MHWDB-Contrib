@@ -11,7 +11,7 @@ $sharpnessColors: (
 
 .#{$ns}-slider {
 	@each $key, $color in $sharpnessColors {
-		&.sharpness-#{$key}-slider {
+		&.sharpness-#{"" + $key}-slider {
 			.#{$ns}-slider-track > .#{$ns}-slider-progress:nth-child(2) {
 				background: $color;
 			}
