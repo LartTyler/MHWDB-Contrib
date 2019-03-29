@@ -2,6 +2,7 @@ import {Id} from './Model';
 import {Ailment, IAilmentPayload} from './Models/Ailment';
 import {Armor, ArmorPayload} from './Models/Armor';
 import {ArmorSet, IArmorSetCreatePayload, IArmorSetUpdatePayload} from './Models/ArmorSet';
+import {ArmorSetBonus, IArmorSetBonusCreatePayload, IArmorSetBonusUpdatePayload} from './Models/ArmorSetBonus';
 import {Charm, ICharmCreatePayload, ICharmUpdatePayload} from './Models/Charm';
 import {Decoration, DecorationUpdatePayload, IDecorationCreatePayload} from './Models/Decoration';
 import {Item, ItemPayload} from './Models/Item';
@@ -166,6 +167,41 @@ export interface IMonHunDBRoutes {
 			params: Identity;
 			query: IProjectable;
 			response: ArmorSet;
+		};
+	};
+	// endregion
+
+	// region Armor Set Bonuses
+	'/armor/sets/bonuses': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: ArmorSetBonus[];
+		};
+
+		PUT: {
+			body: IArmorSetBonusCreatePayload;
+			query: IProjectable;
+			response: ArmorSetBonus;
+		};
+	};
+
+	'/armor/sets/bonuses/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: ArmorSetBonus;
+		};
+
+		PATCH: {
+			body: IArmorSetBonusUpdatePayload;
+			params: Identity;
+			query: IProjectable;
+			response: ArmorSetBonus;
 		};
 	};
 	// endregion
