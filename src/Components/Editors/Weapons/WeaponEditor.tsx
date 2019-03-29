@@ -2,7 +2,7 @@ import {Button, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {IConstraintViolations} from '../../../Api/Error';
+import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Slot} from '../../../Api/Model';
 import {AttributeName, IAttribute} from '../../../Api/Models/attributes';
 import {
@@ -384,6 +384,12 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			this.setState({
 				saving: false,
 			});
+
+			if (isConstraintViolationError(error)) {
+				this.setState({
+					violations: error.context.violations,
+				});
+			}
 		});
 	};
 }
