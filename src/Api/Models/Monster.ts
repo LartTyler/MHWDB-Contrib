@@ -3,6 +3,8 @@ import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {Ailment} from './Ailment';
+import {Location} from './Location';
+import {Element} from './Weapon';
 
 export enum MonsterType {
 	SMALL = 'small',

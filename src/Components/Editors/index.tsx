@@ -10,6 +10,7 @@ import {Charms} from './Charms';
 import {Decorations} from './Decorations';
 import {Items} from './Items';
 import {Locations} from './Locations';
+import {Monsters} from './Monsters';
 import {MotionValues} from './MotionValues';
 import {Skills} from './Skills';
 import {Weapons} from './Weapons';
@@ -25,6 +26,7 @@ export const Editors: React.FC<{}> = () => (
 			<Route path="/edit/decorations" component={Decorations} />
 			<Route path="/edit/items" component={Items} />
 			<Route path="/edit/locations" component={Locations} />
+			<Route path="/edit/monsters" component={Monsters} />
 			<Route path="/edit/motion-values" component={MotionValues} />
 			<Route path="/edit/skills" component={Skills} />
 			<Route path="/edit/weapons" component={Weapons} />

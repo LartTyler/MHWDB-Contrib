@@ -4,7 +4,7 @@ import {Location, LocationModel} from '../../../Api/Models/Location';
 import {toaster} from '../../../toaster';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
-const sorter = createEntitySorter<Location>('name');
+export const locationSorter = createEntitySorter<Location>('name');
 
 const filterEntityOnName = createEntityFilter<Location>('name');
 
@@ -68,7 +68,7 @@ export class LocationList extends React.PureComponent<{}, IState> {
 	private load = () => {
 		LocationModel.list().then(response => this.setState({
 			loading: false,
-			locations: response.data.sort(sorter),
+			locations: response.data.sort(locationSorter),
 		}));
 	};
 }

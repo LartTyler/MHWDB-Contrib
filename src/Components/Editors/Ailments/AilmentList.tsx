@@ -4,7 +4,7 @@ import {Ailment, AilmentModel} from '../../../Api/Models/Ailment';
 import {toaster} from '../../../toaster';
 import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
-const sorter = createEntitySorter<Ailment>('name');
+export const ailmentsSorter = createEntitySorter<Ailment>('name');
 
 const filterEntityOnName = createEntityFilter<Ailment>('name');
 const filterEntityOnDescription = createEntityFilter<Ailment>('description');
@@ -79,7 +79,7 @@ export class AilmentList extends React.PureComponent<{}, IState> {
 			id: true,
 			name: true,
 		}).then(response => this.setState({
-			ailments: response.data.sort(sorter),
+			ailments: response.data.sort(ailmentsSorter),
 			loading: false,
 		}));
 	};
