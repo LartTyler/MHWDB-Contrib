@@ -3,13 +3,15 @@ import {tokenStore} from '../Api/client';
 
 export enum Role {
 	ADMIN = 'ROLE_ADMIN',
+	EDITOR = 'ROLE_EDITOR',
 	USER = 'ROLE_USER',
 }
 
 type GrantedRoles = Role | Role[];
 
 const hierarchy: { [key in Role]: GrantedRoles } = {
-	[Role.ADMIN]: Role.USER,
+	[Role.ADMIN]: Role.EDITOR,
+	[Role.EDITOR]: Role.USER,
 	[Role.USER]: [],
 };
 
