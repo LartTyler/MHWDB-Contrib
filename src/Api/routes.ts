@@ -10,6 +10,7 @@ import {Location, LocationPayload} from './Models/Location';
 import {Monster, MonsterPayload} from './Models/Monster';
 import {MotionValue, MotionValuePayload} from './Models/MotionValue';
 import {Skill, SkillPayload} from './Models/Skill';
+import {User, UserCreatePayload, UserPayload} from './Models/User';
 import {Weapon, WeaponCreatePayload, WeaponPayload, WeaponType} from './Models/Weapon';
 
 interface IProjection<T extends boolean> {
@@ -457,6 +458,70 @@ export interface IMonHunDBRoutes {
 			params: Identity;
 			query: IProjectable;
 			response: Skill;
+		};
+	};
+	// endregion
+
+	// region Users
+	'/users': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: User[];
+		};
+
+		PUT: {
+			body: UserCreatePayload;
+			query: IProjectable;
+			response: User;
+		};
+	};
+
+	'/users/activate/:code': {
+		POST: {
+			body: {
+				password: string;
+			};
+			query: IProjectable;
+			response: User;
+		};
+	};
+
+	'/users/password-reset': {
+		POST: {
+			body: {
+				email: string;
+				passwordResetUrl: string;
+			};
+			response: void;
+		};
+	};
+
+	'/users/password-reset/:code': {
+		POST: {
+			body: {
+				password: string;
+			};
+			response: void;
+		};
+	};
+
+	'/users/:id': {
+		DELETE: {
+			params: Identity;
+			response: void;
+		};
+
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: User;
+		};
+
+		PATCH: {
+			body: UserPayload;
+			params: Identity;
+			query: IProjectable;
+			response: User;
 		};
 	};
 	// endregion
