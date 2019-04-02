@@ -5,21 +5,22 @@ import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {login, tokenStore} from '../../Api/client';
 import {toaster} from '../../toaster';
 import './Login.scss';
+import {PasswordResetDialog} from './PasswordResetDialog';
 
 interface ILoginState {
-	username: string;
 	password: string;
-	redirect: boolean;
 	processing: boolean;
-	error: string;
+	redirect: boolean;
+	showResetDialog: boolean;
+	username: string;
 }
 
 class LoginComponent extends React.Component<RouteComponentProps<{}>, ILoginState> {
 	public state: Readonly<ILoginState> = {
-		error: null,
 		password: '',
 		processing: false,
 		redirect: false,
+		showResetDialog: false,
 		username: '',
 	};
 
@@ -52,14 +53,24 @@ class LoginComponent extends React.Component<RouteComponentProps<{}>, ILoginStat
 
 					<a
 						className={`${Classes.TEXT_MUTED} password-reset-link`}
-						onClick={() => alert('Not yet supported.')}
+						onClick={this.onForgotPasswordClick}
 					>
 						Forgot your password?
 					</a>
 				</form>
+
+				<PasswordResetDialog isOpen={this.state.showResetDialog} onClose={this.onForgotPasswordDialogClose} />
 			</div>
 		);
 	}
+
+	private onForgotPasswordClick = () => this.setState({
+		showResetDialog: true,
+	});
+
+	private onForgotPasswordDialogClose = () => this.setState({
+		showResetDialog: false,
+	});
 
 	private onFormSubmit = (event: FormEvent<HTMLFormElement>): void => {
 		event.preventDefault();
