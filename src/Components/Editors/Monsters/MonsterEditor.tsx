@@ -1,18 +1,19 @@
-import {H2, H3, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {Button, H2, H3, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
-import {IConstraintViolations} from '../../../Api/Error';
+import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Ailment, AilmentModel} from '../../../Api/Models/Ailment';
 import {Location, LocationModel} from '../../../Api/Models/Location';
 import {
-	MonsterModel,
+	MonsterModel, MonsterPayload,
 	MonsterResistance,
 	MonsterSpecies,
 	MonsterType,
 	MonsterWeakness,
 } from '../../../Api/Models/Monster';
 import {Element} from '../../../Api/Models/Weapon';
+import {toaster} from '../../../toaster';
 import {createEntityListFilter, filterStrings} from '../../../Utility/select';
 import {ucfirst, ucwords} from '../../../Utility/string';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
@@ -296,6 +297,20 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 							/>
 						</Cell>
 					</Row>
+
+					<Row align="end">
+						<Cell size={1}>
+							<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
+								Cancel
+							</Button>
+						</Cell>
+
+						<Cell size={1}>
+							<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
+								Save
+							</Button>
+						</Cell>
+					</Row>
 				</form>
 			</>
 		);
@@ -321,6 +336,10 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 
 	private onAilmentSelect = (ailment: Ailment) => this.setState({
 		ailments: [...this.state.ailments, ailment],
+	});
+
+	private onCancelClick = () => this.setState({
+		redirect: true,
 	});
 
 	private onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({
@@ -378,8 +397,85 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.saving)
 			return;
 
+		const violations: IConstraintViolations = {};
+
+		if (!this.state.type) {
+			violations.type = {
+				code: 'missing_required_field',
+				message: 'This value cannot be empty.',
+				path: 'type',
+			};
+		}
+
+		if (!this.state.species) {
+			violations.species = {
+				code: 'missing_required_field',
+				message: 'This value cannot be empty.',
+				path: 'species',
+			};
+		}
+
+		if (Object.values(violations).length) {
+			toaster.show({
+				intent: Intent.DANGER,
+				message: 'One or more fields did not pass validation.',
+			});
+
+			this.setState({
+				violations: {...violations},
+			});
+
+			return;
+		}
+
 		this.setState({
 			saving: true,
+		});
+
+		const payload: MonsterPayload = {
+			ailments: this.state.ailments.map(ailment => ailment.id),
+			description: this.state.description.trim(),
+			elements: this.state.elements,
+			locations: this.state.locations.map(location => location.id),
+			name: this.state.name.trim(),
+			resistances: this.state.resistances,
+			species: this.state.species,
+			type: this.state.type,
+			weaknesses: this.state.weaknesses,
+		};
+
+		const idParam = this.props.match.params.monster;
+		let promise: Promise<unknown>;
+
+		if (idParam === 'new')
+			promise = MonsterModel.create(payload, {id: true});
+		else
+			promise = MonsterModel.update(idParam, payload, {id: true});
+
+		promise.then(() => {
+			toaster.show({
+				intent: Intent.SUCCESS,
+				message: `${this.state.name} ${idParam === 'new' ? 'created' : 'updated'}.`,
+			});
+
+			this.setState({
+				redirect: true,
+			});
+		}).catch((error: Error) => {
+			toaster.show({
+				intent: Intent.DANGER,
+				message: error.message,
+			});
+
+			this.setState({
+				saving: false,
+			});
+
+			if (isConstraintViolationError(error)) {
+				this.setState({
+					violations: error.context.violations,
+				});
+			}
 		});
 	};
 }
