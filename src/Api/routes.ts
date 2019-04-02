@@ -7,7 +7,7 @@ import {Charm, ICharmCreatePayload, ICharmUpdatePayload} from './Models/Charm';
 import {Decoration, DecorationUpdatePayload, IDecorationCreatePayload} from './Models/Decoration';
 import {Item, ItemPayload} from './Models/Item';
 import {Location, LocationPayload} from './Models/Location';
-import {Monster} from './Models/Monster';
+import {Monster, MonsterPayload} from './Models/Monster';
 import {MotionValue, MotionValuePayload} from './Models/MotionValue';
 import {Skill, SkillPayload} from './Models/Skill';
 import {Weapon, WeaponCreatePayload, WeaponPayload, WeaponType} from './Models/Weapon';
@@ -355,7 +355,7 @@ export interface IMonHunDBRoutes {
 		};
 
 		PUT: {
-			body: Monster;
+			body: MonsterPayload;
 			query: IProjectable;
 			response: Monster;
 		};
@@ -374,7 +374,7 @@ export interface IMonHunDBRoutes {
 		};
 
 		PATCH: {
-			body: Monster;
+			body: MonsterPayload;
 			params: Identity;
 			query: IProjectable;
 			response: Monster;

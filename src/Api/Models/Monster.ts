@@ -1,4 +1,5 @@
 import {CancelToken} from 'axios';
+import {Omit} from 'utility-types';
 import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
@@ -52,6 +53,11 @@ export type MonsterResistance = Partial<IMonsterResistance>;
 export type MonsterWeakness = Partial<IMonsterWeakness>;
 export type Monster = Partial<IMonster>;
 
+export type MonsterPayload = Omit<Monster, 'ailments' | 'locations'> & {
+	ailments?: number[];
+	locations?: number[];
+};
+
 export class MonsterModel {
 	public static list(query?: IQueryDocument, projection?: Projection, cancelToken?: CancelToken) {
 		return client.get('/monsters', {
@@ -63,7 +69,7 @@ export class MonsterModel {
 		});
 	}
 
-	public static create(payload: Monster, projection?: Projection) {
+	public static create(payload: MonsterPayload, projection?: Projection) {
 		return client.put('/monsters', payload, {
 			params: {
 				p: projection,
@@ -80,7 +86,7 @@ export class MonsterModel {
 		});
 	}
 
-	public static update(id: Id, payload: Monster, projection?: Projection) {
+	public static update(id: Id, payload: MonsterPayload, projection?: Projection) {
 		return client.patch<'/monsters/:id'>(`/monsters/${id}`, payload, {
 			params: {
 				p: projection,
