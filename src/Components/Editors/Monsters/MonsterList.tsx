@@ -43,10 +43,16 @@ export class MonsterList extends React.PureComponent<{}, IState> {
 				entities={this.state.monsters}
 				loading={this.state.loading}
 				noDataPlaceholder="No monsters found."
+				onDeleteClick={this.onDelete}
+				onRefreshClick={this.load}
 				title="Monsters"
 			/>
 		);
 	}
+
+	private onDelete = (target: Monster) => MonsterModel.delete(target.id).then(() => this.setState({
+		monsters: this.state.monsters.filter(monster => monster !== target),
+	}));
 
 	private load = () => {
 		if (this.state.loading)
