@@ -78,7 +78,7 @@ export class UserModel {
 	}
 
 	public static resetPassword(code: string, password: string) {
-		client.post<'/users/password-reset/:code'>(`/users/password-reset/${code}`, {
+		return client.post<'/users/password-reset/:code'>(`/users/password-reset/${code}`, {
 			password,
 		});
 	}

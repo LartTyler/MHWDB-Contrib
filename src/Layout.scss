@@ -44,6 +44,18 @@ body {
 	width: 100%;
 }
 
+.no-navbar {
+	margin-top: -50px;
+	padding: 75px 10px;
+	min-height: 100vh;
+}
+
 textarea.full-width {
 	min-width: 100%;
+}
+
+.password-manager-right-element-fix {
+	.#{$ns}-input-action {
+		right: 0;
+	}
 }

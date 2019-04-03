@@ -3,6 +3,7 @@ import * as React from 'react';
 import {Route, Router, Switch} from 'react-router-dom';
 import {App} from './Components/App';
 import {Login} from './Components/Auth/Login';
+import {PasswordReset} from './Components/Auth/PasswordReset';
 import {isThemeName, Theme, ThemeContext, ThemeMutatorContext} from './Components/Contexts/ThemeContext';
 import {history} from './history';
 import './Layout.scss';
@@ -46,6 +47,7 @@ export class Layout extends React.Component<{}, ILayoutState> {
 						<Router history={history}>
 							<Switch>
 								<Route path="/login" component={Login} />
+								<Route path="/password-reset/:code" component={PasswordReset} />
 
 								<PrivateRoute path="/" component={App} />
 							</Switch>

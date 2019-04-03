@@ -14,7 +14,7 @@ interface IState {
 	processing: boolean;
 }
 
-export class PasswordResetDialog extends React.PureComponent<IProps, IState> {
+export class PasswordResetRequestDialog extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		email: '',
 		processing: false,

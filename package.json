@@ -13,7 +13,7 @@
 		"@blueprintjs/core": "^3.6.1",
 		"@blueprintjs/icons": "^3.1.0",
 		"@blueprintjs/select": "^3.2.0",
-		"@dbstudios/blueprintjs-components": "^1.0.4",
+		"@dbstudios/blueprintjs-components": "^2.0.1",
 		"@types/react": "^16.4.14",
 		"@types/react-dom": "^16.0.8",
 		"@types/react-router-dom": "^4.3.1",

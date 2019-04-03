@@ -5,7 +5,7 @@ import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {login, tokenStore} from '../../Api/client';
 import {toaster} from '../../toaster';
 import './Login.scss';
-import {PasswordResetDialog} from './PasswordResetDialog';
+import {PasswordResetRequestDialog} from './PasswordResetRequestDialog';
 
 interface ILoginState {
 	password: string;
@@ -59,7 +59,7 @@ class LoginComponent extends React.Component<RouteComponentProps<{}>, ILoginStat
 					</a>
 				</form>
 
-				<PasswordResetDialog isOpen={this.state.showResetDialog} onClose={this.onForgotPasswordDialogClose} />
+				<PasswordResetRequestDialog isOpen={this.state.showResetDialog} onClose={this.onForgotPasswordDialogClose} />
 			</div>
 		);
 	}
