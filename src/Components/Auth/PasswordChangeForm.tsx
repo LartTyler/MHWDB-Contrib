@@ -76,7 +76,11 @@ export class PasswordChangeForm extends React.PureComponent<IPasswordChangeFormP
 				</Cell>
 
 				<Cell size={6}>
-					<FormGroup label="Confirm Password" labelFor="confirmation">
+					<FormGroup
+						label="Confirm Password"
+						labelFor="confirmation"
+						helperText={this.state.password !== this.state.confirmation ? 'Passwords do not match.' : ''}
+					>
 						<InputGroup
 							name="confirmation"
 							onChange={this.onConfirmationChange}
