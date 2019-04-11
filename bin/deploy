@@ -130,7 +130,7 @@ fi
 echo
 read -p "Deploying application to the ${bucket} bucket. Continue? (y/N) " -r
 
-if [[ "${REPLY}" =~ ^[yY] ]]; then
+if ! [[ "${REPLY}" =~ ^[yY] ]]; then
     echo "Operation cancelled."
     echo
 
