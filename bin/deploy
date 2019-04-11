@@ -40,6 +40,9 @@ function usage() {
     echo "${indent}${indent}The ID of the CloudFront distribution to invalidate after deploying"
     echo
     echo "Options:"
+    echo "${indent}--aws-profile"
+    echo "${indent}${indent}The AWS profile to load during deploy. Defaults to the AWS CLI default profile."
+    echo
     echo "${indent}--minimal, -n"
     echo "${indent}${indent}Minimal interaction mode. Don't ask any questions and build with default values. You'll still"
     echo "${indent}${indent}be prompted to confirm that deploy settings are correct before any changes are deployed."
@@ -55,11 +58,19 @@ bucket=""
 distribution=""
 minimalInteraction=""
 
+awsProfile="default"
+
 while [[ $# > 0 ]]; do
     value="${1}"
     shift
 
     case "${value}" in
+        --aws-profile)
+            awsProfile="${1}"
+            shift
+
+            ;;
+
         --minimal|-n)
             minimalInteraction="minimalInteraction"
 
@@ -112,6 +123,7 @@ echo
 echo -e "${underline}${bold}Pre-Build Checklist${reset}"
 echo -e "${checkmark} Verify that the API URL should be '${apiUrl}'"
 echo -e "${checkmark} Verify that the deploy target should be '${bucket}'"
+echo -e "${checkmark} Verify that the AWS profile '${awsProfile}' should be used"
 
 if [[ -z "${distribution}" ]]; then
     echo
@@ -146,16 +158,16 @@ bucketUrl="s3://${bucket}"
 
 echo
 echo "Deploying files to ${bucketUrl}..."
-echo -e "${colorCommand}$ aws s3 sync --delete --quiet --content-encoding utf-8 dist/ ${bucketUrl}${reset}"
+echo -e "${colorCommand}$ aws s3 sync --profile ${awsProfile} --delete --quiet --content-encoding utf-8 dist/ ${bucketUrl}${reset}"
 
-aws s3 sync --delete --quiet --content-encoding utf-8 dist/ "${bucketUrl}"
+aws s3 sync --profile "${awsProfile}" --delete --quiet --content-encoding utf-8 dist/ "${bucketUrl}"
 
-if [[ -z "${distribution}" ]]; then
+if [[ -n "${distribution}" ]]; then
     echo
     echo "Invalidating CloudFront distribution with ID ${distribution}..."
-    echo -e "${colorCommand}aws cloudfront create-invalidation --distribution-id "${distribution}" --paths "/*" > /dev/null${reset}"
+    echo -e "${colorCommand}aws cloudfront create-invalidation --profile ${awsProfile} --distribution-id ${distribution} --paths "/*" > /dev/null${reset}"
 
-    aws cloudfront create-invalidation --distribution-id "${distribution}" --paths "/*" > /dev/null
+    aws cloudfront create-invalidation --profile "${awsProfile}" --distribution-id "${distribution}" --paths "/*" > /dev/null
 fi
 
 echo
