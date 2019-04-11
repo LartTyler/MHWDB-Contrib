@@ -124,7 +124,7 @@ export class MonsterWeaknessesEditor extends React.PureComponent<IProps, IState>
 									<InputGroup
 										name="condition"
 										onChange={this.onConditionChange}
-										value={this.state.condition}
+										value={this.state.condition || ''}
 									/>
 								</FormGroup>
 							</div>
@@ -190,7 +190,7 @@ export class MonsterWeaknessesEditor extends React.PureComponent<IProps, IState>
 	private onSave = () => {
 		const weakness = this.state.activeWeakness || {};
 
-		weakness.condition = this.state.condition.trim();
+		weakness.condition = this.state.condition.trim() || null;
 		weakness.element = this.state.element;
 		weakness.stars = this.state.stars;
 

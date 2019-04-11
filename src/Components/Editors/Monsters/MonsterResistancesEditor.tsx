@@ -94,7 +94,7 @@ export class MonsterResistancesEditor extends React.PureComponent<IProps, IState
 									<InputGroup
 										name="condition"
 										onChange={this.onConditionChange}
-										value={this.state.condition}
+										value={this.state.condition || ''}
 									/>
 								</FormGroup>
 							</div>
@@ -158,7 +158,7 @@ export class MonsterResistancesEditor extends React.PureComponent<IProps, IState
 	private onSave = () => {
 		const resistance = this.state.activeResistance || {};
 
-		resistance.condition = this.state.condition.trim();
+		resistance.condition = this.state.condition.trim() || null;
 		resistance.element = this.state.element;
 
 		if (this.state.activeResistance)
