@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if ! git diff-index --quiet HEAD --; then
+if ! git diff-index --quiet HEAD; then
     echo
     echo "You have uncommitted changes. Commit and push them before deploying."
     echo
