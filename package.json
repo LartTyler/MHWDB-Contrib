@@ -38,7 +38,7 @@
 		"utility-types": "^2.1.0"
 	},
 	"scripts": {
-		"build": "parcel build index.html",
+		"build": "rm -rf ./dist && parcel build --no-cache --no-source-maps index.html",
 		"deploy": "./bin/deploy",
 		"start": "parcel serve index.html -p 4000 --no-hmr"
 	},
