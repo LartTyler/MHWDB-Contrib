@@ -316,7 +316,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 		});
 
 		const payload: IAilmentPayload = {
-			description: this.state.description,
+			description: this.state.description.trim() || null,
 			name: this.state.name,
 			protection: {
 				items: this.state.protectionItems.map(item => item.id),
