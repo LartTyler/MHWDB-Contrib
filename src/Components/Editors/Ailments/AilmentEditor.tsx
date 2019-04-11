@@ -276,7 +276,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 				id: true,
 				name: true,
 			}),
-			idParam !== null && AilmentModel.read(idParam),
+			idParam !== 'new' && AilmentModel.read(idParam),
 		]).then(responses => {
 			this.setState({
 				items: responses[0].data,
