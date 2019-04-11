@@ -1,13 +1,5 @@
 #!/usr/bin/env bash
 
-if ! git diff-index --quiet HEAD; then
-    echo
-    echo "You have uncommitted changes. Commit and push them before deploying."
-    echo
-
-    exit
-fi
-
 npm_execpath="${npm_execpath:-}"
 
 reset="\e[0m"
@@ -33,6 +25,13 @@ function usage() {
     indent="    "
 
     echo -e "Usage: ${bold}${me} ${reset}[options] ${underline}bucket${reset} [${underline}distribution-id${reset}]"
+    echo
+    echo "Deploys the application to an S3 bucket and, optionally, invalidates a CloudFront distribution sitting in front"
+    echo "of the S3 bucket."
+    echo
+    echo "You must install and configure the AWS CLI in order to use this command. Information for doing so may be"
+    echo "found here: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html."
+    echo
     echo "Arguments:"
     echo -e "${indent}${bold}bucket${reset}"
     echo "${indent}${indent}The name of the S3 bucket to deploy the application files to"
@@ -86,6 +85,14 @@ done
 
 if [[ -z "${bucket}" ]]; then
     usage
+fi
+
+if ! git diff-index --quiet HEAD; then
+    echo
+    echo "You have uncommitted changes. Commit and push them before deploying."
+    echo
+
+    exit
 fi
 
 apiUrl="https://mhw-db.com"
