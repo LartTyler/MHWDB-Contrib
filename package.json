@@ -38,8 +38,9 @@
 		"utility-types": "^2.1.0"
 	},
 	"scripts": {
-		"start": "parcel serve index.html -p 4000 --no-hmr",
-		"build": "parcel build index.html"
+		"build": "parcel build index.html",
+		"deploy": "./bin/deploy",
+		"start": "parcel serve index.html -p 4000 --no-hmr"
 	},
 	"sideEffects": false
 }

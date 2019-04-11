@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+
+if ! git diff-index --quiet HEAD --; then
+    echo
+    echo "You have uncommitted changes. Commit and push them before deploying."
+    echo
+
+    exit
+fi
+
+npm_execpath="${npm_execpath:-}"
+
+reset="\e[0m"
+bold="\e[1m"
+underline="\e[4m"
+colorWarn="\e[33m"
+colorCommand="\e[2m"
+checkmark="\u2714"
+
+function usage() {
+    local me="${0}"
+
+    if [[ -n "${npm_execpath}" ]]; then
+        me=`basename "${npm_execpath}" | cut -d. -f1`
+
+        if [[ "${me}" == "npm" ]]; then
+            me="npm run"
+        fi
+
+        me="${me} deploy"
+    fi
+
+    indent="    "
+
+    echo -e "Usage: ${bold}${me} ${reset}[options] ${underline}bucket${reset} [${underline}distribution-id${reset}]"
+    echo "Arguments:"
+    echo -e "${indent}${bold}bucket${reset}"
+    echo "${indent}${indent}The name of the S3 bucket to deploy the application files to"
+    echo
+    echo -e "${indent}${bold}distribution-id${reset}"
+    echo "${indent}${indent}The ID of the CloudFront distribution to invalidate after deploying"
+    echo
+    echo "Options:"
+    echo "${indent}--minimal, -n"
+    echo "${indent}${indent}Minimal interaction mode. Don't ask any questions and build with default values. You'll still"
+    echo "${indent}${indent}be prompted to confirm that deploy settings are correct before any changes are deployed."
+    echo
+    echo "${indent}--help, -h"
+    echo "${indent}${indent}Displays this help message."
+    echo
+
+    exit
+}
+
+bucket=""
+distribution=""
+minimalInteraction=""
+
+while [[ $# > 0 ]]; do
+    value="${1}"
+    shift
+
+    case "${value}" in
+        --minimal|-n)
+            minimalInteraction="minimalInteraction"
+
+            ;;
+
+        --help|-h)
+            usage
+
+            ;;
+
+        *)
+            if [[ -n "${bucket}" ]]; then
+                if [[ -n "${distribution}" ]]; then
+                    usage
+                else
+                    distribution="${value}"
+                fi
+            else
+                bucket="${value}"
+            fi
+    esac
+done
+
+if [[ -z "${bucket}" ]]; then
+    usage
+fi
+
+apiUrl="https://mhw-db.com"
+
+if [[ -z "${minimalInteraction}" ]]; then
+    echo
+    read -p "Enter the API URL, or leave blank to use the default (${apiUrl}): " -r
+
+    reply="$(echo -e "${REPLY}" | tr -d '[:space:]')"
+
+    if [[ -n "${reply}" ]]; then
+        apiUrl="${reply}"
+    fi
+fi
+
+echo
+echo -e "${underline}${bold}Pre-Build Checklist${reset}"
+echo -e "${checkmark} Verify that the API URL should be '${apiUrl}'"
+echo -e "${checkmark} Verify that the deploy target should be '${bucket}'"
+
+if [[ -z "${distribution}" ]]; then
+    echo
+    echo -e "${colorWarn}"'!!'" You did not provide a CloudFlare distribution ID to invalidate.${reset}"
+else
+    echo -e "${checkmark} Verify that the CloudFront distribution ID '${distribution}' is correct"
+fi
+
+branch=`git rev-parse --abbrev-ref HEAD`
+
+if [[ "${branch}" != "master" ]]; then
+    echo
+    echo -e "${colorWarn}"'!!'" You are deploying the ${branch} branch. Double check that this is correct.${reset}"
+fi
+
+echo
+read -p "Deploying application to the ${bucket} bucket. Continue? (y/N) " -r
+
+if [[ "${REPLY}" =~ ^[yY] ]]; then
+    echo "Operation cancelled."
+    echo
+
+    exit
+fi
+
+echo
+echo "Building project files..."
+
+API_URL="${apiUrl}" yarn build --log-level 1
+
+bucketUrl="s3://${bucket}"
+
+echo
+echo "Deploying files to ${bucketUrl}..."
+echo -e "${colorCommand}$ aws s3 sync --delete --quiet --content-encoding utf-8 dist/ ${bucketUrl}${reset}"
+
+aws s3 sync --delete --quiet --content-encoding utf-8 dist/ "${bucketUrl}"
+
+if [[ -z "${distribution}" ]]; then
+    echo
+    echo "Invalidating CloudFront distribution with ID ${distribution}..."
+    echo -e "${colorCommand}aws cloudfront create-invalidation --distribution-id "${distribution}" --paths "/*" > /dev/null${reset}"
+
+    aws cloudfront create-invalidation --distribution-id "${distribution}" --paths "/*" > /dev/null
+fi
+
+echo
