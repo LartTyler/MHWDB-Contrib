@@ -59,3 +59,9 @@ textarea.full-width {
 		right: 0;
 	}
 }
+
+.#{$ns}-button-group .#{$ns}-popover-target.full-width {
+	> div[class=""], div.#{$ns}-active {
+		@extend .full-width;
+	}
+}
