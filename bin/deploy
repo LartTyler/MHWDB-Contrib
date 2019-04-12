@@ -98,7 +98,7 @@ if [[ -z "${bucket}" ]]; then
     usage
 fi
 
-if ! git diff-index --quiet HEAD; then
+if ! git diff --quiet; then
     echo
     echo "You have uncommitted changes. Commit and push them before deploying."
     echo
