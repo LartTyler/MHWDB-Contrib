@@ -158,9 +158,9 @@ bucketUrl="s3://${bucket}"
 
 echo
 echo "Deploying files to ${bucketUrl}..."
-echo -e "${colorCommand}$ aws s3 sync --profile ${awsProfile} --delete --quiet --content-type 'text/html; charset=utf-8' dist/ ${bucketUrl}${reset}"
+echo -e "${colorCommand}$ aws s3 sync --profile ${awsProfile} --delete --quiet --content-encoding utf-8 dist/ ${bucketUrl}${reset}"
 
-aws s3 sync --profile "${awsProfile}" --delete --quiet --content-type "text/html; charset=utf-8" dist/ "${bucketUrl}"
+aws s3 sync --profile "${awsProfile}" --delete --quiet --content-encoding utf-8 dist/ "${bucketUrl}"
 
 if [[ -n "${distribution}" ]]; then
     echo
