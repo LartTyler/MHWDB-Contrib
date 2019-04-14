@@ -25,12 +25,12 @@ import {StringValues, toStringValues} from '../../../Utility/object';
 import {filterStrings} from '../../../Utility/select';
 import {ucfirst} from '../../../Utility/string';
 import {IThemeAware, withTheme} from '../../Contexts/ThemeContext';
-import {LinkButton} from '../../Navigation/LinkButton';
 import {Role} from '../../RequireRole';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
 import {CraftingCostDialog} from '../CraftingCostDialog';
+import {EditorButtons} from '../EditorButtons';
 import {SkillDialog} from '../SkillDialog';
 import {skillSorter} from '../Skills/SkillList';
 import {Slots} from '../Slots';
@@ -540,26 +540,12 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						</Button>
 					)}
 
-					<Row align="end">
-						<Cell size={1}>
-							<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/objects/armor">
-								Close
-							</LinkButton>
-						</Cell>
-
-						{!readOnly && (
-							<Cell size={1}>
-								<Button
-									fill={true}
-									intent={Intent.PRIMARY}
-									loading={this.state.saving}
-									onClick={this.onSave}
-								>
-									Save
-								</Button>
-							</Cell>
-						)}
-					</Row>
+					<EditorButtons
+						onClose={this.onClose}
+						onSave={this.onSave}
+						readOnly={readOnly}
+						saving={this.state.saving}
+					/>
 				</form>
 
 				{!readOnly && (
@@ -593,6 +579,10 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
+	});
+
+	private onClose = () => this.setState({
+		redirect: true,
 	});
 
 	private onCraftingCostDialogHide = () => this.setState({
