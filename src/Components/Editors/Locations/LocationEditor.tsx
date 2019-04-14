@@ -192,6 +192,10 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 				message: error.message,
 			});
 
+			this.setState({
+				saving: false,
+			});
+
 			if (isConstraintViolationError(error)) {
 				this.setState({
 					violations: error.context.violations,
