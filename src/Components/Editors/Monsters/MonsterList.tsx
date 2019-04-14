@@ -1,9 +1,13 @@
 import * as React from 'react';
 import {Monster, MonsterModel} from '../../../Api/Models/Monster';
 import {ucfirst, ucwords} from '../../../Utility/string';
-import {createEntitySorter, EntityList} from '../EntityList';
+import {createEntityFilter, createEntitySorter, EntityList} from '../EntityList';
 
 export const monsterSorter = createEntitySorter<Monster>('name');
+
+const filterName = createEntityFilter<Monster>('name');
+const filterType = createEntityFilter<Monster>('type');
+const filterSpecies = createEntityFilter<Monster>('species');
 
 const MonsterEntityList = EntityList.ofType<Monster>();
 
@@ -29,13 +33,16 @@ export class MonsterList extends React.PureComponent<{}, IState> {
 				columns={[
 					{
 						dataIndex: 'name',
+						onFilter: filterName,
 						title: 'Name',
 					},
 					{
+						onFilter: filterType,
 						render: monster => ucfirst(monster.type),
 						title: 'Type',
 					},
 					{
+						onFilter: filterSpecies,
 						render: monster => ucwords(monster.species),
 						title: 'Species',
 					},
