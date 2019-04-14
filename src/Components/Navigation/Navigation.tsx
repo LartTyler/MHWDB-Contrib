@@ -8,7 +8,7 @@ import {
 	NavbarDivider,
 	NavbarGroup,
 	NavbarHeading,
-	Popover,
+	Popover, PopoverPosition,
 } from '@blueprintjs/core';
 import * as React from 'react';
 import {GoMarkGithub} from 'react-icons/go';
@@ -56,7 +56,7 @@ export const Navigation: React.FC<{}> = () => (
 
 			{isUserAuthenticated() ? (
 				<>
-					<Popover>
+					<Popover position={PopoverPosition.BOTTOM}>
 						<Button minimal={true} rightIcon="caret-down">
 							{tokenStore.getToken().body.displayName}
 						</Button>
