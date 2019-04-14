@@ -39,7 +39,7 @@ export const logout = () => {
 
 	toaster.show({
 		intent: Intent.PRIMARY,
-		message: 'You have been logged out. Objects are now read-only.',
+		message: 'You have been logged out. Objects are now read only.',
 	});
 };
 
