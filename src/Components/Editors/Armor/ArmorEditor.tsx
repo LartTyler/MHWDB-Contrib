@@ -2,6 +2,7 @@ import {Button, ButtonGroup, Classes, FormGroup, H2, H3, InputGroup, Intent, Spi
 import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Rank, rankNames, Slot} from '../../../Api/Model';
 import {
@@ -25,6 +26,7 @@ import {filterStrings} from '../../../Utility/select';
 import {ucfirst} from '../../../Utility/string';
 import {IThemeAware, withTheme} from '../../Contexts/ThemeContext';
 import {LinkButton} from '../../Navigation/LinkButton';
+import {Role} from '../../RequireRole';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
@@ -204,6 +206,8 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		else if (this.state.redirect)
 			return <Redirect to="/objects/armor" />;
 
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
+
 		return (
 			<>
 				<H2>{this.state.name || 'No Name'}</H2>
@@ -212,7 +216,12 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					<Row>
 						<Cell size={6}>
 							<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-								<InputGroup name="name" onChange={this.onStringInputChange} value={this.state.name} />
+								<InputGroup
+									name="name"
+									onChange={this.onStringInputChange}
+									readOnly={readOnly}
+									value={this.state.name}
+								/>
 							</ValidationAwareFormGroup>
 						</Cell>
 
@@ -221,6 +230,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 								<ButtonGroup fill={true}>
 									<ArmorSetEntitySelect
 										config={{
+											disabled: readOnly,
 											itemListPredicate: filterArmorSets,
 											items: this.state.armorSetList || [],
 											loading: this.state.armorSetList === null,
@@ -235,7 +245,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 										labelField="name"
 									/>
 
-									{this.state.armorSetList !== null && (
+									{!readOnly && this.state.armorSetList !== null && (
 										<Button className={Classes.FIXED} icon="cross" onClick={this.onArmorSetClear} />
 									)}
 								</ButtonGroup>
@@ -247,6 +257,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						<Cell size={6}>
 							<FormGroup label="Type">
 								<Select
+									disabled={readOnly}
 									itemListPredicate={filterStrings}
 									items={armorTypeNames}
 									itemTextRenderer={ucfirst}
@@ -262,6 +273,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						<Cell size={6}>
 							<FormGroup label="Rank">
 								<Select
+									disabled={readOnly}
 									itemListPredicate={filterStrings}
 									items={rankNames}
 									itemTextRenderer={ucfirst}
@@ -282,7 +294,12 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 								labelFor="rarity"
 								violations={this.state.violations}
 							>
-								<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
+								<InputGroup
+									name="rarity"
+									onChange={this.onRarityChange}
+									readOnly={readOnly}
+									value={this.state.rarity}
+								/>
 							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
@@ -300,6 +317,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="defense.base"
 									onBlur={this.onDefenseBlur}
 									onChange={this.onDefenseChange}
+									readOnly={readOnly}
 									value={this.state.defense.base}
 								/>
 							</ValidationAwareFormGroup>
@@ -315,6 +333,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="defense.max"
 									onBlur={this.onDefenseBlur}
 									onChange={this.onDefenseChange}
+									readOnly={readOnly}
 									value={this.state.defense.max}
 								/>
 							</ValidationAwareFormGroup>
@@ -330,6 +349,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="defense.augmented"
 									onBlur={this.onDefenseBlur}
 									onChange={this.onDefenseChange}
+									readOnly={readOnly}
 									value={this.state.defense.augmented}
 								/>
 							</ValidationAwareFormGroup>
@@ -349,6 +369,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="resistances.fire"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
+									readOnly={readOnly}
 									value={this.state.resistances.fire}
 								/>
 							</ValidationAwareFormGroup>
@@ -364,6 +385,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="resistances.water"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
+									readOnly={readOnly}
 									value={this.state.resistances.water}
 								/>
 							</ValidationAwareFormGroup>
@@ -379,6 +401,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="resistances.thunder"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
+									readOnly={readOnly}
 									value={this.state.resistances.thunder}
 								/>
 							</ValidationAwareFormGroup>
@@ -396,6 +419,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="resistances.ice"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
+									readOnly={readOnly}
 									value={this.state.resistances.ice}
 								/>
 							</ValidationAwareFormGroup>
@@ -411,6 +435,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 									name="resistances.dragon"
 									onBlur={this.onResistanceBlur}
 									onChange={this.onResistanceChange}
+									readOnly={readOnly}
 									value={this.state.resistances.dragon}
 								/>
 							</ValidationAwareFormGroup>
@@ -424,6 +449,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							<Slots
 								slots={this.state.slots}
 								onChange={this.onSlotsChange}
+								readOnly={readOnly}
 							/>
 						</Cell>
 
@@ -434,6 +460,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 								accepted={armorAttributes}
 								attributes={this.state.attributes}
 								onChange={this.onAttributesChange}
+								readOnly={readOnly}
 							/>
 						</Cell>
 					</Row>
@@ -456,7 +483,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							},
 							{
 								align: 'right',
-								render: record => (
+								render: record => !readOnly && (
 									<Button icon="cross" minimal={true} onClick={() => this.onSkillRemove(record)} />
 								),
 								title: <div>&nbsp;</div>,
@@ -468,9 +495,11 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						rowKey="id"
 					/>
 
-					<Button icon="plus" onClick={this.onSkillDialogShow} style={{marginTop: 10}}>
-						Add Skill
-					</Button>
+					{!readOnly && (
+						<Button icon="plus" onClick={this.onSkillDialogShow} style={{marginTop: 10}}>
+							Add Skill
+						</Button>
+					)}
 
 					<H3 style={{marginTop: 20}}>Crafting</H3>
 
@@ -490,7 +519,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 							},
 							{
 								align: 'right',
-								render: cost => (
+								render: cost => !readOnly && (
 									<Button
 										icon="cross"
 										minimal={true}
@@ -505,43 +534,51 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						rowKey={cost => cost.item.id.toString(10)}
 					/>
 
-					<Button icon="plus" onClick={this.onCraftingCostDialogShow}>
-						Add Item
-					</Button>
+					{!readOnly && (
+						<Button icon="plus" onClick={this.onCraftingCostDialogShow}>
+							Add Item
+						</Button>
+					)}
 
 					<Row align="end">
 						<Cell size={1}>
 							<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/objects/armor">
-								Cancel
+								Close
 							</LinkButton>
 						</Cell>
 
-						<Cell size={1}>
-							<Button
-								fill={true}
-								intent={Intent.PRIMARY}
-								loading={this.state.saving}
-								onClick={this.onSave}
-							>
-								Save
-							</Button>
-						</Cell>
+						{!readOnly && (
+							<Cell size={1}>
+								<Button
+									fill={true}
+									intent={Intent.PRIMARY}
+									loading={this.state.saving}
+									onClick={this.onSave}
+								>
+									Save
+								</Button>
+							</Cell>
+						)}
 					</Row>
 				</form>
 
-				<SkillDialog
-					isOpen={this.state.showSkillDialog}
-					omit={this.state.omittedSkills}
-					onClose={this.onSkillDialogHide}
-					onSave={this.onSkillAdd}
-					skills={this.state.skillList}
-				/>
+				{!readOnly && (
+					<>
+						<SkillDialog
+							isOpen={this.state.showSkillDialog}
+							omit={this.state.omittedSkills}
+							onClose={this.onSkillDialogHide}
+							onSave={this.onSkillAdd}
+							skills={this.state.skillList}
+						/>
 
-				<CraftingCostDialog
-					isOpen={this.state.showCraftingCostDialog}
-					onClose={this.onCraftingCostDialogHide}
-					onSubmit={this.onCraftingCostAdd}
-				/>
+						<CraftingCostDialog
+							isOpen={this.state.showCraftingCostDialog}
+							onClose={this.onCraftingCostDialogHide}
+							onSubmit={this.onCraftingCostAdd}
+						/>
+					</>
+				)}
 			</>
 		);
 	}

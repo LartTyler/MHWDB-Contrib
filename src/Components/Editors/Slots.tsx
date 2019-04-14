@@ -13,6 +13,8 @@ export const slotRanks = [
 interface IProps {
 	slots: Slot[];
 	onChange: (slots: Slot[]) => void;
+
+	readOnly?: boolean;
 }
 
 export const Slots: React.FC<IProps> = props => {
@@ -31,7 +33,7 @@ export const Slots: React.FC<IProps> = props => {
 							},
 							{
 								align: 'right',
-								render: record => (
+								render: record => !props.readOnly && (
 									<Button
 										icon="cross"
 										minimal={true}
@@ -46,54 +48,58 @@ export const Slots: React.FC<IProps> = props => {
 						noDataPlaceholder={<div style={{marginBottom: 5}}>This item has no slots.</div>}
 					/>
 
-					<Button disabled={props.slots.length === 3} icon="plus" onClick={() => setShowDialog(true)}>
-						Add Slot
-					</Button>
+					{!props.readOnly && (
+						<>
+							<Button disabled={props.slots.length === 3} icon="plus" onClick={() => setShowDialog(true)}>
+								Add Slot
+							</Button>
 
-					<Dialog
-						className={theme === Theme.DARK ? Classes.DARK : ''}
-						isOpen={showDialog}
-						onClose={() => setShowDialog(false)}
-						title="Add Slot"
-					>
-						<div className={Classes.DIALOG_BODY}>
-							<FormGroup label="Rank">
-								<Select
-									items={slotRanks}
-									onItemSelect={rank => setSelectedRank(rank)}
-									selected={selectedRank}
-									popoverProps={{
-										targetClassName: 'full-width',
-									}}
-								/>
-							</FormGroup>
-						</div>
+							<Dialog
+								className={theme === Theme.DARK ? Classes.DARK : ''}
+								isOpen={showDialog}
+								onClose={() => setShowDialog(false)}
+								title="Add Slot"
+							>
+								<div className={Classes.DIALOG_BODY}>
+									<FormGroup label="Rank">
+										<Select
+											items={slotRanks}
+											onItemSelect={rank => setSelectedRank(rank)}
+											selected={selectedRank}
+											popoverProps={{
+												targetClassName: 'full-width',
+											}}
+										/>
+									</FormGroup>
+								</div>
 
-						<div className={Classes.DIALOG_FOOTER}>
-							<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-								<Button onClick={() => setShowDialog(false)}>
-									Cancel
-								</Button>
+								<div className={Classes.DIALOG_FOOTER}>
+									<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+										<Button onClick={() => setShowDialog(false)}>
+											Cancel
+										</Button>
 
-								<Button
-									intent={Intent.PRIMARY}
-									onClick={() => {
-										props.onChange([
-											...props.slots,
-											{
-												rank: selectedRank,
-											},
-										]);
+										<Button
+											intent={Intent.PRIMARY}
+											onClick={() => {
+												props.onChange([
+													...props.slots,
+													{
+														rank: selectedRank,
+													},
+												]);
 
-										setShowDialog(false);
-										setSelectedRank(1);
-									}}
-								>
-									Save
-								</Button>
-							</div>
-						</div>
-					</Dialog>
+												setShowDialog(false);
+												setSelectedRank(1);
+											}}
+										>
+											Save
+										</Button>
+									</div>
+								</div>
+							</Dialog>
+						</>
+					)}
 				</>
 			)}
 		</ThemeContext.Consumer>
