@@ -6,7 +6,7 @@ import {Omit} from 'utility-types';
 interface ILinkButtonProps {
 	to: string;
 
-	buttonProps?: IButtonProps;
+	buttonProps?: IButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
 	linkProps?: Omit<LinkProps, 'to'>;
 }
 
