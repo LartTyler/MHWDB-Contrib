@@ -162,7 +162,7 @@ echo -e "${colorCommand}$ aws s3 sync --profile ${awsProfile} --delete --quiet -
 
 aws s3 sync --profile "${awsProfile}" --delete --quiet --content-encoding utf-8 dist/ "${bucketUrl}"
 
-echo -e "aws s3 cp --profile ${awsProfile} --quiet --content-type 'text/html; charset=utf-8' --metadata-directive REPLACE ${bucketUrl}/index.html ${bucketUrl}/index.html"
+echo -e "${colorCommand}$ aws s3 cp --profile ${awsProfile} --quiet --content-type 'text/html; charset=utf-8' --metadata-directive REPLACE ${bucketUrl}/index.html ${bucketUrl}/index.html${reset}"
 
 aws s3 cp --profile "${awsProfile}" --quiet --content-type "text/html; charset=utf-8" --metadata-directive REPLACE "${bucketUrl}/index.html" "${bucketUrl}/index.html"
 
