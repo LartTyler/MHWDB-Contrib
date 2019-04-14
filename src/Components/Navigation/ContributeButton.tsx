@@ -27,7 +27,7 @@ Object.entries(weaponTypeLabels).map(([type, label]) => {
 export const ContributeButton: React.FC<{}> = () => {
 	return (
 		<Popover autoFocus={false} position={Position.BOTTOM_LEFT}>
-			<Button minimal={true}>Objects</Button>
+			<Button minimal={true} rightIcon="caret-down">Objects</Button>
 
 			<Menu>
 				<LinkedMenuItem href="/objects/ailments" text="Ailments" />
