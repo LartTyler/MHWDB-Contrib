@@ -15,6 +15,8 @@ interface IProps {
 	onChange: (ranks: ArmorSetBonusRank[]) => void;
 	ranks: ArmorSetBonusRank[];
 	skills: Skill[];
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -51,7 +53,7 @@ export class ArmorSetBonusRanksEditor extends React.PureComponent<IProps, IState
 						},
 						{
 							align: 'right',
-							render: rank => (
+							render: rank => !this.props.readOnly && (
 								<>
 									<Button icon="edit" minimal={true} onClick={() => this.onEditClick(rank)} />
 
@@ -68,79 +70,83 @@ export class ArmorSetBonusRanksEditor extends React.PureComponent<IProps, IState
 					rowKey="pieces"
 				/>
 
-				<Button
-					disabled={this.props.ranks.length === 5}
-					icon="plus"
-					onClick={this.onAddClick}
-					style={{marginTop: 10}}
-				>
-					Add Rank
-				</Button>
-
-				<ThemeContext.Consumer>
-					{theme => (
-						<Dialog
-							className={theme === Theme.DARK ? Classes.DARK : ''}
-							isOpen={this.state.showDialog}
-							onClose={this.onDialogClose}
-							title="Modify Rank"
+				{!this.props.readOnly && (
+					<>
+						<Button
+							disabled={this.props.ranks.length === 5}
+							icon="plus"
+							onClick={this.onAddClick}
+							style={{marginTop: 10}}
 						>
-							<div className={Classes.DIALOG_BODY}>
-								<FormGroup label="Pieces">
-									<Select
-										filterable={false}
-										items={this.state.allowedPieces}
-										onItemSelect={this.onPiecesSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.pieces}
-									/>
-								</FormGroup>
+							Add Rank
+						</Button>
 
-								<FormGroup label="Skill">
-									<Select
-										itemListPredicate={filterSkills}
-										items={this.props.skills}
-										itemTextRenderer={this.renderSkillText}
-										onItemSelect={this.onSkillSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.skill}
-										virtual={true}
-									/>
-								</FormGroup>
+						<ThemeContext.Consumer>
+							{theme => (
+								<Dialog
+									className={theme === Theme.DARK ? Classes.DARK : ''}
+									isOpen={this.state.showDialog}
+									onClose={this.onDialogClose}
+									title="Modify Rank"
+								>
+									<div className={Classes.DIALOG_BODY}>
+										<FormGroup label="Pieces">
+											<Select
+												filterable={false}
+												items={this.state.allowedPieces}
+												onItemSelect={this.onPiecesSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.pieces}
+											/>
+										</FormGroup>
 
-								<FormGroup label="Skill Level">
-									<Select
-										disabled={this.state.skill === null}
-										filterable={false}
-										items={this.state.skill ? range(1, this.state.skill.ranks.length) : []}
-										itemTextRenderer={this.renderSkillLevelText}
-										onItemSelect={this.onSkillLevelSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.skillLevel}
-									/>
-								</FormGroup>
-							</div>
+										<FormGroup label="Skill">
+											<Select
+												itemListPredicate={filterSkills}
+												items={this.props.skills}
+												itemTextRenderer={this.renderSkillText}
+												onItemSelect={this.onSkillSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.skill}
+												virtual={true}
+											/>
+										</FormGroup>
 
-							<div className={Classes.DIALOG_FOOTER}>
-								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-									<Button onClick={this.onDialogClose}>
-										Cancel
-									</Button>
+										<FormGroup label="Skill Level">
+											<Select
+												disabled={this.state.skill === null}
+												filterable={false}
+												items={this.state.skill ? range(1, this.state.skill.ranks.length) : []}
+												itemTextRenderer={this.renderSkillLevelText}
+												onItemSelect={this.onSkillLevelSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.skillLevel}
+											/>
+										</FormGroup>
+									</div>
 
-									<Button intent={Intent.PRIMARY} onClick={this.onDialogSave}>
-										Save
-									</Button>
-								</div>
-							</div>
-						</Dialog>
-					)}
-				</ThemeContext.Consumer>
+									<div className={Classes.DIALOG_FOOTER}>
+										<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+											<Button onClick={this.onDialogClose}>
+												Cancel
+											</Button>
+
+											<Button intent={Intent.PRIMARY} onClick={this.onDialogSave}>
+												Save
+											</Button>
+										</div>
+									</div>
+								</Dialog>
+							)}
+						</ThemeContext.Consumer>
+					</>
+				)}
 			</>
 		);
 	}
