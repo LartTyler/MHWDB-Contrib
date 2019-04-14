@@ -35,7 +35,7 @@ class PasswordResetComponent extends React.PureComponent<IProps, IState> {
 			return <Redirect to="/login" />;
 
 		return (
-			<div className="no-navbar content-container">
+			<div className="content-container">
 				<H1>Reset Your Password</H1>
 
 				<p>

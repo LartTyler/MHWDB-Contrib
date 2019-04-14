@@ -35,7 +35,7 @@ class UserActivationComponent extends React.PureComponent<IProps, IState> {
 			return <Redirect to="/login" />;
 
 		return (
-			<div className="no-navbar content-container">
+			<div className="content-container">
 				<H1>Welcome!</H1>
 
 				<p>

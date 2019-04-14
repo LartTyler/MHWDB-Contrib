@@ -47,11 +47,7 @@ export class Layout extends React.Component<{}, ILayoutState> {
 					<ThemeMutatorContext.Provider value={this.onThemeChange}>
 						<Router history={history}>
 							<Switch>
-								<Route path="/login" component={Login} />
-								<Route path="/password-reset/:code" component={PasswordReset} />
-								<Route path="/activate/:code" component={UserActivation} />
-
-								<PrivateRoute path="/" component={App} />
+								<Route path="/" component={App} />
 							</Switch>
 						</Router>
 					</ThemeMutatorContext.Provider>
