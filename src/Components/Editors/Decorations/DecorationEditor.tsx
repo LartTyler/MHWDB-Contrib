@@ -2,13 +2,15 @@ import {Button, H2, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {DecorationModel} from '../../../Api/Models/Decoration';
 import {Skill, SkillModel, SkillRank} from '../../../Api/Models/Skill';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
-import {LinkButton} from '../../Navigation/LinkButton';
+import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
+import {EditorButtons} from '../EditorButtons';
 import {createEntitySorter} from '../EntityList';
 import {SkillDialog} from '../SkillDialog';
 import {slotRanks} from '../Slots';
@@ -114,6 +116,8 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 		else if (this.state.redirect)
 			return <Redirect to="/objects/decorations" />;
 
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
+
 		return (
 			<form onSubmit={this.save}>
 				<H2>{this.state.name || 'No Name'}</H2>
@@ -121,7 +125,12 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 				<Row>
 					<Cell size={6}>
 						<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-							<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+							<InputGroup
+								name="name"
+								onChange={this.onNameChange}
+								readOnly={readOnly}
+								value={this.state.name}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 				</Row>
@@ -129,13 +138,19 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 				<Row>
 					<Cell size={6}>
 						<ValidationAwareFormGroup label="Rarity" labelFor="rarity" violations={this.state.violations}>
-							<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
+							<InputGroup
+								name="rarity"
+								onChange={this.onRarityChange}
+								readOnly={readOnly}
+								value={this.state.rarity}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 
 					<Cell size={6}>
 						<ValidationAwareFormGroup label="Slot" labelFor="slot" violations={this.state.violations}>
 							<Select
+								disabled={readOnly}
 								items={slotRanks}
 								onItemSelect={this.onSlotSelect}
 								popoverProps={{
@@ -165,7 +180,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 						},
 						{
 							align: 'right',
-							render: record => (
+							render: record => !readOnly && (
 								<Button icon="cross" minimal={true} onClick={() => this.onSkillRemove(record)} />
 							),
 							title: <div>&nbsp;</div>,
@@ -177,34 +192,35 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 					rowKey="id"
 				/>
 
-				<Button icon="plus" onClick={this.onSkillDialogShow} style={{marginTop: 10}}>
-					Add Skill
-				</Button>
-
-				<SkillDialog
-					isOpen={this.state.showSkillDialog}
-					omit={this.state.omittedSkills}
-					onClose={this.onSkillDialogClose}
-					onSave={this.onSkillAdd}
-					skills={this.state.skillList}
-				/>
-
-				<Row align="end">
-					<Cell size={1}>
-						<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/objects/decorations">
-							Cancel
-						</LinkButton>
-					</Cell>
-
-					<Cell size={1}>
-						<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
-							Save
+				{!readOnly && (
+					<>
+						<Button icon="plus" onClick={this.onSkillDialogShow} style={{marginTop: 10}}>
+							Add Skill
 						</Button>
-					</Cell>
-				</Row>
+
+						<SkillDialog
+							isOpen={this.state.showSkillDialog}
+							omit={this.state.omittedSkills}
+							onClose={this.onSkillDialogClose}
+							onSave={this.onSkillAdd}
+							skills={this.state.skillList}
+						/>
+					</>
+				)}
+
+				<EditorButtons
+					onClose={this.onClose}
+					onSave={this.save}
+					readOnly={readOnly}
+					saving={this.state.saving}
+				/>
 			</form>
 		);
 	}
+
+	private onClose = () => this.setState({
+		redirect: true,
+	});
 
 	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		name: event.currentTarget.value,
