@@ -63,7 +63,7 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/items" />;
+			return <Redirect to="/objects/items" />;
 
 		return (
 			<>
@@ -115,7 +115,7 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 
 					<Row align="end">
 						<Cell size={1}>
-							<LinkButton to="/edit/items" buttonProps={{fill: true, disabled: this.state.saving}}>
+							<LinkButton to="/objects/items" buttonProps={{fill: true, disabled: this.state.saving}}>
 								Cancel
 							</LinkButton>
 						</Cell>

@@ -31,7 +31,7 @@ export class ArmorList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<ArmorEntityList
-				basePath="/edit/armor"
+				basePath="/objects/armor"
 				columns={[
 					{
 						dataIndex: 'name',

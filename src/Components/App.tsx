@@ -22,7 +22,7 @@ export const App: React.FC<{}> = () => (
 				<Route path="/activate/:code" component={UserActivation} />
 
 				<Route path="/" exact={true} component={Home} />
-				<Route path="/edit" component={Editors} />
+				<Route path="/objects" component={Editors} />
 
 				<Route component={PageNotFound} />
 			</Switch>

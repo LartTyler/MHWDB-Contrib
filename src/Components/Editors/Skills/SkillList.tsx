@@ -27,7 +27,7 @@ export class SkillList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<SkillEntityList
-				basePath="/edit/skills"
+				basePath="/objects/skills"
 				columns={[
 					{
 						dataIndex: 'name',

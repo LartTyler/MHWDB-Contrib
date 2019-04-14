@@ -90,7 +90,7 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to={`/edit/motion-values/${type}`} />;
+			return <Redirect to={`/objects/motion-values/${type}`} />;
 
 		return (
 			<form onSubmit={this.save}>
@@ -154,7 +154,7 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 				<Row align="end">
 					<Cell size={1}>
 						<LinkButton
-							to={`/edit/motion-values/${type}`}
+							to={`/objects/motion-values/${type}`}
 							buttonProps={{
 								disabled: this.state.saving,
 								fill: true,

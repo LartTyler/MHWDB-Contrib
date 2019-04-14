@@ -202,7 +202,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/armor" />;
+			return <Redirect to="/objects/armor" />;
 
 		return (
 			<>
@@ -511,7 +511,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 
 					<Row align="end">
 						<Cell size={1}>
-							<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/edit/armor">
+							<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/objects/armor">
 								Cancel
 							</LinkButton>
 						</Cell>

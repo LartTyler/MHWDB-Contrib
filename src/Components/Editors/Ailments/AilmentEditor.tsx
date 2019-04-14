@@ -2,6 +2,7 @@ import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blu
 import {Cell, MultiSelect, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {AilmentModel, IAilmentPayload, RecoveryAction} from '../../../Api/Models/Ailment';
 import {Item, ItemModel} from '../../../Api/Models/Item';
@@ -10,6 +11,7 @@ import {Projection} from '../../../Api/routes';
 import {toaster} from '../../../toaster';
 import {createEntityListFilter} from '../../../Utility/select';
 import {LinkButton} from '../../Navigation/LinkButton';
+import {Role} from '../../RequireRole';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 
@@ -65,7 +67,9 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/ailments" />;
+			return <Redirect to="/objects/ailments" />;
+
+		const isReadOnly = !isRoleGrantedToUser(Role.EDITOR);
 
 		return (
 			<>
@@ -75,7 +79,12 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 					<Row>
 						<Cell size={6}>
 							<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-								<InputGroup name="name" value={this.state.name} onChange={this.onNameInputChange} />
+								<InputGroup
+									name="name"
+									readOnly={isReadOnly}
+									value={this.state.name}
+									onChange={this.onNameInputChange}
+								/>
 							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
@@ -89,6 +98,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 							>
 								<TextArea
 									name="description"
+									readOnly={isReadOnly}
 									value={this.state.description}
 									onChange={this.onDescriptionInputChange}
 									fill={true}
@@ -104,6 +114,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 							<FormGroup label="Items">
 								<ItemEntitySelect
 									config={{
+										disabled: isReadOnly,
 										itemListPredicate: itemsFilter,
 										items: this.state.items || [],
 										loading: this.state.items === null,
@@ -128,6 +139,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 								violations={this.state.violations}
 							>
 								<MultiSelect
+									disabled={isReadOnly}
 									items={[RecoveryAction.DODGE]}
 									itemTextRenderer={this.renderRecoveryActionValue}
 									onClear={this.onRecoveryActionsClear}
@@ -149,6 +161,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 							<FormGroup label="Items">
 								<ItemEntitySelect
 									config={{
+										disabled: isReadOnly,
 										itemListPredicate: itemsFilter,
 										items: this.state.items,
 										loading: this.state.items === null,
@@ -170,6 +183,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 							<FormGroup label="Skills">
 								<SkillEntitySelect
 									config={{
+										disabled: isReadOnly,
 										itemListPredicate: skillsFilter,
 										items: this.state.skills,
 										loading: this.state.skills === null,
@@ -190,16 +204,23 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 
 					<Row align="end">
 						<Cell size={1}>
-							<LinkButton to="/edit/ailments" buttonProps={{fill: true, disabled: this.state.saving}}>
-								Cancel
+							<LinkButton to="/objects/ailments" buttonProps={{fill: true, disabled: this.state.saving}}>
+								Close
 							</LinkButton>
 						</Cell>
 
-						<Cell size={1}>
-							<Button intent={Intent.PRIMARY} fill={true} loading={this.state.saving} onClick={this.save}>
-								Save
-							</Button>
-						</Cell>
+						{isRoleGrantedToUser(Role.EDITOR) && (
+							<Cell size={1}>
+								<Button
+									intent={Intent.PRIMARY}
+									fill={true}
+									loading={this.state.saving}
+									onClick={this.save}
+								>
+									Save
+								</Button>
+							</Cell>
+						)}
 					</Row>
 				</form>
 			</>

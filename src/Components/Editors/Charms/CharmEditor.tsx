@@ -56,7 +56,7 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/charms" />;
+			return <Redirect to="/objects/charms" />;
 
 		return (
 			<>

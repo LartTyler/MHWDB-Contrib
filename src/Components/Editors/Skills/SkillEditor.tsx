@@ -65,7 +65,7 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/skills" />;
+			return <Redirect to="/objects/skills" />;
 
 		return (
 			<>
@@ -147,7 +147,7 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 						<Cell className="text-right" offset={8} size={2}>
 							<LinkButton
 								buttonProps={{disabled: this.state.saving}}
-								to="/edit/skills"
+								to="/objects/skills"
 								linkProps={{style: {marginRight: 10}}}
 							>
 								Cancel

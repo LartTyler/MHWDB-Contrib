@@ -25,7 +25,7 @@ export class DecorationList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<DecorationEntityList
-				basePath="/edit/decorations"
+				basePath="/objects/decorations"
 				columns={[
 					{
 						dataIndex: 'name',

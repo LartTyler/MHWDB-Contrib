@@ -112,7 +112,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/decorations" />;
+			return <Redirect to="/objects/decorations" />;
 
 		return (
 			<form onSubmit={this.save}>
@@ -191,7 +191,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 
 				<Row align="end">
 					<Cell size={1}>
-						<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/edit/decorations">
+						<LinkButton buttonProps={{disabled: this.state.saving, fill: true}} to="/objects/decorations">
 							Cancel
 						</LinkButton>
 					</Cell>

@@ -78,7 +78,7 @@ class MotionValueListComponent extends React.PureComponent<IProps, IState> {
 							render: mv => (
 								<Controls
 									entity={mv}
-									editPath={`/edit/motion-values/${type}/${mv.id}`}
+									editPath={`/objects/motion-values/${type}/${mv.id}`}
 									onDelete={this.onMotionValueDelete}
 								/>
 							),

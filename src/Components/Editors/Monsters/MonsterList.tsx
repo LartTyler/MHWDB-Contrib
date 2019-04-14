@@ -25,7 +25,7 @@ export class MonsterList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<MonsterEntityList
-				basePath="/edit/monsters"
+				basePath="/objects/monsters"
 				columns={[
 					{
 						dataIndex: 'name',

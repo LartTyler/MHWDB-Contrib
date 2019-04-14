@@ -18,18 +18,18 @@ import {Weapons} from './Weapons';
 export const Editors: React.FC<{}> = () => (
 	<ContentContainer>
 		<Switch>
-			<Route path="/edit/ailments" component={Ailments} />
-			<Route path="/edit/armor" component={Armor} />
-			<Route path="/edit/armor-sets/bonuses" component={ArmorSetBonuses} />
-			<Route path="/edit/armor-sets" component={ArmorSets} />
-			<Route path="/edit/charms" component={Charms} />
-			<Route path="/edit/decorations" component={Decorations} />
-			<Route path="/edit/items" component={Items} />
-			<Route path="/edit/locations" component={Locations} />
-			<Route path="/edit/monsters" component={Monsters} />
-			<Route path="/edit/motion-values" component={MotionValues} />
-			<Route path="/edit/skills" component={Skills} />
-			<Route path="/edit/weapons" component={Weapons} />
+			<Route path="/objects/ailments" component={Ailments} />
+			<Route path="/objects/armor" component={Armor} />
+			<Route path="/objects/armor-sets/bonuses" component={ArmorSetBonuses} />
+			<Route path="/objects/armor-sets" component={ArmorSets} />
+			<Route path="/objects/charms" component={Charms} />
+			<Route path="/objects/decorations" component={Decorations} />
+			<Route path="/objects/items" component={Items} />
+			<Route path="/objects/locations" component={Locations} />
+			<Route path="/objects/monsters" component={Monsters} />
+			<Route path="/objects/motion-values" component={MotionValues} />
+			<Route path="/objects/skills" component={Skills} />
+			<Route path="/objects/weapons" component={Weapons} />
 		</Switch>
 	</ContentContainer>
 );

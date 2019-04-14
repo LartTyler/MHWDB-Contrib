@@ -103,7 +103,7 @@ class ArmorSetBonusEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/armor-sets/bonuses" />;
+			return <Redirect to="/objects/armor-sets/bonuses" />;
 
 		return (
 			<>
