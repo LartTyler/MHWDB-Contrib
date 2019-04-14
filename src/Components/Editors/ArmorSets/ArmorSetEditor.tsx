@@ -2,6 +2,7 @@ import {Button, ButtonGroup, Classes, H2, InputGroup, Intent, Spinner} from '@bl
 import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Rank} from '../../../Api/Model';
 import {Armor, ArmorModel} from '../../../Api/Models/Armor';
@@ -10,9 +11,11 @@ import {ArmorSetBonus, ArmorSetBonusModel} from '../../../Api/Models/ArmorSetBon
 import {toaster} from '../../../toaster';
 import {createEntityListFilter} from '../../../Utility/select';
 import {ucfirst} from '../../../Utility/string';
+import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {armorSorter} from '../Armor/ArmorList';
 import {armorSetBonusSorter} from '../ArmorSetBonuses/ArmorSetBonusList';
+import {EditorButtons} from '../EditorButtons';
 import './ArmorSetEditor.scss';
 
 const filterArmorList = createEntityListFilter<Armor>('name');
@@ -122,6 +125,8 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 		else if (this.state.redirect)
 			return <Redirect to="/objects/armor-sets" />;
 
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
+
 		return (
 			<>
 				<H2>{this.state.name || 'No Name'}</H2>
@@ -130,13 +135,19 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 					<Row>
 						<Cell size={7}>
 							<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-								<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+								<InputGroup
+									name="name"
+									onChange={this.onNameChange}
+									readOnly={readOnly}
+									value={this.state.name}
+								/>
 							</ValidationAwareFormGroup>
 						</Cell>
 
 						<Cell size={5}>
 							<ValidationAwareFormGroup label="Rank" labelFor="rank" violations={this.state.violations}>
 								<Select
+									disabled={readOnly}
 									filterable={false}
 									items={[
 										Rank.LOW,
@@ -161,6 +172,7 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 								violations={this.state.violations}
 							>
 								<MultiSelect
+									disabled={readOnly}
 									itemListPredicate={filterArmorList}
 									items={this.state.armor}
 									itemTextRenderer={this.renderArmorText}
@@ -182,6 +194,7 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 							<ValidationAwareFormGroup label="Bonus" labelFor="Bonus" violations={this.state.violations}>
 								<ButtonGroup fill={true}>
 									<Select
+										disabled={readOnly}
 										itemListPredicate={filterBonusList}
 										items={this.state.bonuses}
 										itemTextRenderer={this.renderBonusText}
@@ -195,7 +208,7 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 										virtual={true}
 									/>
 
-									{this.state.bonuses !== null && (
+									{!readOnly && this.state.bonuses !== null && (
 										<Button className={Classes.FIXED} icon="cross" onClick={this.onBonusClear} />
 									)}
 								</ButtonGroup>
@@ -203,19 +216,12 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					</Row>
 
-					<Row align="end">
-						<Cell size={1}>
-							<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
-								Cancel
-							</Button>
-						</Cell>
-
-						<Cell size={1}>
-							<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
-								Save
-							</Button>
-						</Cell>
-					</Row>
+					<EditorButtons
+						onClose={this.onCancelClick}
+						onSave={this.save}
+						readOnly={readOnly}
+						saving={this.state.saving}
+					/>
 				</form>
 			</>
 		);
