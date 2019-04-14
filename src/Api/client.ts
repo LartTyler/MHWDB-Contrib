@@ -36,7 +36,7 @@ interface IAxiosError {
 	request?: XMLHttpRequest;
 }
 
-const isAxiosErrorResponse = <T>(value: any): value is IAxiosError => {
+const isAxiosErrorResponse = (value: any): value is IAxiosError => {
 	return typeof value === 'object' && ('response' in value || 'request' in value);
 };
 
