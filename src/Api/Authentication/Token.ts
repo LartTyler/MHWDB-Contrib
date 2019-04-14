@@ -1,6 +1,7 @@
 import {Role} from '../../Components/RequireRole';
 
 export interface IJwtBody {
+	displayName: string;
 	exp: number;
 	roles: Role[];
 }
