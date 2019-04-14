@@ -6,7 +6,7 @@ import {SkillList} from './SkillList';
 
 export const Skills: React.FC<{}> = () => (
 	<Switch>
-		<Route path="/edit/skills" exact={true} component={SkillList} />
-		<Route path="/edit/skills/:skill(\d+|new)" exact={true} component={SkillEditor} />
+		<Route path="/objects/skills" exact={true} component={SkillList} />
+		<Route path="/objects/skills/:skill(\d+|new)" exact={true} component={SkillEditor} />
 	</Switch>
 );

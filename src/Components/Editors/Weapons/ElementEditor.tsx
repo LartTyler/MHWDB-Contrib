@@ -11,6 +11,8 @@ interface IProps {
 	onElementAdd: (element: WeaponElement) => void;
 	onElementChange: (element: WeaponElement) => void;
 	onElementRemove: (target: WeaponElement) => void;
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -53,7 +55,7 @@ export class ElementEditor extends React.PureComponent<IProps, IState> {
 						},
 						{
 							align: 'right',
-							render: element => (
+							render: element => !this.props.readOnly && (
 								<>
 									<Button icon="edit" minimal={true} onClick={() => this.onEditClick(element)} />
 
@@ -73,72 +75,76 @@ export class ElementEditor extends React.PureComponent<IProps, IState> {
 					rowKey="type"
 				/>
 
-				<Button icon="plus" onClick={this.onEditDialogShow} style={{marginTop: 15}}>
-					Add Element
-				</Button>
+				{!this.props.readOnly && (
+					<>
+						<Button icon="plus" onClick={this.onEditDialogShow} style={{marginTop: 15}}>
+							Add Element
+						</Button>
 
-				<ThemeContext.Consumer>
-					{theme => (
-						<Dialog
-							className={theme === Theme.DARK ? Classes.DARK : ''}
-							isOpen={this.state.showDialog}
-							onClose={this.onEditDialogClose}
-							title="Modify Element"
-						>
-							<div className={Classes.DIALOG_BODY}>
-								<FormGroup label="Element">
-									<Select
-										filterable={false}
-										items={Object.values(Element)}
-										itemTextRenderer={this.renderElementText}
-										omit={this.props.elements.map(element => element.type)}
-										onItemSelect={this.onElementSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.type}
-									/>
-								</FormGroup>
-
-								<Row>
-									<Cell size={8}>
-										<FormGroup label="Damage">
-											<InputGroup
-												name="damage"
-												onChange={this.onDamageChange}
-												value={this.state.damage}
+						<ThemeContext.Consumer>
+							{theme => (
+								<Dialog
+									className={theme === Theme.DARK ? Classes.DARK : ''}
+									isOpen={this.state.showDialog}
+									onClose={this.onEditDialogClose}
+									title="Modify Element"
+								>
+									<div className={Classes.DIALOG_BODY}>
+										<FormGroup label="Element">
+											<Select
+												filterable={false}
+												items={Object.values(Element)}
+												itemTextRenderer={this.renderElementText}
+												omit={this.props.elements.map(element => element.type)}
+												onItemSelect={this.onElementSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.type}
 											/>
 										</FormGroup>
-									</Cell>
 
-									<Cell size={4}>
-										<FormGroup label="Hidden">
-											<Checkbox
-												checked={this.state.hidden}
-												name="hidden"
-												onChange={this.onHiddenChange}
-											>
-												Yes
-											</Checkbox>
-										</FormGroup>
-									</Cell>
-								</Row>
-							</div>
+										<Row>
+											<Cell size={8}>
+												<FormGroup label="Damage">
+													<InputGroup
+														name="damage"
+														onChange={this.onDamageChange}
+														value={this.state.damage}
+													/>
+												</FormGroup>
+											</Cell>
 
-							<div className={Classes.DIALOG_FOOTER}>
-								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-									<Button onClick={this.onEditDialogClose}>
-										Cancel
-									</Button>
+											<Cell size={4}>
+												<FormGroup label="Hidden">
+													<Checkbox
+														checked={this.state.hidden}
+														name="hidden"
+														onChange={this.onHiddenChange}
+													>
+														Yes
+													</Checkbox>
+												</FormGroup>
+											</Cell>
+										</Row>
+									</div>
 
-									<Button intent={Intent.PRIMARY} onClick={this.onEditDialogSave}>
-										Save
-									</Button>
-								</div>
-							</div>
-						</Dialog>
-					)}
-				</ThemeContext.Consumer>
+									<div className={Classes.DIALOG_FOOTER}>
+										<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+											<Button onClick={this.onEditDialogClose}>
+												Cancel
+											</Button>
+
+											<Button intent={Intent.PRIMARY} onClick={this.onEditDialogSave}>
+												Save
+											</Button>
+										</div>
+									</div>
+								</Dialog>
+							)}
+						</ThemeContext.Consumer>
+					</>
+				)}
 			</>
 		);
 	}

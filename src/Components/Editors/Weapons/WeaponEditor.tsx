@@ -1,7 +1,8 @@
-import {Button, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Slot} from '../../../Api/Model';
 import {AttributeName, IAttribute} from '../../../Api/Models/attributes';
@@ -16,8 +17,10 @@ import {
 } from '../../../Api/Models/Weapon';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
+import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
+import {EditorButtons} from '../EditorButtons';
 import {Slots} from '../Slots';
 import {DurabilityEditor} from './DurabilityEditor';
 import {ElementEditor} from './ElementEditor';
@@ -182,7 +185,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to={`/edit/weapons/${type}`} />;
+			return <Redirect to={`/objects/weapons/${type}`} />;
+
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
 
 		return (
 			<form onSubmit={this.save}>
@@ -191,13 +196,23 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				<Row>
 					<Cell size={5}>
 						<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-							<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+							<InputGroup
+								name="name"
+								onChange={this.onNameChange}
+								readOnly={readOnly}
+								value={this.state.name}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 
 					<Cell size={3}>
 						<ValidationAwareFormGroup label="Rarity" labelFor="rarity" violations={this.state.violations}>
-							<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
+							<InputGroup
+								name="rarity"
+								onChange={this.onRarityChange}
+								readOnly={readOnly}
+								value={this.state.rarity}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 
@@ -210,6 +225,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 							<InputGroup
 								name="attack.display"
 								onChange={this.onAttackChange}
+								readOnly={readOnly}
 								value={this.state.attack}
 							/>
 						</ValidationAwareFormGroup>
@@ -224,13 +240,14 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 							accepted={this.state.allowedAttributes}
 							attributes={this.state.attributes}
 							onChange={this.onAttributesChange}
+							readOnly={readOnly}
 						/>
 					</Cell>
 
 					<Cell size={4}>
 						<H3>Slots</H3>
 
-						<Slots slots={this.state.slots} onChange={this.onSlotsChange} />
+						<Slots slots={this.state.slots} onChange={this.onSlotsChange} readOnly={readOnly} />
 					</Cell>
 				</Row>
 
@@ -238,6 +255,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 				<WeaponCraftingEditor
 					crafting={this.state.crafting}
+					readOnly={readOnly}
 					weaponId={this.props.match.params.weapon}
 					weaponType={type}
 				/>
@@ -247,7 +265,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 						<Cell size={6}>
 							<H3 style={{marginTop: 15}}>Durability</H3>
 
-							<DurabilityEditor durability={this.state.durability} />
+							<DurabilityEditor durability={this.state.durability} readOnly={readOnly} />
 						</Cell>
 					)}
 
@@ -259,23 +277,17 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 							onElementAdd={this.onElementAdd}
 							onElementChange={this.onElementChange}
 							onElementRemove={this.onElementRemove}
+							readOnly={readOnly}
 						/>
 					</Cell>
 				</Row>
 
-				<Row align="end">
-					<Cell size={1}>
-						<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
-							Cancel
-						</Button>
-					</Cell>
-
-					<Cell size={1}>
-						<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
-							Save
-						</Button>
-					</Cell>
-				</Row>
+				<EditorButtons
+					onClose={this.onClose}
+					onSave={this.save}
+					readOnly={readOnly}
+					saving={this.state.saving}
+				/>
 			</form>
 		);
 	}
@@ -288,7 +300,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		attributes,
 	});
 
-	private onCancelClick = () => this.setState({
+	private onClose = () => this.setState({
 		redirect: true,
 	});
 

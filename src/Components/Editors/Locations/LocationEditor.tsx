@@ -1,12 +1,15 @@
-import {Button, H2, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {H2, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Camp, LocationModel, LocationPayload} from '../../../Api/Models/Location';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
+import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
+import {EditorButtons} from '../EditorButtons';
 import {createEntitySorter} from '../EntityList';
 import {Camps} from './Camps';
 
@@ -65,7 +68,9 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/locations" />;
+			return <Redirect to="/objects/locations" />;
+
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
 
 		return (
 			<>
@@ -79,7 +84,12 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 								labelFor="name"
 								violations={this.state.violations}
 							>
-								<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+								<InputGroup
+									name="name"
+									onChange={this.onNameChange}
+									readOnly={readOnly}
+									value={this.state.name}
+								/>
 							</ValidationAwareFormGroup>
 						</Cell>
 
@@ -92,6 +102,7 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 								<InputGroup
 									name="zoneCount"
 									onChange={this.onZoneCountChange}
+									readOnly={readOnly}
 									value={this.state.zoneCount}
 								/>
 							</ValidationAwareFormGroup>
@@ -104,27 +115,16 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 						camps={this.state.camps}
 						onDelete={this.onCampDelete}
 						onSave={this.onCampAdd}
+						readOnly={readOnly}
 						zoneCount={parseInt(this.state.zoneCount, 10)}
 					/>
 
-					<Row align="end">
-						<Cell size={1}>
-							<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
-								Cancel
-							</Button>
-						</Cell>
-
-						<Cell size={1}>
-							<Button
-								fill={true}
-								intent={Intent.PRIMARY}
-								loading={this.state.saving}
-								onClick={this.onSave}
-							>
-								Save
-							</Button>
-						</Cell>
-					</Row>
+					<EditorButtons
+						onClose={this.onClose}
+						onSave={this.onSave}
+						readOnly={readOnly}
+						saving={this.state.saving}
+					/>
 				</form>
 			</>
 		);
@@ -143,7 +143,7 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 		});
 	};
 
-	private onCancelClick = () => this.setState({
+	private onClose = () => this.setState({
 		redirect: true,
 	});
 

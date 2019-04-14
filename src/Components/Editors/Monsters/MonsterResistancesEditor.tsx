@@ -9,6 +9,8 @@ import {Theme, ThemeContext} from '../../Contexts/ThemeContext';
 interface IProps {
 	resistances: MonsterResistance[];
 	onChange: (resistances: MonsterResistance[]) => void;
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -44,7 +46,7 @@ export class MonsterResistancesEditor extends React.PureComponent<IProps, IState
 						},
 						{
 							align: 'right',
-							render: resistance => (
+							render: resistance => !this.props.readOnly && (
 								<>
 									<Button icon="edit" minimal={true} onClick={() => this.onEditClick(resistance)} />
 
@@ -64,59 +66,63 @@ export class MonsterResistancesEditor extends React.PureComponent<IProps, IState
 					rowKey="element"
 				/>
 
-				<Button icon="plus" onClick={this.onAddClick} style={{marginTop: 15}}>
-					Add Resistance
-				</Button>
+				{!this.props.readOnly && (
+					<>
+						<Button icon="plus" onClick={this.onAddClick} style={{marginTop: 15}}>
+							Add Resistance
+						</Button>
 
-				<ThemeContext.Consumer>
-					{theme => (
-						<Dialog
-							className={theme === Theme.DARK ? Classes.DARK : ''}
-							isOpen={this.state.showDialog}
-							onClose={this.onDialogClose}
-							title={this.state.activeResistance ? 'Modify Resistance' : 'Add Resistance'}
-						>
-							<div className={Classes.DIALOG_BODY}>
-								<FormGroup label="Element" labelFor="element">
-									<Select
-										filterable={false}
-										items={Object.values(Element)}
-										itemTextRenderer={this.renderElementText}
-										onItemSelect={this.onElementSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.element}
-									/>
-								</FormGroup>
+						<ThemeContext.Consumer>
+							{theme => (
+								<Dialog
+									className={theme === Theme.DARK ? Classes.DARK : ''}
+									isOpen={this.state.showDialog}
+									onClose={this.onDialogClose}
+									title={this.state.activeResistance ? 'Modify Resistance' : 'Add Resistance'}
+								>
+									<div className={Classes.DIALOG_BODY}>
+										<FormGroup label="Element" labelFor="element">
+											<Select
+												filterable={false}
+												items={Object.values(Element)}
+												itemTextRenderer={this.renderElementText}
+												onItemSelect={this.onElementSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.element}
+											/>
+										</FormGroup>
 
-								<FormGroup label="Condition" labelFor="condition">
-									<InputGroup
-										name="condition"
-										onChange={this.onConditionChange}
-										value={this.state.condition || ''}
-									/>
-								</FormGroup>
-							</div>
+										<FormGroup label="Condition" labelFor="condition">
+											<InputGroup
+												name="condition"
+												onChange={this.onConditionChange}
+												value={this.state.condition || ''}
+											/>
+										</FormGroup>
+									</div>
 
-							<div className={Classes.DIALOG_FOOTER}>
-								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-									<Button onClick={this.onDialogClose}>
-										Cancel
-									</Button>
+									<div className={Classes.DIALOG_FOOTER}>
+										<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+											<Button onClick={this.onDialogClose}>
+												Cancel
+											</Button>
 
-									<Button
-										disabled={this.state.element === null}
-										intent={Intent.PRIMARY}
-										onClick={this.onSave}
-									>
-										Save
-									</Button>
-								</div>
-							</div>
-						</Dialog>
-					)}
-				</ThemeContext.Consumer>
+											<Button
+												disabled={this.state.element === null}
+												intent={Intent.PRIMARY}
+												onClick={this.onSave}
+											>
+												Save
+											</Button>
+										</div>
+									</div>
+								</Dialog>
+							)}
+						</ThemeContext.Consumer>
+					</>
+				)}
 			</>
 		);
 	}

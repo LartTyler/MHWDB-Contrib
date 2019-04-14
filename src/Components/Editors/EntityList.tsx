@@ -2,12 +2,14 @@ import {Button} from '@blueprintjs/core';
 import {Cell, IColumn, Row, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
+import {isRoleGrantedToUser} from '../../Api/client';
 import {Entity} from '../../Api/Model';
 import {compareFields} from '../../Utility/object';
 import {Manager} from '../Manager/Manager';
 import {ManagerHeader} from '../Manager/ManagerHeader';
 import {RefreshButton} from '../Manager/RefreshButton';
 import {RowControls} from '../Manager/RowControls';
+import {Role} from '../RequireRole';
 import {SearchInput} from '../Search';
 
 export const createEntityFilter = <T extends Entity>(key: keyof T) => (record: T, search: string) => {
@@ -67,15 +69,17 @@ export class EntityList<T extends Entity> extends React.PureComponent<IProps<T>,
 					search={<SearchInput onSearch={this.onSearchInputChange} />}
 				/>
 
-				<Row align="end">
-					<Cell size={2}>
-						<Link to={`${this.props.basePath}/new`} className="plain-link">
-							<Button icon="plus">
-								Add New
-							</Button>
-						</Link>
-					</Cell>
-				</Row>
+				{isRoleGrantedToUser(Role.EDITOR) && (
+					<Row align="end">
+						<Cell size={2}>
+							<Link to={`${this.props.basePath}/new`} className="plain-link">
+								<Button icon="plus">
+									Add New
+								</Button>
+							</Link>
+						</Cell>
+					</Row>
+				)}
 
 				<Table
 					dataSource={this.props.entities}
@@ -117,7 +121,7 @@ export class EntityList<T extends Entity> extends React.PureComponent<IProps<T>,
 					style: {
 						width: 200,
 					},
-					title: 'Controls',
+					title: <span>&nbsp;</span>,
 				},
 			],
 			search: '',

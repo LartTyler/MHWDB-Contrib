@@ -50,8 +50,7 @@ export class TokenStore {
 
 			delete client.defaults.headers.authorization;
 
-			if (history.location.pathname !== '/login')
-				history.push('/login');
+			history.push(history.location.pathname);
 		} else
 			this.scheduleRefresh();
 

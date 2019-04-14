@@ -6,7 +6,7 @@ import {CharmList} from './CharmList';
 
 export const Charms: React.FC<{}> = () => (
 	<Switch>
-		<Route path="/edit/charms" exact={true} component={CharmList} />
-		<Route path="/edit/charms/:charm(new|\d+)" exact={true} component={CharmEditor} />
+		<Route path="/objects/charms" exact={true} component={CharmList} />
+		<Route path="/objects/charms/:charm(new|\d+)" exact={true} component={CharmEditor} />
 	</Switch>
 );

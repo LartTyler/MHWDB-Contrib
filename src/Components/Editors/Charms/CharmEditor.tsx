@@ -1,11 +1,14 @@
-import {Button, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {CharmModel, CharmRank} from '../../../Api/Models/Charm';
 import {toaster} from '../../../toaster';
+import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
+import {EditorButtons} from '../EditorButtons';
 import {CharmRanksTable} from './CharmRanksTable';
 
 interface IRouteProps {
@@ -56,7 +59,9 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to="/edit/charms" />;
+			return <Redirect to="/objects/charms" />;
+
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
 
 		return (
 			<>
@@ -66,7 +71,12 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 					<Row>
 						<Cell size={6}>
 							<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-								<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+								<InputGroup
+									name="name"
+									onChange={this.onNameChange}
+									readOnly={readOnly}
+									value={this.state.name}
+								/>
 							</ValidationAwareFormGroup>
 						</Cell>
 					</Row>
@@ -79,27 +89,21 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 						onDelete={this.onCharmRankDelete}
 						onUpdate={this.onCharmRankUpdate}
 						ranks={this.state.ranks}
+						readOnly={readOnly}
 					/>
 
-					<Row align="end">
-						<Cell size={1}>
-							<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
-								Cancel
-							</Button>
-						</Cell>
-
-						<Cell size={1}>
-							<Button intent={Intent.PRIMARY} fill={true} loading={this.state.saving} onClick={this.save}>
-								Save
-							</Button>
-						</Cell>
-					</Row>
+					<EditorButtons
+						onClose={this.onClose}
+						onSave={this.save}
+						readOnly={readOnly}
+						saving={this.state.saving}
+					/>
 				</form>
 			</>
 		);
 	}
 
-	private onCancelClick = () => this.setState({
+	private onClose = () => this.setState({
 		redirect: true,
 	});
 

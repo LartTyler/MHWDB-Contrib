@@ -6,7 +6,7 @@ import {ArmorSetList} from './ArmorSetList';
 
 export const ArmorSets: React.FC<{}> = () => (
 	<Switch>
-		<Route path="/edit/armor-sets" exact={true} component={ArmorSetList} />
-		<Route path="/edit/armor-sets/:armorSet(\d+|new)" exact={true} component={ArmorSetEditor} />
+		<Route path="/objects/armor-sets" exact={true} component={ArmorSetList} />
+		<Route path="/objects/armor-sets/:armorSet(\d+|new)" exact={true} component={ArmorSetEditor} />
 	</Switch>
 );

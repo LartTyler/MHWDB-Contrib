@@ -10,7 +10,6 @@ import {
 	MenuItem,
 	Popover,
 	Spinner,
-	Tooltip,
 } from '@blueprintjs/core';
 import {Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
@@ -31,6 +30,8 @@ interface IProps {
 	onDelete: (target: CharmRank) => void;
 	onUpdate: (target: CharmRank, subject: RankUpdateSubject) => void;
 	ranks: CharmRank[];
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -61,6 +62,8 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 	}
 
 	public render(): React.ReactNode {
+		const readOnly = this.props.readOnly;
+
 		return (
 			<>
 				<Table
@@ -91,9 +94,10 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 						},
 						{
 							align: 'right',
-							render: rank => (
+							render: rank => readOnly && (
 								<>
 									<Button icon="edit" minimal={true} onClick={() => this.onEditDialogShow(rank)} />
+
 									<Button icon="cross" minimal={true} onClick={() => this.props.onDelete(rank)} />
 								</>
 							),
@@ -106,9 +110,11 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 					rowKey="level"
 				/>
 
-				<Button icon="plus" style={{marginTop: 10}} onClick={this.onAddClick}>
-					Add Rank
-				</Button>
+				{!readOnly && (
+					<Button icon="plus" style={{marginTop: 10}} onClick={this.onAddClick}>
+						Add Rank
+					</Button>
+				)}
 
 				<ThemeContext.Consumer>
 					{theme => (
@@ -131,6 +137,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 									<InputGroup
 										name="rarity"
 										onChange={this.onRarityChange}
+										readOnly={readOnly}
 										value={this.state.activeRankRarity}
 									/>
 								</FormGroup>
@@ -139,12 +146,14 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 							<div className={Classes.DIALOG_FOOTER}>
 								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
 									<Button onClick={this.discard}>
-										Cancel
+										Close
 									</Button>
 
-									<Button intent={Intent.PRIMARY} onClick={this.onEditDialogSave}>
-										Save
-									</Button>
+									{!readOnly && (
+										<Button intent={Intent.PRIMARY} onClick={this.onEditDialogSave}>
+											Save
+										</Button>
+									)}
 								</div>
 							</div>
 						</Dialog>
@@ -174,32 +183,35 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 
 	private renderCraftingPopover = (rank: CharmRank) => {
 		const loading = this.state.items.length === 0;
+		const readOnly = this.props.readOnly;
 
 		return (
 			<Popover>
-				<Tooltip content="Edit crafting..." hoverOpenDelay={1000}>
-					<Button minimal={true}>
-						{rank.crafting.materials.length} Material{rank.crafting.materials.length !== 1 ? 's' : ''}
-					</Button>
-				</Tooltip>
+				<Button minimal={true}>
+					{rank.crafting.materials.length} Material{rank.crafting.materials.length !== 1 ? 's' : ''}
+				</Button>
 
 				<Menu>
-					<MenuItem
-						disabled={loading}
-						icon={loading && (
-							<Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
-						) || 'plus'}
-						text="Add Material"
-						onClick={() => this.onAddMaterialClick(rank)}
-					/>
+					{!readOnly && (
+						<>
+							<MenuItem
+								disabled={loading}
+								icon={loading && (
+									<Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
+								) || 'plus'}
+								text="Add Material"
+								onClick={() => this.onAddMaterialClick(rank)}
+							/>
 
-					<MenuDivider />
+							<MenuDivider />
+						</>
+					)}
 
 					{rank.crafting.materials.length > 0 && rank.crafting.materials.map(cost => (
 						<MenuItem
 							icon="graph"
 							key={cost.item.id}
-							labelElement={(
+							labelElement={!readOnly && (
 								<Button
 									className={Classes.POPOVER_DISMISS_OVERRIDE}
 									icon="cross"
@@ -220,32 +232,35 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 
 	private renderSkillPopover = (rank: CharmRank) => {
 		const loading = this.state.skills.length === 0;
+		const readOnly = this.props.readOnly;
 
 		return (
 			<Popover>
-				<Tooltip content="Edit skills..." hoverOpenDelay={1000}>
-					<Button minimal={true}>
-						{rank.skills.length} Skill{rank.skills.length !== 1 ? 's' : ''}
-					</Button>
-				</Tooltip>
+				<Button minimal={true}>
+					{rank.skills.length} Skill{rank.skills.length !== 1 ? 's' : ''}
+				</Button>
 
 				<Menu>
-					<MenuItem
-						disabled={loading}
-						icon={loading && (
-							<Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
-						) || 'plus'}
-						text="Add Skill"
-						onClick={() => this.onAddSkillClick(rank)}
-					/>
+					{!readOnly && (
+						<>
+							<MenuItem
+								disabled={loading}
+								icon={loading && (
+									<Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_SMALL} />
+								) || 'plus'}
+								text="Add Skill"
+								onClick={() => this.onAddSkillClick(rank)}
+							/>
 
-					<MenuDivider />
+							<MenuDivider />
+						</>
+					)}
 
 					{rank.skills.length > 0 && rank.skills.map(skill => (
 						<MenuItem
 							icon="book"
 							key={skill.id}
-							labelElement={(
+							labelElement={!readOnly && (
 								<Button
 									className={Classes.POPOVER_DISMISS_OVERRIDE}
 									icon="cross"
@@ -257,7 +272,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 							text={`${skill.skillName} ${skill.level}`}
 						/>
 					)) || (
-						<MenuItem disabled={true} text="No skills yet" />
+						<MenuItem disabled={true} text="This charm has no skills." />
 					)}
 				</Menu>
 			</Popover>
