@@ -1,10 +1,14 @@
+import {Intent} from '@blueprintjs/core';
 import axios from 'restyped-axios';
+import {isRoleGranted, Role} from '../Components/RequireRole';
+import {toaster} from '../toaster';
 import {Token} from './Authentication/Token';
 import {TokenStore} from './Authentication/TokenStore';
 import {ApiError, isErrorResponse} from './Error';
 import {IMonHunDBRoutes} from './routes';
 
 export const client = axios.create<IMonHunDBRoutes>({
+	// @ts-ignore
 	baseURL: process.env.API_URL,
 });
 
@@ -12,6 +16,14 @@ export const tokenStorageKey = 'api.auth_token';
 export const tokenStore = new TokenStore(tokenStorageKey);
 
 tokenStore.initialize();
+
+export const isUserAuthenticated = () => {
+	return tokenStore.isAuthenticated();
+};
+
+export const isRoleGrantedToUser = (role: Role) => {
+	return isUserAuthenticated() && isRoleGranted(role, tokenStore.getToken().body.roles);
+};
 
 export const login = (username: string, password: string): Promise<void> => {
 	return client.post('/auth', {
@@ -24,6 +36,11 @@ export const login = (username: string, password: string): Promise<void> => {
 
 export const logout = () => {
 	tokenStore.setToken(null);
+
+	toaster.show({
+		intent: Intent.PRIMARY,
+		message: 'You have been logged out. Objects are now read only.',
+	});
 };
 
 interface IAxiosError {
@@ -35,7 +52,7 @@ interface IAxiosError {
 	request?: XMLHttpRequest;
 }
 
-const isAxiosErrorResponse = <T>(value: any): value is IAxiosError => {
+const isAxiosErrorResponse = (value: any): value is IAxiosError => {
 	return typeof value === 'object' && ('response' in value || 'request' in value);
 };
 

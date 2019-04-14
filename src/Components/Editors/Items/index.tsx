@@ -6,7 +6,7 @@ import {ItemList} from './ItemList';
 
 export const Items: React.FC<{}> = () => (
 	<Switch>
-		<Route path="/edit/items" exact={true} component={ItemList} />
-		<Route path="/edit/items/:item(\d+|new)" exact={true} component={ItemEditor} />
+		<Route path="/objects/items" exact={true} component={ItemList} />
+		<Route path="/objects/items/:item(\d+|new)" exact={true} component={ItemEditor} />
 	</Switch>
 );

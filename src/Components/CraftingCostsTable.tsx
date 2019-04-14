@@ -9,6 +9,7 @@ interface IProps {
 
 	loading?: boolean;
 	noDataPlaceholder?: React.ReactNode;
+	readOnly?: boolean;
 }
 
 export const CraftingCostTable: React.FC<IProps> = props => (
@@ -28,7 +29,7 @@ export const CraftingCostTable: React.FC<IProps> = props => (
 			},
 			{
 				align: 'right',
-				render: cost => (
+				render: cost => !props.readOnly && (
 					<Button
 						icon="cross"
 						minimal={true}
@@ -45,7 +46,3 @@ export const CraftingCostTable: React.FC<IProps> = props => (
 		rowKey={cost => cost.item.id.toString(10)}
 	/>
 );
-
-CraftingCostTable.defaultProps = {
-	loading: false,
-};

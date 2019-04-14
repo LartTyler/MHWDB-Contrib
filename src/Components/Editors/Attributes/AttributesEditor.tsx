@@ -15,6 +15,8 @@ interface IProps {
 	accepted: AttributeName[];
 	attributes: IAttribute[];
 	onChange: (attributes: IAttribute[]) => void;
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -61,7 +63,7 @@ export class AttributesEditor extends React.PureComponent<IProps, IState> {
 						},
 						{
 							align: 'right',
-							render: attribute => (
+							render: attribute => !this.props.readOnly && (
 								<>
 									<Button icon="edit" minimal={true} onClick={() => this.onEditClick(attribute)} />
 
@@ -76,29 +78,37 @@ export class AttributesEditor extends React.PureComponent<IProps, IState> {
 					noDataPlaceholder={<div>This item has no special attributes.</div>}
 				/>
 
-				<Popover>
-					<Button disabled={this.state.selectableAttributes.length === 0} icon="plus" style={{marginTop: 10}}>
-						Add Attribute
-					</Button>
+				{!this.props.readOnly && (
+					<>
+						<Popover>
+							<Button
+								disabled={this.state.selectableAttributes.length === 0}
+								icon="plus"
+								style={{marginTop: 10}}
+							>
+								Add Attribute
+							</Button>
 
-					<Menu>
-						{this.state.selectableAttributes.map(attribute => (
-							<MenuItem
-								key={attribute}
-								text={attributeLabels[attribute]}
-								onClick={() => this.onAttributeSelect(attribute)}
+							<Menu>
+								{this.state.selectableAttributes.map(attribute => (
+									<MenuItem
+										key={attribute}
+										text={attributeLabels[attribute]}
+										onClick={() => this.onAttributeSelect(attribute)}
+									/>
+								))}
+							</Menu>
+						</Popover>
+
+						{!!AttributeDialog && (
+							<AttributeDialog
+								attribute={this.state.attribute}
+								onClose={this.onDialogClose}
+								onSave={this.onDialogSave}
+								value={this.state.attributeValue}
 							/>
-						))}
-					</Menu>
-				</Popover>
-
-				{!!AttributeDialog && (
-					<AttributeDialog
-						attribute={this.state.attribute}
-						onClose={this.onDialogClose}
-						onSave={this.onDialogSave}
-						value={this.state.attributeValue}
-					/>
+						)}
+					</>
 				)}
 			</>
 		);

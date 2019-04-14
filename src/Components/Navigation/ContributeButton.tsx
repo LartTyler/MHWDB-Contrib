@@ -9,7 +9,7 @@ const weaponMenuItems: React.ReactNode[] = [];
 Object.entries(weaponTypeLabels).map(([type, label]) => {
 	motionValueMenuItems.push((
 		<LinkedMenuItem
-			href={`/edit/motion-values/${type}`}
+			href={`/objects/motion-values/${type}`}
 			key={type}
 			text={label}
 		/>
@@ -17,7 +17,7 @@ Object.entries(weaponTypeLabels).map(([type, label]) => {
 
 	weaponMenuItems.push((
 		<LinkedMenuItem
-			href={`/edit/weapons/${type}`}
+			href={`/objects/weapons/${type}`}
 			key={type}
 			text={label}
 		/>
@@ -27,24 +27,24 @@ Object.entries(weaponTypeLabels).map(([type, label]) => {
 export const ContributeButton: React.FC<{}> = () => {
 	return (
 		<Popover autoFocus={false} position={Position.BOTTOM_LEFT}>
-			<Button minimal={true}>Contribute</Button>
+			<Button minimal={true}>Objects</Button>
 
 			<Menu>
-				<LinkedMenuItem href="/edit/ailments" text="Ailments" />
-				<LinkedMenuItem href="/edit/armor" text="Armor" />
-				<LinkedMenuItem href="/edit/armor-sets" text="Armor Sets" />
-				<LinkedMenuItem href="/edit/armor-sets/bonuses" text="Armor Set Bonuses" />
-				<LinkedMenuItem href="/edit/charms" text="Charms" />
-				<LinkedMenuItem href="/edit/decorations" text="Decorations" />
-				<LinkedMenuItem href="/edit/items" text="Items" />
-				<LinkedMenuItem href="/edit/locations" text="Locations" />
-				<LinkedMenuItem href="/edit/monsters" text="Monsters" />
+				<LinkedMenuItem href="/objects/ailments" text="Ailments" />
+				<LinkedMenuItem href="/objects/armor" text="Armor" />
+				<LinkedMenuItem href="/objects/armor-sets" text="Armor Sets" />
+				<LinkedMenuItem href="/objects/armor-sets/bonuses" text="Armor Set Bonuses" />
+				<LinkedMenuItem href="/objects/charms" text="Charms" />
+				<LinkedMenuItem href="/objects/decorations" text="Decorations" />
+				<LinkedMenuItem href="/objects/items" text="Items" />
+				<LinkedMenuItem href="/objects/locations" text="Locations" />
+				<LinkedMenuItem href="/objects/monsters" text="Monsters" />
 
 				<MenuItem text="Motion Values">
 					{motionValueMenuItems}
 				</MenuItem>
 
-				<LinkedMenuItem href="/edit/skills" text="Skills" />
+				<LinkedMenuItem href="/objects/skills" text="Skills" />
 
 				<MenuItem text="Weapons">
 					{weaponMenuItems}

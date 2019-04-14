@@ -1,14 +1,16 @@
-import {Button, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {MotionValueModel} from '../../../Api/Models/MotionValue';
 import {DamageType, WeaponType, weaponTypeLabels} from '../../../Api/Models/Weapon';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
-import {LinkButton} from '../../Navigation/LinkButton';
+import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
+import {EditorButtons} from '../EditorButtons';
 
 interface IDamageTypeItem {
 	label: string;
@@ -90,7 +92,9 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.loading)
 			return <Spinner intent={Intent.PRIMARY} />;
 		else if (this.state.redirect)
-			return <Redirect to={`/edit/motion-values/${type}`} />;
+			return <Redirect to={`/objects/motion-values/${type}`} />;
+
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
 
 		return (
 			<form onSubmit={this.save}>
@@ -99,7 +103,12 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 				<Row>
 					<Cell size={6}>
 						<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-							<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+							<InputGroup
+								name="name"
+								onChange={this.onNameChange}
+								readOnly={readOnly}
+								value={this.state.name}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 
@@ -110,6 +119,7 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 							violations={this.state.violations}
 						>
 							<Select
+								disabled={readOnly}
 								items={damageTypes}
 								filterable={false}
 								itemTextRenderer={this.renderDamageType}
@@ -126,19 +136,31 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 				<Row>
 					<Cell size={6}>
 						<ValidationAwareFormGroup label="Exhaust" labelFor="exhaust" violations={this.state.violations}>
-							<InputGroup name="exhaust" onChange={this.onExhaustChange} value={this.state.exhaust} />
+							<InputGroup
+								name="exhaust"
+								onChange={this.onExhaustChange}
+								placeholder="0"
+								readOnly={readOnly}
+								value={this.state.exhaust}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 
 					<Cell size={6}>
 						<ValidationAwareFormGroup label="Stun" labelFor="stun" violations={this.state.violations}>
-							<InputGroup name="stun" onChange={this.onStunChange} value={this.state.stun} />
+							<InputGroup
+								name="stun"
+								onChange={this.onStunChange}
+								placeholder="0"
+								readOnly={readOnly}
+								value={this.state.stun}
+							/>
 						</ValidationAwareFormGroup>
 					</Cell>
 				</Row>
 
 				<ValidationAwareFormGroup
-					helperText="Enter each hit of the motion value, separated by either a new line or a comma"
+					helperText={!readOnly && 'Enter each hit of the motion value, separated by either a new line or a comma.'}
 					label="Hits"
 					labelFor="hits"
 					violations={this.state.violations}
@@ -146,35 +168,27 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 					<TextArea
 						name="hits"
 						onChange={this.onHitsChange}
+						readOnly={readOnly}
 						style={{minWidth: '100%'}}
 						value={this.state.hits}
 					/>
 				</ValidationAwareFormGroup>
 
-				<Row align="end">
-					<Cell size={1}>
-						<LinkButton
-							to={`/edit/motion-values/${type}`}
-							buttonProps={{
-								disabled: this.state.saving,
-								fill: true,
-							}}
-						>
-							Cancel
-						</LinkButton>
-					</Cell>
-
-					<Cell size={1}>
-						<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
-							Save
-						</Button>
-					</Cell>
-				</Row>
+				<EditorButtons
+					onClose={this.onClose}
+					onSave={this.save}
+					readOnly={readOnly}
+					saving={this.state.saving}
+				/>
 			</form>
 		);
 	}
 
 	private renderDamageType = (item: IDamageTypeItem) => item.label;
+
+	private onClose = () => this.setState({
+		redirect: true,
+	});
 
 	private onDamageTypeSelect = (item: IDamageTypeItem) => this.setState({
 		damageType: item,

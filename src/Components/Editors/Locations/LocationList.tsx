@@ -28,7 +28,7 @@ export class LocationList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<LocationEntityList
-				basePath="/edit/locations"
+				basePath="/objects/locations"
 				columns={[
 					{
 						dataIndex: 'name',

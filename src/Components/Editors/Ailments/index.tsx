@@ -6,7 +6,7 @@ import {AilmentList} from './AilmentList';
 
 export const Ailments: React.FC<{}> = () => (
 	<Switch>
-		<Route path="/edit/ailments" exact={true} component={AilmentList} />
-		<Route path="/edit/ailments/:ailment(\d+|new)" exact={true} component={AilmentEditor} />
+		<Route path="/objects/ailments" exact={true} component={AilmentList} />
+		<Route path="/objects/ailments/:ailment(\d+|new)" exact={true} component={AilmentEditor} />
 	</Switch>
 );

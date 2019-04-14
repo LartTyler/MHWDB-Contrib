@@ -1,11 +1,13 @@
-import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {ItemModel, ItemPayload} from '../../../Api/Models/Item';
 import {Projection} from '../../../Api/routes';
 import {toaster} from '../../../toaster';
-import {LinkButton} from '../../Navigation/LinkButton';
+import {Role} from '../../RequireRole';
+import {EditorButtons} from '../EditorButtons';
 
 const cleanIntegerString = (input: string, max: number = null): string => {
 	let output = parseInt(input.replace(/[^\d.]/, ''), 10);
@@ -56,102 +58,6 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 	};
 
 	public componentDidMount(): void {
-		this.loadItem();
-	}
-
-	public render(): React.ReactNode {
-		if (this.state.loading)
-			return <Spinner intent={Intent.PRIMARY} />;
-		else if (this.state.redirect)
-			return <Redirect to="/edit/items" />;
-
-		return (
-			<>
-				<H2>{this.state.name || 'No Name'}</H2>
-
-				<form>
-					<Row>
-						<Cell size={6}>
-							<FormGroup label="Name" labelFor="name">
-								<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
-							</FormGroup>
-						</Cell>
-
-						<Cell size={2}>
-							<FormGroup label="Rarity" labelFor="rarity">
-								<InputGroup name="rarity" onChange={this.onRarityChange} value={this.state.rarity} />
-							</FormGroup>
-						</Cell>
-
-						<Cell size={2}>
-							<FormGroup label="Value" labelFor="value">
-								<InputGroup name="value" onChange={this.onValueChange} value={this.state.value} />
-							</FormGroup>
-						</Cell>
-
-						<Cell size={2}>
-							<FormGroup label="Carry Limit" labelFor="carryLimit">
-								<InputGroup
-									name="carryLimit"
-									onChange={this.onCarryLimitChange}
-									value={this.state.carryLimit}
-								/>
-							</FormGroup>
-						</Cell>
-					</Row>
-
-					<Row>
-						<Cell size={12}>
-							<FormGroup label="Description" labelFor="description">
-								<TextArea
-									fill={true}
-									name="description"
-									onChange={this.onDescriptionChange}
-									value={this.state.description}
-								/>
-							</FormGroup>
-						</Cell>
-					</Row>
-
-					<Row align="end">
-						<Cell size={1}>
-							<LinkButton to="/edit/items" buttonProps={{fill: true, disabled: this.state.saving}}>
-								Cancel
-							</LinkButton>
-						</Cell>
-
-						<Cell size={1}>
-							<Button intent={Intent.PRIMARY} fill={true} loading={this.state.saving} onClick={this.save}>
-								Save
-							</Button>
-						</Cell>
-					</Row>
-				</form>
-			</>
-		);
-	}
-
-	private onCarryLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		carryLimit: cleanIntegerString(event.currentTarget.value),
-	});
-
-	private onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({
-		description: event.currentTarget.value,
-	});
-
-	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		name: event.currentTarget.value,
-	});
-
-	private onRarityChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		rarity: cleanIntegerString(event.currentTarget.value, 8),
-	});
-
-	private onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		value: cleanIntegerString(event.currentTarget.value),
-	});
-
-	private loadItem = () => {
 		const idParam = this.props.match.params.item;
 
 		if (idParam === 'new') {
@@ -174,7 +80,115 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 				value: item.value.toString(10),
 			});
 		});
-	};
+	}
+
+	public render(): React.ReactNode {
+		if (this.state.loading)
+			return <Spinner intent={Intent.PRIMARY} />;
+		else if (this.state.redirect)
+			return <Redirect to="/objects/items" />;
+
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
+
+		return (
+			<>
+				<H2>{this.state.name || 'No Name'}</H2>
+
+				<form>
+					<Row>
+						<Cell size={6}>
+							<FormGroup label="Name" labelFor="name">
+								<InputGroup
+									name="name"
+									onChange={this.onNameChange}
+									readOnly={readOnly}
+									value={this.state.name}
+								/>
+							</FormGroup>
+						</Cell>
+
+						<Cell size={2}>
+							<FormGroup label="Rarity" labelFor="rarity">
+								<InputGroup
+									name="rarity"
+									onChange={this.onRarityChange}
+									readOnly={readOnly}
+									value={this.state.rarity}
+								/>
+							</FormGroup>
+						</Cell>
+
+						<Cell size={2}>
+							<FormGroup label="Value" labelFor="value">
+								<InputGroup
+									name="value"
+									onChange={this.onValueChange}
+									readOnly={readOnly}
+									value={this.state.value}
+								/>
+							</FormGroup>
+						</Cell>
+
+						<Cell size={2}>
+							<FormGroup label="Carry Limit" labelFor="carryLimit">
+								<InputGroup
+									name="carryLimit"
+									onChange={this.onCarryLimitChange}
+									readOnly={readOnly}
+									value={this.state.carryLimit}
+								/>
+							</FormGroup>
+						</Cell>
+					</Row>
+
+					<Row>
+						<Cell size={12}>
+							<FormGroup label="Description" labelFor="description">
+								<TextArea
+									fill={true}
+									name="description"
+									onChange={this.onDescriptionChange}
+									readOnly={readOnly}
+									value={this.state.description}
+								/>
+							</FormGroup>
+						</Cell>
+					</Row>
+
+					<EditorButtons
+						onClose={this.onClose}
+						onSave={this.save}
+						readOnly={readOnly}
+						saving={this.state.saving}
+					/>
+				</form>
+			</>
+		);
+	}
+
+	private onCarryLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		carryLimit: cleanIntegerString(event.currentTarget.value),
+	});
+
+	private onClose = () => this.setState({
+		redirect: true,
+	});
+
+	private onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({
+		description: event.currentTarget.value,
+	});
+
+	private onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		name: event.currentTarget.value,
+	});
+
+	private onRarityChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		rarity: cleanIntegerString(event.currentTarget.value, 8),
+	});
+
+	private onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		value: cleanIntegerString(event.currentTarget.value),
+	});
 
 	private save = (event?: React.SyntheticEvent<any>) => {
 		if (event)

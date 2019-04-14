@@ -1,7 +1,9 @@
 import {Button, Intent} from '@blueprintjs/core';
 import * as React from 'react';
 import {Link} from 'react-router-dom';
+import {isRoleGrantedToUser} from '../../Api/client';
 import {Confirm} from '../Confirm';
+import {Role} from '../RequireRole';
 
 interface IRowControlsProps<T> {
 	/**
@@ -31,15 +33,17 @@ export class RowControls<T> extends React.Component<IRowControlsProps<T>, IRowCo
 	};
 
 	public render(): JSX.Element {
+		const isEditor = isRoleGrantedToUser(Role.EDITOR);
+
 		return (
 			<>
 				<Link to={this.props.editPath} className="plain-link">
 					<Button minimal={true} loading={this.state.loading}>
-						Edit
+						{isEditor ? 'Edit' : 'View'}
 					</Button>
 				</Link>
 
-				{this.props.onDelete && (
+				{this.props.onDelete && isEditor && (
 					<Confirm
 						message={(
 							<span>

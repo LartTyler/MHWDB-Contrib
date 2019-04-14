@@ -10,6 +10,8 @@ import {Theme, ThemeContext} from '../../Contexts/ThemeContext';
 interface IProps {
 	weaknesses: MonsterWeakness[];
 	onChange: (weaknesses: MonsterWeakness[]) => void;
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -61,7 +63,7 @@ export class MonsterWeaknessesEditor extends React.PureComponent<IProps, IState>
 						},
 						{
 							align: 'right',
-							render: weakness => (
+							render: weakness => !this.props.readOnly && (
 								<>
 									<Button icon="edit" minimal={true} onClick={() => this.onEditClick(weakness)} />
 									<Button icon="cross" minimal={true} onClick={() => this.onDeleteClick(weakness)} />
@@ -76,73 +78,77 @@ export class MonsterWeaknessesEditor extends React.PureComponent<IProps, IState>
 					rowKey="element"
 				/>
 
-				<Button
-					disabled={omit.length === elements.length}
-					icon="plus"
-					onClick={this.onAddClick}
-					style={{marginTop: 15}}
-				>
-					Add Weakness
-				</Button>
-
-				<ThemeContext.Consumer>
-					{theme => (
-						<Dialog
-							className={theme === Theme.DARK ? Classes.DARK : ''}
-							isOpen={this.state.showDialog}
-							onClose={this.onDialogClose}
-							title={this.state.activeWeakness ? 'Edit Weakness' : 'Add Weakness'}
+				{!this.props.readOnly && (
+					<>
+						<Button
+							disabled={omit.length === elements.length}
+							icon="plus"
+							onClick={this.onAddClick}
+							style={{marginTop: 15}}
 						>
-							<div className={Classes.DIALOG_BODY}>
-								<FormGroup label="Element">
-									<Select
-										filterable={false}
-										items={elements}
-										itemTextRenderer={this.renderElementText}
-										omit={omit}
-										onItemSelect={this.onElementSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.element}
-									/>
-								</FormGroup>
+							Add Weakness
+						</Button>
 
-								<FormGroup label="Stars">
-									<Select
-										filterable={false}
-										items={range(1, 3)}
-										onItemSelect={this.onStarsSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.stars}
-									/>
-								</FormGroup>
+						<ThemeContext.Consumer>
+							{theme => (
+								<Dialog
+									className={theme === Theme.DARK ? Classes.DARK : ''}
+									isOpen={this.state.showDialog}
+									onClose={this.onDialogClose}
+									title={this.state.activeWeakness ? 'Edit Weakness' : 'Add Weakness'}
+								>
+									<div className={Classes.DIALOG_BODY}>
+										<FormGroup label="Element">
+											<Select
+												filterable={false}
+												items={elements}
+												itemTextRenderer={this.renderElementText}
+												omit={omit}
+												onItemSelect={this.onElementSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.element}
+											/>
+										</FormGroup>
 
-								<FormGroup label="Condition" labelFor="condition">
-									<InputGroup
-										name="condition"
-										onChange={this.onConditionChange}
-										value={this.state.condition || ''}
-									/>
-								</FormGroup>
-							</div>
+										<FormGroup label="Stars">
+											<Select
+												filterable={false}
+												items={range(1, 3)}
+												onItemSelect={this.onStarsSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.stars}
+											/>
+										</FormGroup>
 
-							<div className={Classes.DIALOG_FOOTER}>
-								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-									<Button onClick={this.onDialogClose}>
-										Cancel
-									</Button>
+										<FormGroup label="Condition" labelFor="condition">
+											<InputGroup
+												name="condition"
+												onChange={this.onConditionChange}
+												value={this.state.condition || ''}
+											/>
+										</FormGroup>
+									</div>
 
-									<Button intent={Intent.PRIMARY} onClick={this.onSave}>
-										Save
-									</Button>
-								</div>
-							</div>
-						</Dialog>
-					)}
-				</ThemeContext.Consumer>
+									<div className={Classes.DIALOG_FOOTER}>
+										<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+											<Button onClick={this.onDialogClose}>
+												Cancel
+											</Button>
+
+											<Button intent={Intent.PRIMARY} onClick={this.onSave}>
+												Save
+											</Button>
+										</div>
+									</div>
+								</Dialog>
+							)}
+						</ThemeContext.Consumer>
+					</>
+				)}
 			</>
 		);
 	}

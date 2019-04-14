@@ -29,7 +29,7 @@ export class AilmentList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<AilmentEntityList
-				basePath="/edit/ailments"
+				basePath="/objects/ailments"
 				columns={[
 					{
 						dataIndex: 'name',

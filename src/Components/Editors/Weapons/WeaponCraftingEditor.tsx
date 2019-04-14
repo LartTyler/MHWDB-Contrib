@@ -12,6 +12,8 @@ interface IProps {
 	crafting: WeaponCrafting;
 	weaponId: number | string;
 	weaponType: WeaponType;
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -106,12 +108,18 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 	}
 
 	public render(): React.ReactNode {
+		const readOnly = this.props.readOnly;
+
 		return (
 			<>
 				<Row>
 					<Cell size={6}>
 						<FormGroup label="Craftable">
-							<Checkbox checked={this.state.craftable} onChange={this.onCraftableChange}>
+							<Checkbox
+								disabled={readOnly}
+								checked={this.state.craftable}
+								onChange={this.onCraftableChange}
+							>
 								Is Craftable
 							</Checkbox>
 						</FormGroup>
@@ -121,6 +129,7 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 						<FormGroup label="Built From (Previous)">
 							<ButtonGroup fill={true}>
 								<Select
+									disabled={readOnly}
 									itemListPredicate={this.filterWeaponList}
 									items={this.state.weapons}
 									itemTextRenderer={this.renderWeaponText}
@@ -134,7 +143,7 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 									virtual={true}
 								/>
 
-								{this.state.weapons !== null && (
+								{!readOnly && this.state.weapons !== null && (
 									<Button className={Classes.FIXED} icon="cross" onClick={this.onPreviousReset} />
 								)}
 							</ButtonGroup>
@@ -152,16 +161,19 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 								loading={this.state.items === null}
 								noDataPlaceholder={<div>Use the button below to add crafting material costs.</div>}
 								onRemove={this.onCraftingCostRemove}
+								readOnly={readOnly}
 							/>
 
-							<Button
-								disabled={this.state.items === null}
-								icon="plus"
-								onClick={this.onCraftingCostAddClick}
-								style={{marginTop: 10}}
-							>
-								Add Item
-							</Button>
+							{!readOnly && (
+								<Button
+									disabled={this.state.items === null}
+									icon="plus"
+									onClick={this.onCraftingCostAddClick}
+									style={{marginTop: 10}}
+								>
+									Add Item
+								</Button>
+							)}
 						</Cell>
 					)}
 
@@ -174,26 +186,31 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 								loading={this.state.items === null}
 								noDataPlaceholder={<div>Use the button below to add upgrade material costs.</div>}
 								onRemove={this.onUpgradeCostRemove}
+								readOnly={readOnly}
 							/>
 
-							<Button
-								disabled={this.state.items === null}
-								icon="plus"
-								onClick={this.onUpgradeCostAddClick}
-								style={{marginTop: 10}}
-							>
-								Add Item
-							</Button>
+							{!readOnly && (
+								<Button
+									disabled={this.state.items === null}
+									icon="plus"
+									onClick={this.onUpgradeCostAddClick}
+									style={{marginTop: 10}}
+								>
+									Add Item
+								</Button>
+							)}
 						</Cell>
 					)}
 				</Row>
 
-				<CraftingCostDialog
-					isOpen={this.state.craftingCostDialogType !== null}
-					items={this.state.items}
-					onClose={this.onCraftingCostDialogClose}
-					onSubmit={this.onCraftingCostDialogSave}
-				/>
+				{!readOnly && (
+					<CraftingCostDialog
+						isOpen={this.state.craftingCostDialogType !== null}
+						items={this.state.items}
+						onClose={this.onCraftingCostDialogClose}
+						onSubmit={this.onCraftingCostDialogSave}
+					/>
+				)}
 			</>
 		);
 	}

@@ -45,7 +45,7 @@ class WeaponListComponent extends React.PureComponent<IProps, IState> {
 
 		return (
 			<WeaponEntityList
-				basePath={`/edit/weapons/${type}`}
+				basePath={`/objects/weapons/${type}`}
 				columns={[
 					{
 						dataIndex: 'name',

@@ -4,7 +4,7 @@ import * as React from 'react';
 import {attributeNames, getAttributeDisplayName, IAttributes} from '../../../Api/Model';
 import {SkillRank} from '../../../Api/Models/Skill';
 import {filterStrings} from '../../../Utility/select';
-import {IThemeAware, Theme, withTheme} from '../../Contexts/ThemeContext';
+import {Theme, ThemeContext} from '../../Contexts/ThemeContext';
 
 const numberRegex = /^-?\d*\.?\d+$/;
 
@@ -13,13 +13,14 @@ interface IModifier {
 	value: string | number;
 }
 
-interface IProps extends IThemeAware {
+interface IProps {
 	isOpen: boolean;
 	onClose: () => void;
 	onCreate: (rank: SkillRank) => void;
 	onSave: (rank: SkillRank) => void;
 
 	rank?: SkillRank;
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -28,7 +29,7 @@ interface IState {
 	omitModifiers: string[];
 }
 
-class RankEditDialogComponent extends React.PureComponent<IProps, IState> {
+export class RankEditDialog extends React.PureComponent<IProps, IState> {
 	public constructor(props: IProps) {
 		super(props);
 
@@ -49,81 +50,102 @@ class RankEditDialogComponent extends React.PureComponent<IProps, IState> {
 	}
 
 	public render(): React.ReactNode {
+		const readOnly = this.props.readOnly;
+
 		return (
-			<Dialog
-				canEscapeKeyClose={true}
-				canOutsideClickClose={true}
-				className={this.props.theme === Theme.DARK ? Classes.DARK : ''}
-				isOpen={this.props.isOpen}
-				onClose={this.props.onClose}
-				title={this.props.rank ? `Edit Rank ${this.props.rank.level}` : 'Add Rank'}
-			>
-				<div className={Classes.DIALOG_BODY}>
-					<form onSubmit={this.onSave}>
-						<FormGroup label="Description" labelFor="description">
-							<TextArea
-								fill={true}
-								name="description"
-								onChange={this.onDescriptionChange}
-								value={this.state.description}
-							/>
-						</FormGroup>
+			<ThemeContext.Consumer>
+				{theme => (
+					<Dialog
+						canEscapeKeyClose={true}
+						canOutsideClickClose={true}
+						className={theme === Theme.DARK ? Classes.DARK : ''}
+						isOpen={this.props.isOpen}
+						onClose={this.props.onClose}
+						title={this.props.rank ? `Edit Rank ${this.props.rank.level}` : 'Add Rank'}
+					>
+						<div className={Classes.DIALOG_BODY}>
+							<form onSubmit={this.onSave}>
+								<FormGroup label="Description" labelFor="description">
+									<TextArea
+										fill={true}
+										name="description"
+										onChange={this.onDescriptionChange}
+										readOnly={readOnly}
+										value={this.state.description}
+									/>
+								</FormGroup>
 
-						{this.state.modifiers.map((modifier, index) => (
-							<Row key={index}>
-								<Cell size={5}>
-									<FormGroup label="Modifier">
-										<Select
-											itemListPredicate={filterStrings}
-											items={attributeNames}
-											itemTextRenderer={getAttributeDisplayName}
-											omit={this.state.omitModifiers}
-											onItemSelect={(key: string) => this.onModifierKeyChange(modifier, key)}
-											popoverProps={{
-												targetClassName: 'full-width',
-											}}
-											selected={modifier.key}
-										/>
-									</FormGroup>
-								</Cell>
+								{this.state.modifiers.map((modifier, index) => (
+									<Row key={index}>
+										<Cell size={5}>
+											<FormGroup label="Modifier">
+												<Select
+													disabled={readOnly}
+													itemListPredicate={filterStrings}
+													items={attributeNames}
+													itemTextRenderer={getAttributeDisplayName}
+													omit={this.state.omitModifiers}
+													onItemSelect={(key: string) => this.onModifierKeyChange(
+														modifier,
+														key,
+													)}
+													popoverProps={{
+														targetClassName: 'full-width',
+													}}
+													selected={modifier.key}
+												/>
+											</FormGroup>
+										</Cell>
 
-								<Cell size={5}>
-									<FormGroup label="Value">
-										<InputGroup
-											onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-												this.onModifierValueChange(modifier, event.currentTarget.value);
-											}}
-											value={modifier.value.toString()}
-										/>
-									</FormGroup>
-								</Cell>
+										<Cell size={5}>
+											<FormGroup label="Value">
+												<InputGroup
+													onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+														this.onModifierValueChange(modifier, event.currentTarget.value);
+													}}
+													readOnly={readOnly}
+													value={modifier.value.toString()}
+												/>
+											</FormGroup>
+										</Cell>
 
-								<Cell className="text-right" size={2}>
-									<FormGroup label={<span>&nbsp;</span>}>
-										<Button icon="cross" onClick={() => this.onModifierDelete(modifier)} />
-									</FormGroup>
-								</Cell>
-							</Row>
-						))}
+										{!readOnly && (
+											<Cell className="text-right" size={2}>
+												<FormGroup label={<span>&nbsp;</span>}>
+													<Button
+														icon="cross"
+														onClick={() => this.onModifierDelete(modifier)}
+													/>
+												</FormGroup>
+											</Cell>
+										)}
+									</Row>
+								))}
 
-						<Button icon="plus" onClick={this.onModifierAdd}>
-							Add Modifier
-						</Button>
-					</form>
-				</div>
+								{!readOnly && (
+									<Button icon="plus" onClick={this.onModifierAdd}>
+										Add Modifier
+									</Button>
+								)}
+							</form>
+						</div>
 
-				<div className={Classes.DIALOG_FOOTER}>
-					<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-						<Button onClick={this.props.onClose}>
-							Cancel
-						</Button>
+						<div className={Classes.DIALOG_FOOTER}>
+							<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+								<Button onClick={this.props.onClose}>
+									Close
+								</Button>
 
-						<Button intent={Intent.PRIMARY} onClick={this.onSave}>
-							Save
-						</Button>
-					</div>
-				</div>
-			</Dialog>
+								{!readOnly && (
+									<Button intent={Intent.PRIMARY} onClick={this.onSave}>
+										Save
+									</Button>
+								)}
+							</div>
+						</div>
+					</Dialog>
+				)}
+			</ThemeContext.Consumer>
 		);
 	}
 
@@ -190,5 +212,3 @@ class RankEditDialogComponent extends React.PureComponent<IProps, IState> {
 			this.props.onCreate(rank);
 	};
 }
-
-export const RankEditDialog = withTheme(RankEditDialogComponent);

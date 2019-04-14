@@ -16,14 +16,12 @@ const hierarchy: { [key in Role]: GrantedRoles } = {
 };
 
 export const isRoleGranted = (role: Role, roles: Role[]): boolean => {
-	if (roles.indexOf(role) >= 0) {
+	if (roles.indexOf(role) >= 0)
 		return true;
-	}
 
 	for (const key of roles) {
-		if (!(key in hierarchy)) {
+		if (!(key in hierarchy))
 			continue;
-		}
 
 		const children = hierarchy[key];
 

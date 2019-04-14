@@ -6,7 +6,7 @@ import {DecorationList} from './DecorationList';
 
 export const Decorations: React.FC<{}> = () => (
 	<Switch>
-		<Route path="/edit/decorations" exact={true} component={DecorationList} />
-		<Route path="/edit/decorations/:decoration(new|\d+)" exact={true} component={DecorationEditor} />
+		<Route path="/objects/decorations" exact={true} component={DecorationList} />
+		<Route path="/objects/decorations/:decoration(new|\d+)" exact={true} component={DecorationEditor} />
 	</Switch>
 );

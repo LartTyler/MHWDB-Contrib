@@ -3,8 +3,7 @@
 #login-component {
 	max-width: 400px;
 	padding: 75px 10px;
-	min-height: 100vh;
-	margin: -#{$pt-navbar-height} auto 0;
+	margin: 0 auto;
 
 	.password-reset-link {
 		padding-left: 10px;

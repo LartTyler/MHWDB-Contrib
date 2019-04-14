@@ -26,7 +26,7 @@ export class ArmorSetBonusList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<ArmorSetBonusEntityList
-				basePath="/edit/armor-sets/bonuses"
+				basePath="/objects/armor-sets/bonuses"
 				columns={[
 					{
 						dataIndex: 'name',

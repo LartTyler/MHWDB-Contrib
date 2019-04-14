@@ -6,10 +6,10 @@ import {MotionValueList} from './MotionValueList';
 
 export const MotionValues: React.FC<{}> = () => (
 	<Switch>
-		<Route path="/edit/motion-values/:weaponType([A-Za-z-]+)" exact={true} component={MotionValueList} />
+		<Route path="/objects/motion-values/:weaponType([A-Za-z-]+)" exact={true} component={MotionValueList} />
 
 		<Route
-			path="/edit/motion-values/:weaponType([A-Za-z-]+)/:motionValue(\d+|new)"
+			path="/objects/motion-values/:weaponType([A-Za-z-]+)/:motionValue(\d+|new)"
 			exact={true}
 			component={MotionValueEditor}
 		/>

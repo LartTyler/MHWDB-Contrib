@@ -26,7 +26,7 @@ export class CharmList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<CharmEntityList
-				basePath="/edit/charms"
+				basePath="/objects/charms"
 				columns={[
 					{
 						dataIndex: 'name',

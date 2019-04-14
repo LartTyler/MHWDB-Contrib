@@ -31,7 +31,7 @@ export class ItemList extends React.PureComponent<{}, IState> {
 	public render(): React.ReactNode {
 		return (
 			<ItemEntityList
-				basePath="/edit/items"
+				basePath="/objects/items"
 				columns={[
 					{
 						dataIndex: 'name',
