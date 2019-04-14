@@ -5,6 +5,7 @@ import {ApiError, isErrorResponse} from './Error';
 import {IMonHunDBRoutes} from './routes';
 
 export const client = axios.create<IMonHunDBRoutes>({
+	// @ts-ignore
 	baseURL: process.env.API_URL,
 });
 
