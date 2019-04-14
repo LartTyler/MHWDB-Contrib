@@ -7,6 +7,8 @@ import './DurabilityEditor.scss';
 
 interface IProps {
 	durability: Durability[];
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -48,7 +50,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 						},
 						{
 							align: 'right',
-							render: (durability, index) => (
+							render: (durability, index) =>!this.props.readOnly && (
 								<Button
 									icon="edit"
 									minimal={true}
@@ -62,103 +64,105 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 					fullWidth={true}
 				/>
 
-				<ThemeContext.Consumer>
-					{theme => (
-						<Dialog
-							className={theme === Theme.DARK ? Classes.DARK : ''}
-							isOpen={this.state.activeIndex !== null}
-							onClose={this.onEditDialogClose}
-							title={`Editing Handicraft +${this.state.activeIndex}`}
-						>
-							<div className={Classes.DIALOG_BODY}>
-								<FormGroup label="Red Sharpness">
-									<Slider
-										className="sharpness-red-slider"
-										showTrackFill={false}
-										labelStepSize={50}
-										min={0}
-										max={250}
-										onChange={this.onSharpnessRedChange}
-										stepSize={5}
-										value={this.state.red}
-									/>
-								</FormGroup>
+				{!this.props.readOnly && (
+					<ThemeContext.Consumer>
+						{theme => (
+							<Dialog
+								className={theme === Theme.DARK ? Classes.DARK : ''}
+								isOpen={this.state.activeIndex !== null}
+								onClose={this.onEditDialogClose}
+								title={`Editing Handicraft +${this.state.activeIndex}`}
+							>
+								<div className={Classes.DIALOG_BODY}>
+									<FormGroup label="Red Sharpness">
+										<Slider
+											className="sharpness-red-slider"
+											showTrackFill={false}
+											labelStepSize={50}
+											min={0}
+											max={250}
+											onChange={this.onSharpnessRedChange}
+											stepSize={5}
+											value={this.state.red}
+										/>
+									</FormGroup>
 
-								<FormGroup label="Orange Sharpness">
-									<Slider
-										className="sharpness-orange-slider"
-										labelStepSize={50}
-										min={0}
-										max={250}
-										onChange={this.onSharpnessOrangeChange}
-										stepSize={5}
-										value={this.state.orange}
-									/>
-								</FormGroup>
+									<FormGroup label="Orange Sharpness">
+										<Slider
+											className="sharpness-orange-slider"
+											labelStepSize={50}
+											min={0}
+											max={250}
+											onChange={this.onSharpnessOrangeChange}
+											stepSize={5}
+											value={this.state.orange}
+										/>
+									</FormGroup>
 
-								<FormGroup label="Yellow Sharpness">
-									<Slider
-										className="sharpness-yellow-slider"
-										labelStepSize={50}
-										min={0}
-										max={250}
-										onChange={this.onSharpnessYellowChange}
-										stepSize={5}
-										value={this.state.yellow}
-									/>
-								</FormGroup>
+									<FormGroup label="Yellow Sharpness">
+										<Slider
+											className="sharpness-yellow-slider"
+											labelStepSize={50}
+											min={0}
+											max={250}
+											onChange={this.onSharpnessYellowChange}
+											stepSize={5}
+											value={this.state.yellow}
+										/>
+									</FormGroup>
 
-								<FormGroup label="Green Sharpness">
-									<Slider
-										className="sharpness-green-slider"
-										labelStepSize={50}
-										min={0}
-										max={250}
-										onChange={this.onSharpnessGreenChange}
-										stepSize={5}
-										value={this.state.green}
-									/>
-								</FormGroup>
+									<FormGroup label="Green Sharpness">
+										<Slider
+											className="sharpness-green-slider"
+											labelStepSize={50}
+											min={0}
+											max={250}
+											onChange={this.onSharpnessGreenChange}
+											stepSize={5}
+											value={this.state.green}
+										/>
+									</FormGroup>
 
-								<FormGroup label="Blue Sharpness">
-									<Slider
-										className="sharpness-blue-slider"
-										labelStepSize={50}
-										min={0}
-										max={250}
-										onChange={this.onSharpnessBlueChange}
-										stepSize={5}
-										value={this.state.blue}
-									/>
-								</FormGroup>
+									<FormGroup label="Blue Sharpness">
+										<Slider
+											className="sharpness-blue-slider"
+											labelStepSize={50}
+											min={0}
+											max={250}
+											onChange={this.onSharpnessBlueChange}
+											stepSize={5}
+											value={this.state.blue}
+										/>
+									</FormGroup>
 
-								<FormGroup label="White Sharpness">
-									<Slider
-										className="sharpness-white-slider"
-										labelStepSize={50}
-										min={0}
-										max={250}
-										onChange={this.onSharpnessWhiteChange}
-										stepSize={5}
-										value={this.state.white}
-									/>
-								</FormGroup>
-							</div>
-
-							<div className={Classes.DIALOG_FOOTER}>
-								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-									<Button onClick={this.onEditDialogClose}>
-										Cancel
-									</Button>
-
-									<Button intent={Intent.PRIMARY} onClick={this.onEditDialogSave}>
-										Save
-									</Button>
+									<FormGroup label="White Sharpness">
+										<Slider
+											className="sharpness-white-slider"
+											labelStepSize={50}
+											min={0}
+											max={250}
+											onChange={this.onSharpnessWhiteChange}
+											stepSize={5}
+											value={this.state.white}
+										/>
+									</FormGroup>
 								</div>
-							</div>
-						</Dialog>
-					)}
-				</ThemeContext.Consumer>
+
+								<div className={Classes.DIALOG_FOOTER}>
+									<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+										<Button onClick={this.onEditDialogClose}>
+											Cancel
+										</Button>
+
+										<Button intent={Intent.PRIMARY} onClick={this.onEditDialogSave}>
+											Save
+										</Button>
+									</div>
+								</div>
+							</Dialog>
+						)}
+					</ThemeContext.Consumer>
+				)}
 			</>
 		);
 	}
