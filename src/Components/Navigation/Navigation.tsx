@@ -13,9 +13,10 @@ import {
 import * as React from 'react';
 import {GoMarkGithub} from 'react-icons/go';
 import {Link} from 'react-router-dom';
-import {Logout} from '../Auth/Logout';
+import {isUserAuthenticated, logout, tokenStore} from '../../Api/client';
 import {ThemeSwitcher} from '../ThemeSwitcher';
 import {ContributeButton} from './ContributeButton';
+import {LinkButton} from './LinkButton';
 
 export const Navigation: React.FC<{}> = () => (
 	<Navbar fixedToTop={true}>
@@ -53,11 +54,23 @@ export const Navigation: React.FC<{}> = () => (
 
 			<NavbarDivider />
 
-			<Logout>
-				<Button minimal={true}>
-					Logout
-				</Button>
-			</Logout>
+			{isUserAuthenticated() ? (
+				<>
+					<Popover>
+						<Button minimal={true} rightIcon="caret-down">
+							{tokenStore.getToken().body.displayName}
+						</Button>
+
+						<Menu>
+							<MenuItem onClick={logout} text="Log Out" />
+						</Menu>
+					</Popover>
+				</>
+			) : (
+				<LinkButton buttonProps={{minimal: true}} to="/login">
+					Log In
+				</LinkButton>
+			)}
 		</NavbarGroup>
 
 	</Navbar>

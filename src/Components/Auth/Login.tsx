@@ -48,7 +48,7 @@ class LoginComponent extends React.Component<RouteComponentProps<{}>, ILoginStat
 					</FormGroup>
 
 					<Button type="submit" loading={this.state.processing}>
-						Sign In
+						Log In
 					</Button>
 
 					<a
