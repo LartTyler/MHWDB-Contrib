@@ -10,6 +10,8 @@ interface IProps {
 	onDelete: (target: Camp) => void;
 	onSave: (camp: Camp) => void;
 	zoneCount: number;
+
+	readOnly?: boolean;
 }
 
 interface IState {
@@ -51,88 +53,94 @@ export class Camps extends React.PureComponent<IProps, IState> {
 	}
 
 	public render(): React.ReactNode {
-		return (
-			<ThemeContext.Consumer>
-				{theme => (
-					<>
-						<Table
-							columns={[
-								{
-									dataIndex: 'name',
-									title: 'Name',
-								},
-								{
-									dataIndex: 'zone',
-									title: 'Zone',
-								},
-								{
-									align: 'right',
-									render: camp => (
-										<Button
-											icon="cross"
-											minimal={true}
-											onClick={() => this.props.onDelete(camp)}
-										/>
-									),
-									title: <>&nbsp;</>,
-								},
-							]}
-							dataSource={this.props.camps}
-							fullWidth={true}
-							noDataPlaceholder={(
-								<div style={{marginBottom: 10}}>
-									This location has no camps yet.
-								</div>
-							)}
-							rowKey="zone"
-						/>
+		const readOnly = this.props.readOnly;
 
+		return (
+			<>
+				<Table
+					columns={[
+						{
+							dataIndex: 'name',
+							title: 'Name',
+						},
+						{
+							dataIndex: 'zone',
+							title: 'Zone',
+						},
+						{
+							align: 'right',
+							render: camp => !readOnly && (
+								<Button icon="cross" minimal={true} onClick={() => this.props.onDelete(camp)} />
+							),
+							title: <>&nbsp;</>,
+						},
+					]}
+					dataSource={this.props.camps}
+					fullWidth={true}
+					noDataPlaceholder={(
+						<div style={{marginBottom: 10}}>
+							This location has no camps yet.
+						</div>
+					)}
+					rowKey="zone"
+				/>
+
+				{!readOnly && (
+					<>
 						<Button disabled={!this.props.zoneCount} icon="plus" onClick={this.onDialogShow}>
 							Add Camp
 						</Button>
 
-						<Dialog
-							className={theme === Theme.DARK ? Classes.DARK : ''}
-							isOpen={this.state.showDialog}
-							onClose={this.onDialogClose}
-							title="Add Camp"
-						>
-							<div className={Classes.DIALOG_BODY}>
-								<FormGroup label="Name">
-									<InputGroup name="campName" onChange={this.onNameChange} value={this.state.name} />
-								</FormGroup>
+						<ThemeContext.Consumer>
+							{theme => (
+								<Dialog
+									className={theme === Theme.DARK ? Classes.DARK : ''}
+									isOpen={this.state.showDialog}
+									onClose={this.onDialogClose}
+									title="Add Camp"
+								>
+									<div className={Classes.DIALOG_BODY}>
+										<FormGroup label="Name">
+											<InputGroup
+												name="campName"
+												onChange={this.onNameChange}
+												value={this.state.name}
+											/>
+										</FormGroup>
 
-								<FormGroup label="Zone">
-									<Select
-										items={this.state.zones}
-										onItemSelect={this.onZoneSelect}
-										popoverProps={{
-											targetClassName: 'full-width',
-										}}
-										selected={this.state.zone}
-									/>
-								</FormGroup>
-							</div>
+										<FormGroup label="Zone">
+											<Select
+												items={this.state.zones}
+												onItemSelect={this.onZoneSelect}
+												popoverProps={{
+													targetClassName: 'full-width',
+												}}
+												selected={this.state.zone}
+											/>
+										</FormGroup>
+									</div>
 
-							<div className={Classes.DIALOG_FOOTER}>
-								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-									<Button onClick={this.onDialogClose}>
-										Cancel
-									</Button>
+									<div className={Classes.DIALOG_FOOTER}>
+										<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+											<Button onClick={this.onDialogClose}>
+												Cancel
+											</Button>
 
-									<Button
-										disabled={!this.state.name || !this.state.zone}
-										intent={Intent.PRIMARY}
-										onClick={this.onSave}
-									>
-										Save
-									</Button>
-								</div>
-							</div>
-						</Dialog>
+											<Button
+												disabled={!this.state.name || !this.state.zone}
+												intent={Intent.PRIMARY}
+												onClick={this.onSave}
+											>
+												Save
+											</Button>
+										</div>
+									</div>
+								</Dialog>
+							)}
+						</ThemeContext.Consumer>
 					</>
 				)}
-			</ThemeContext.Consumer>
+			</>
 		);
 	}
 
