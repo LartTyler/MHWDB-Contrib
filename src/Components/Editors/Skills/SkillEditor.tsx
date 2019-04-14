@@ -1,11 +1,13 @@
-import {Button, FormGroup, H2, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {Button, FormGroup, H2, H3, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import {Cell, Row, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {SkillModel, SkillPayload, SkillRank} from '../../../Api/Models/Skill';
 import {Projection} from '../../../Api/routes';
 import {toaster} from '../../../toaster';
-import {LinkButton} from '../../Navigation/LinkButton';
+import {Role} from '../../RequireRole';
+import {EditorButtons} from '../EditorButtons';
 import {RankEditDialog} from './RankEditDialog';
 
 interface IRouteProps {
@@ -67,15 +69,22 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 		else if (this.state.redirect)
 			return <Redirect to="/objects/skills" />;
 
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
+
 		return (
 			<>
-				<H2>{this.state.name.length ? this.state.name : 'Unnamed'}</H2>
+				<H2>{this.state.name.length ? this.state.name : 'No Name'}</H2>
 
 				<form onSubmit={this.onSave}>
 					<Row>
 						<Cell size={6}>
 							<FormGroup label="Name" labelFor="name">
-								<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+								<InputGroup
+									name="name"
+									onChange={this.onNameChange}
+									readOnly={readOnly}
+									value={this.state.name}
+								/>
 							</FormGroup>
 						</Cell>
 					</Row>
@@ -85,9 +94,12 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 							fill={true}
 							name="description"
 							onChange={this.onDescriptionChange}
+							readOnly={readOnly}
 							value={this.state.description}
 						/>
 					</FormGroup>
+
+					<H3>Ranks</H3>
 
 					<Table
 						dataSource={this.state.ranks}
@@ -113,51 +125,40 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 								render: (rank, index) => (
 									<>
 										<Button
-											icon="edit"
+											icon={readOnly ? 'eye-open' : 'edit'}
 											minimal={true}
 											onClick={() => this.onRankEditClick(index)}
 										/>
 
-										<Button
-											icon="cross"
-											minimal={true}
-											onClick={() => this.onRankDeleteClick(index)}
-										/>
+										{!readOnly && (
+											<Button
+												icon="cross"
+												minimal={true}
+												onClick={() => this.onRankDeleteClick(index)}
+											/>
+										)}
 									</>
 								),
 								title: '',
 							},
 						]}
 						fullWidth={true}
-						noDataPlaceholder={(
-							<div style={{marginBottom: 5}}>
-								This skill has no ranks yet. Add some using the button below.
-							</div>
-						)}
+						noDataPlaceholder={<div>This skill has no ranks.</div>}
 						rowKey="id"
 					/>
 
-					<Row>
-						<Cell size={2}>
-							<Button icon="plus" onClick={this.onAddRankButtonClick}>
-								Add Rank
-							</Button>
-						</Cell>
+					{!readOnly && (
+						<Button icon="plus" onClick={this.onAddRankButtonClick} style={{marginTop: 10}}>
+							Add Rank
+						</Button>
+					)}
 
-						<Cell className="text-right" offset={8} size={2}>
-							<LinkButton
-								buttonProps={{disabled: this.state.saving}}
-								to="/objects/skills"
-								linkProps={{style: {marginRight: 10}}}
-							>
-								Cancel
-							</LinkButton>
-
-							<Button loading={this.state.saving} intent={Intent.PRIMARY} onClick={this.onSave}>
-								Save
-							</Button>
-						</Cell>
-					</Row>
+					<EditorButtons
+						onClose={this.onClose}
+						onSave={this.onSave}
+						readOnly={readOnly}
+						saving={this.state.saving}
+					/>
 				</form>
 
 				{this.state.showRankEditDialog && (
@@ -167,6 +168,7 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 						onCreate={this.onRankDialogCreateRank}
 						onSave={this.onRankDialogSaveRank}
 						rank={this.state.activeRank}
+						readOnly={readOnly}
 					/>
 				)}
 			</>
@@ -176,6 +178,10 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 	private onAddRankButtonClick = () => this.setState({
 		activeRank: null,
 		showRankEditDialog: true,
+	});
+
+	private onClose = () => this.setState({
+		redirect: true,
 	});
 
 	private onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => this.setState({
