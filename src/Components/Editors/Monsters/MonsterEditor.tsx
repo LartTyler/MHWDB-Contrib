@@ -1,12 +1,14 @@
-import {Button, H2, H3, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
+import {H2, H3, InputGroup, Intent, Spinner, TextArea} from '@blueprintjs/core';
 import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
+import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Ailment, AilmentModel} from '../../../Api/Models/Ailment';
 import {Location, LocationModel} from '../../../Api/Models/Location';
 import {
-	MonsterModel, MonsterPayload,
+	MonsterModel,
+	MonsterPayload,
 	MonsterResistance,
 	MonsterSpecies,
 	MonsterType,
@@ -16,8 +18,10 @@ import {Element} from '../../../Api/Models/Weapon';
 import {toaster} from '../../../toaster';
 import {createEntityListFilter, filterStrings} from '../../../Utility/select';
 import {ucfirst, ucwords} from '../../../Utility/string';
+import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {ailmentsSorter} from '../Ailments/AilmentList';
+import {EditorButtons} from '../EditorButtons';
 import {locationSorter} from '../Locations/LocationList';
 import {MonsterResistancesEditor} from './MonsterResistancesEditor';
 import {MonsterWeaknessesEditor} from './MonsterWeaknessesEditor';
@@ -143,6 +147,8 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 		else if (this.state.redirect)
 			return <Redirect to="/objects/monsters" />;
 
+		const readOnly = !isRoleGrantedToUser(Role.EDITOR);
+
 		return (
 			<>
 				<H2>{this.state.name || 'No Name'}</H2>
@@ -151,7 +157,12 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 					<Row>
 						<Cell size={6}>
 							<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
-								<InputGroup name="name" onChange={this.onNameChange} value={this.state.name} />
+								<InputGroup
+									name="name"
+									onChange={this.onNameChange}
+									readOnly={readOnly}
+									value={this.state.name}
+								/>
 							</ValidationAwareFormGroup>
 						</Cell>
 
@@ -164,6 +175,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 								<TextArea
 									name="description"
 									onChange={this.onDescriptionChange}
+									readOnly={readOnly}
 									style={{
 										minHeight: 50,
 										minWidth: '100%',
@@ -178,6 +190,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 						<Cell size={6}>
 							<ValidationAwareFormGroup label="Type" labelFor="type" violations={this.state.violations}>
 								<Select
+									disabled={readOnly}
 									filterable={false}
 									items={Object.values(MonsterType)}
 									itemTextRenderer={this.renderTypeText}
@@ -197,6 +210,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 								violations={this.state.violations}
 							>
 								<Select
+									disabled={readOnly}
 									filterable={false}
 									items={Object.values(MonsterSpecies)}
 									itemTextRenderer={this.renderSpeciesText}
@@ -218,6 +232,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 								violations={this.state.violations}
 							>
 								<MultiSelect
+									disabled={readOnly}
 									itemListPredicate={filterStrings}
 									items={Object.values(Element)}
 									itemTextRenderer={this.renderElementText}
@@ -239,6 +254,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 								violations={this.state.violations}
 							>
 								<MultiSelect
+									disabled={readOnly}
 									itemKey="id"
 									itemListPredicate={ailmentsListFilter}
 									items={this.state.ailmentsList}
@@ -262,6 +278,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 								violations={this.state.violations}
 							>
 								<MultiSelect
+									disabled={readOnly}
 									itemListPredicate={locationsListFilter}
 									items={this.state.locationsList}
 									itemTextRenderer={this.renderLocationText}
@@ -284,6 +301,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 
 							<MonsterResistancesEditor
 								onChange={this.onResistancesChange}
+								readOnly={readOnly}
 								resistances={this.state.resistances}
 							/>
 						</Cell>
@@ -293,24 +311,18 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 
 							<MonsterWeaknessesEditor
 								onChange={this.onWeaknessesChange}
+								readOnly={readOnly}
 								weaknesses={this.state.weaknesses}
 							/>
 						</Cell>
 					</Row>
 
-					<Row align="end">
-						<Cell size={1}>
-							<Button disabled={this.state.saving} fill={true} onClick={this.onCancelClick}>
-								Cancel
-							</Button>
-						</Cell>
-
-						<Cell size={1}>
-							<Button fill={true} intent={Intent.PRIMARY} loading={this.state.saving} onClick={this.save}>
-								Save
-							</Button>
-						</Cell>
-					</Row>
+					<EditorButtons
+						onClose={this.onClose}
+						onSave={this.save}
+						readOnly={readOnly}
+						saving={this.state.saving}
+					/>
 				</form>
 			</>
 		);
@@ -338,7 +350,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 		ailments: [...this.state.ailments, ailment],
 	});
 
-	private onCancelClick = () => this.setState({
+	private onClose = () => this.setState({
 		redirect: true,
 	});
 
