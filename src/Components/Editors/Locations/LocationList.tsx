@@ -17,7 +17,7 @@ const LocationEntityList = EntityList.ofType<Location>();
 
 export class LocationList extends React.PureComponent<{}, IState> {
 	public state: Readonly<IState> = {
-		loading: true,
+		loading: false,
 		locations: [],
 	};
 
@@ -66,6 +66,13 @@ export class LocationList extends React.PureComponent<{}, IState> {
 	};
 
 	private load = () => {
+		if (this.state.loading)
+			return;
+
+		this.setState({
+			loading: true,
+		});
+
 		LocationModel.list().then(response => this.setState({
 			loading: false,
 			locations: response.data.sort(locationSorter),
