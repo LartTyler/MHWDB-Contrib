@@ -12,6 +12,7 @@ import {MotionValue, MotionValuePayload} from './Models/MotionValue';
 import {Skill, SkillPayload} from './Models/Skill';
 import {User, UserCreatePayload, UserPayload} from './Models/User';
 import {Weapon, WeaponCreatePayload, WeaponPayload, WeaponType} from './Models/Weapon';
+import {WorldEvent} from './Models/WorldEvent';
 
 interface IProjection<T extends boolean> {
 	[key: string]: T;
@@ -557,6 +558,23 @@ export interface IMonHunDBRoutes {
 			params: Identity;
 			query: IProjectable;
 			response: Weapon;
+		};
+	};
+	// endregion
+
+	// region World Events
+	'/events': {
+		GET: {
+			query: IQueryable & IProjectable;
+			response: WorldEvent[];
+		};
+	};
+
+	'/events/:id': {
+		GET: {
+			params: Identity;
+			query: IProjectable;
+			response: WorldEvent;
 		};
 	};
 	// endregion
