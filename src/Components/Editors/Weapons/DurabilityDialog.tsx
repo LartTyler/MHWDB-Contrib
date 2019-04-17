@@ -9,6 +9,8 @@ interface IProps {
 	onSave: (durability: Durability) => void;
 	onClose: () => void;
 	title: string;
+
+	saveButtonText?: string;
 }
 
 interface IState {
@@ -22,6 +24,10 @@ interface IState {
 }
 
 export class DurabilityDialog extends React.PureComponent<IProps, IState> {
+	public static defaultProps: Partial<IProps> = {
+		saveButtonText: 'save',
+	};
+
 	public state: Readonly<IState> = {
 		blue: 0,
 		green: 0,
@@ -144,7 +150,7 @@ export class DurabilityDialog extends React.PureComponent<IProps, IState> {
 								</Button>
 
 								<Button intent={Intent.PRIMARY} onClick={this.onSave}>
-									Save
+									{this.props.saveButtonText}
 								</Button>
 							</div>
 						</div>
