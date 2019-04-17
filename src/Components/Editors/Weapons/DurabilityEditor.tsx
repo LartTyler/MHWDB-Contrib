@@ -3,6 +3,7 @@ import {Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Durability} from '../../../Api/Models/Weapon';
 import {Theme, ThemeContext} from '../../Contexts/ThemeContext';
+import {DurabilityBar} from './DurabilityBar';
 import './DurabilityEditor.scss';
 
 interface IProps {
@@ -45,12 +46,15 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 							title: 'Level',
 						},
 						{
-							render: d => `${d.red}, ${d.orange}, ${d.yellow}, ${d.green}, ${d.blue}, ${d.white}`,
+							render: durability => <DurabilityBar durability={durability} />,
+							style: {
+								width: 200,
+							},
 							title: 'Values',
 						},
 						{
 							align: 'right',
-							render: (durability, index) =>!this.props.readOnly && (
+							render: (durability, index) => !this.props.readOnly && (
 								<Button
 									icon="edit"
 									minimal={true}
