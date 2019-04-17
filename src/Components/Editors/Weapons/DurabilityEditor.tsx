@@ -1,4 +1,4 @@
-import {Button, Classes, Dialog, FormGroup, Intent, Slider} from '@blueprintjs/core';
+import {Button, Classes, Dialog, FormGroup, Intent, Slider, H4} from '@blueprintjs/core';
 import {Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Durability} from '../../../Api/Models/Weapon';
@@ -18,6 +18,7 @@ interface IState {
 	green: number;
 	orange: number;
 	red: number;
+	sum: number;
 	white: number;
 	yellow: number;
 }
@@ -29,6 +30,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 		green: 0,
 		orange: 0,
 		red: 0,
+		sum: 0,
 		white: 0,
 		yellow: 0,
 	};
@@ -78,6 +80,8 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 								title={`Editing Handicraft +${this.state.activeIndex}`}
 							>
 								<div className={Classes.DIALOG_BODY}>
+									<H4>{400 - this.state.sum} durability remaining.</H4>
+
 									<FormGroup label="Red Sharpness">
 										<Slider
 											className="sharpness-red-slider"
@@ -94,6 +98,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 									<FormGroup label="Orange Sharpness">
 										<Slider
 											className="sharpness-orange-slider"
+											disabled={this.state.red === 0}
 											labelStepSize={50}
 											min={0}
 											max={250}
@@ -106,6 +111,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 									<FormGroup label="Yellow Sharpness">
 										<Slider
 											className="sharpness-yellow-slider"
+											disabled={this.state.orange === 0}
 											labelStepSize={50}
 											min={0}
 											max={250}
@@ -118,6 +124,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 									<FormGroup label="Green Sharpness">
 										<Slider
 											className="sharpness-green-slider"
+											disabled={this.state.yellow === 0}
 											labelStepSize={50}
 											min={0}
 											max={250}
@@ -130,6 +137,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 									<FormGroup label="Blue Sharpness">
 										<Slider
 											className="sharpness-blue-slider"
+											disabled={this.state.green === 0}
 											labelStepSize={50}
 											min={0}
 											max={250}
@@ -142,6 +150,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 									<FormGroup label="White Sharpness">
 										<Slider
 											className="sharpness-white-slider"
+											disabled={this.state.blue === 0}
 											labelStepSize={50}
 											min={0}
 											max={250}
@@ -177,6 +186,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 		green: durability.green,
 		orange: durability.orange,
 		red: durability.red,
+		sum: Object.values(durability).reduce((prev, value) => prev + value, 0),
 		white: durability.white,
 		yellow: durability.yellow,
 	});
@@ -187,6 +197,7 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 		green: 0,
 		orange: 0,
 		red: 0,
+		sum: 0,
 		white: 0,
 		yellow: 0,
 	});
@@ -204,27 +215,28 @@ export class DurabilityEditor extends React.PureComponent<IProps, IState> {
 		this.onEditDialogClose();
 	};
 
-	private onSharpnessBlueChange = (blue: number) => this.setState({
-		blue,
-	});
+	private onSharpnessBlueChange = (value: number) => this.onSharpnessChange('blue', value);
 
-	private onSharpnessGreenChange = (green: number) => this.setState({
-		green,
-	});
+	private onSharpnessGreenChange = (value: number) => this.onSharpnessChange('green', value);
 
-	private onSharpnessOrangeChange = (orange: number) => this.setState({
-		orange,
-	});
+	private onSharpnessOrangeChange = (value: number) => this.onSharpnessChange('orange', value);
 
-	private onSharpnessRedChange = (red: number) => this.setState({
-		red,
-	});
+	private onSharpnessRedChange = (value: number) => this.onSharpnessChange('red', value);
 
-	private onSharpnessYellowChange = (yellow: number) => this.setState({
-		yellow,
-	});
+	private onSharpnessYellowChange = (value: number) => this.onSharpnessChange('yellow', value);
 
-	private onSharpnessWhiteChange = (white: number) => this.setState({
-		white,
-	});
+	private onSharpnessWhiteChange = (value: number) => this.onSharpnessChange('white', value);
+
+	private onSharpnessChange = (color: keyof Durability, value: number) => {
+		if (this.state.sum === 400 && this.state[color] <= value)
+			return;
+
+		const sum = this.state.sum - this.state[color];
+		value = Math.min(value, 400 - sum);
+
+		this.setState({
+			[color]: value,
+			sum: sum + value,
+		} as unknown as IState);
+	};
 }
