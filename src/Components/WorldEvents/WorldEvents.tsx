@@ -1,7 +1,9 @@
-import {H2, H3, Icon} from '@blueprintjs/core';
+import {Button, Classes, Dialog, H2, H3, Icon} from '@blueprintjs/core';
 import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Platform, PlatformExclusivity, WorldEvent, WorldEventModel, WorldEventType} from '../../Api/Models/WorldEvent';
+import {formatDateTime} from '../../Utility/date';
+import {Theme, ThemeContext} from '../Contexts/ThemeContext';
 
 const eventTypeNames: { [key in WorldEventType]: string } = {
 	[WorldEventType.KULVE_TAROTH]: 'Kulve Taroth Seige',
@@ -19,6 +21,7 @@ const platformExclusivityNames: { [key in PlatformExclusivity]: string } = {
 };
 
 interface IState {
+	activeEvent: WorldEvent;
 	events: WorldEvent[];
 	loading: boolean;
 	platform: Platform | 'all';
@@ -26,6 +29,7 @@ interface IState {
 
 export class WorldEvents extends React.PureComponent<{}, IState> {
 	public state: Readonly<IState> = {
+		activeEvent: null,
 		events: [],
 		loading: false,
 		platform: 'all',
@@ -65,6 +69,72 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 						return true;
 					}));
 				})}
+
+				<ThemeContext.Consumer>
+					{theme => {
+						const event = this.state.activeEvent;
+
+						if (!event)
+							return null;
+
+						return (
+							<Dialog
+								className={theme === Theme.DARK ? Classes.DARK : ''}
+								isOpen={event !== null}
+								onClose={this.onDialogClose}
+								title="Event Details"
+							>
+								<div className={`${Classes.DIALOG_BODY}`}>
+									<H3>Event Dates</H3>
+
+									<p>
+										{formatDateTime(event.startTimestamp)} ~ {formatDateTime(event.endTimestamp)}
+									</p>
+
+									<H3 style={{marginTop: 10}}>Location</H3>
+
+									<p>
+										{event.location.name}
+									</p>
+
+									{event.requirements !== null && (
+										<>
+											<H3 style={{marginTop: 10}}>Requirements</H3>
+
+											<p>
+												{event.requirements}
+											</p>
+										</>
+									)}
+
+									{event.successConditions !== null && (
+										<>
+											<H3 style={{marginTop: 10}}>Success Conditions</H3>
+
+											<p>
+												{event.successConditions}
+											</p>
+										</>
+									)}
+
+									<H3 style={{marginTop: 10}}>Description</H3>
+
+									<p className={Classes.RUNNING_TEXT}>
+										{event.description}
+									</p>
+								</div>
+
+								<div className={Classes.DIALOG_FOOTER}>
+									<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+										<Button onClick={this.onDialogClose}>
+											Close
+										</Button>
+									</div>
+								</div>
+							</Dialog>
+						);
+					}}
+				</ThemeContext.Consumer>
 			</div>
 		);
 	}
@@ -106,20 +176,18 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 							title: 'Rank',
 						},
 						{
-							render: event => {
-								const date = event.startTimestamp;
-
-								return `${date.toLocaleDateString()} ${date.toLocaleTimeString().replace(':00 ', ' ')}`;
-							},
+							render: event => formatDateTime(event.startTimestamp),
 							title: 'Start Date',
 						},
 						{
-							render: event => {
-								const date = event.endTimestamp;
-
-								return `${date.toLocaleDateString()} ${date.toLocaleTimeString().replace(':00 ', ' ')}`;
-							},
+							render: event => formatDateTime(event.endTimestamp),
 							title: 'End Date',
+						},
+						{
+							render: event => (
+								<Button icon="eye-open" minimal={true} onClick={() => this.onShowInfoClick(event)} />
+							),
+							title: '',
 						},
 					]}
 					dataSource={events}
@@ -135,8 +203,16 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 		return platform === 'all' ? 'All Platforms' : platformNames[platform as Platform];
 	};
 
+	private onDialogClose = () => this.setState({
+		activeEvent: null,
+	});
+
 	private onPlatformSelect = (platform: Platform | 'all') => this.setState({
 		platform,
+	});
+
+	private onShowInfoClick = (event: WorldEvent) => this.setState({
+		activeEvent: event,
 	});
 
 	private load = () => {
