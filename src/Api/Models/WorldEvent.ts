@@ -2,6 +2,7 @@ import {CancelToken} from 'axios';
 import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
+import {Location} from './Location';
 
 export enum WorldEventType {
 	KULVE_TAROTH = 'kulve taroth seige',
