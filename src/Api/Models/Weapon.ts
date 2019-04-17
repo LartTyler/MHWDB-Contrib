@@ -224,6 +224,15 @@ export type AmmoCapacities = Partial<IAmmoCapacities>;
 export type WeaponAttributes = Partial<IWeaponAttributes>;
 export type Weapon = Partial<IWeapon>;
 
+export const durabilityOrder: Array<keyof Durability> = [
+	'red',
+	'orange',
+	'yellow',
+	'green',
+	'blue',
+	'white',
+];
+
 export type WeaponPayload = Omit<Weapon, 'crafting'> & {
 	crafting?: Omit<WeaponCrafting, 'craftingMaterials' | 'upgradeMaterials'> & {
 		craftingMaterials?: ISimpleCraftingCost[];

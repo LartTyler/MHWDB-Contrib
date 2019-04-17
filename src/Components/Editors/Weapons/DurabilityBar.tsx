@@ -1,15 +1,6 @@
 import * as React from 'react';
-import {Durability} from '../../../Api/Models/Weapon';
+import {Durability, durabilityOrder} from '../../../Api/Models/Weapon';
 import './DurabilityBar.scss';
-
-const barOrder: Array<keyof Durability> = [
-	'red',
-	'orange',
-	'yellow',
-	'green',
-	'blue',
-	'white',
-];
 
 interface IProps {
 	durability: Durability;
@@ -20,7 +11,7 @@ export const DurabilityBar: React.FC<IProps> = props => {
 
 	return (
 		<div className="durability-bar">
-			{barOrder.map(color => {
+			{durabilityOrder.map(color => {
 				sum += props.durability[color];
 
 				return (
