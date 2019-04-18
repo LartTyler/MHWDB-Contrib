@@ -30,6 +30,10 @@ export const Navigation: React.FC<{}> = () => (
 			<NavbarDivider />
 
 			<ContributeButton />
+
+			<LinkButton buttonProps={{minimal: true}} to="/events">
+				Events
+			</LinkButton>
 		</NavbarGroup>
 
 		<NavbarGroup align={Alignment.RIGHT}>
