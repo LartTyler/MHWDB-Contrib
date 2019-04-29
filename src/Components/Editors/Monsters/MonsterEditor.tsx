@@ -5,11 +5,13 @@ import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Ailment, AilmentModel} from '../../../Api/Models/Ailment';
+import {Item, ItemModel} from '../../../Api/Models/Item';
 import {Location, LocationModel} from '../../../Api/Models/Location';
 import {
 	MonsterModel,
 	MonsterPayload,
 	MonsterResistance,
+	MonsterReward,
 	MonsterSpecies,
 	MonsterType,
 	MonsterWeakness,
@@ -21,10 +23,12 @@ import {ucfirst, ucwords} from '../../../Utility/string';
 import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {ailmentsSorter} from '../Ailments/AilmentList';
+import {itemSorter} from '../CraftingCostDialog';
 import {EditorButtons} from '../EditorButtons';
 import {locationSorter} from '../Locations/LocationList';
 import {MonsterResistancesEditor} from './MonsterResistancesEditor';
 import {MonsterWeaknessesEditor} from './MonsterWeaknessesEditor';
+import {RewardEditor} from './RewardEditor';
 
 const ailmentsListFilter = createEntityListFilter<Ailment>('name');
 const locationsListFilter = createEntityListFilter<Location>('name');
@@ -41,12 +45,14 @@ interface IState {
 	ailmentsList: Ailment[];
 	description: string;
 	elements: Element[];
+	items: Item[];
 	loading: boolean;
 	locations: Location[];
 	locationsList: Location[];
 	name: string;
 	redirect: boolean;
 	resistances: MonsterResistance[];
+	rewards: MonsterReward[];
 	saving: boolean;
 	species: MonsterSpecies;
 	type: MonsterType;
@@ -60,12 +66,14 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 		ailmentsList: null,
 		description: '',
 		elements: [],
+		items: null,
 		loading: true,
 		locations: [],
 		locationsList: null,
 		name: '',
 		redirect: false,
 		resistances: [],
+		rewards: [],
 		saving: false,
 		species: null,
 		type: null,
@@ -75,6 +83,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 
 	public componentDidMount(): void {
 		const ailmentsPromise = AilmentModel.list().then(response => response.data.sort(ailmentsSorter));
+		const itemsPromise = ItemModel.list().then(response => response.data.sort(itemSorter));
 		const locationsPromise = LocationModel.list().then(response => response.data.sort(locationSorter));
 
 		const idParam = this.props.match.params.monster;
@@ -86,6 +95,10 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 
 			ailmentsPromise.then(ailmentsList => this.setState({
 				ailmentsList,
+			}));
+
+			itemsPromise.then(items => this.setState({
+				items,
 			}));
 
 			locationsPromise.then(locationsList => this.setState({
@@ -123,6 +136,14 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 					ailmentsList,
 				});
 			});
+
+			itemsPromise.then(items => this.setState({
+				rewards: monster.rewards.map(reward => {
+					reward.item = items.find(item => item.id === reward.item.id);
+
+					return reward;
+				}),
+			}));
 
 			locationsPromise.then(locationsList => {
 				const locationIds = monster.locations.map(location => location.id);
@@ -317,6 +338,14 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					</Row>
 
+					<H3>Drops and Rewards</H3>
+
+					<RewardEditor
+						items={this.state.items}
+						onChange={this.onRewardsChange}
+						rewards={this.state.rewards}
+					/>
+
 					<EditorButtons
 						onClose={this.onClose}
 						onSave={this.save}
@@ -388,6 +417,10 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 
 	private onResistancesChange = (resistances: MonsterResistance[]) => this.setState({
 		resistances,
+	});
+
+	private onRewardsChange = (rewards: MonsterReward[]) => this.setState({
+		rewards,
 	});
 
 	private onSpeciesSelect = (species: MonsterSpecies) => this.setState({

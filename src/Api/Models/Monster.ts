@@ -4,7 +4,9 @@ import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {Ailment} from './Ailment';
+import {Item} from './Item';
 import {Location} from './Location';
+import {RewardCondition, RewardConditionPayload} from './Reward';
 import {Element} from './Weapon';
 
 export enum MonsterType {
@@ -33,6 +35,7 @@ interface IMonster extends IEntity {
 	locations: Location[];
 	name: string;
 	resistances: MonsterResistance[];
+	rewards: MonsterReward[];
 	species: MonsterSpecies;
 	type: MonsterType;
 	weaknesses: MonsterWeakness[];
@@ -49,13 +52,23 @@ interface IMonsterWeakness {
 	stars: number;
 }
 
+interface IMonsterReward extends IEntity {
+	conditions: RewardCondition[];
+	item: Item;
+}
+
 export type MonsterResistance = Partial<IMonsterResistance>;
 export type MonsterWeakness = Partial<IMonsterWeakness>;
+export type MonsterReward = Partial<IMonsterReward>;
 export type Monster = Partial<IMonster>;
 
-export type MonsterPayload = Omit<Monster, 'ailments' | 'locations'> & {
+export type MonsterPayload = Omit<Monster, 'ailments' | 'locations' | 'rewards'> & {
 	ailments?: number[];
 	locations?: number[];
+	rewards?: {
+		conditions: RewardConditionPayload;
+		item: number;
+	};
 };
 
 export class MonsterModel {
