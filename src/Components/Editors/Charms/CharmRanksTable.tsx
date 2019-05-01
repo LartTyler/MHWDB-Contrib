@@ -94,7 +94,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 						},
 						{
 							align: 'right',
-							render: rank => readOnly && (
+							render: rank => !readOnly && (
 								<>
 									<Button icon="edit" minimal={true} onClick={() => this.onEditDialogShow(rank)} />
 
