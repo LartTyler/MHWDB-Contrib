@@ -286,7 +286,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 		},
 		level: this.props.ranks.length + 1,
 		name: `${this.props.baseCharmName} ${this.props.ranks.length + 1}`,
-		rarity: 0,
+		rarity: this.props.ranks.length > 0 ? this.props.ranks[this.props.ranks.length - 1].rarity + 1 : 0,
 		skills: [],
 	});
 
