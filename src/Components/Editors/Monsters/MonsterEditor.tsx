@@ -16,6 +16,7 @@ import {
 	MonsterType,
 	MonsterWeakness,
 } from '../../../Api/Models/Monster';
+import {RewardConditionPayload} from '../../../Api/Models/Reward';
 import {Element} from '../../../Api/Models/Weapon';
 import {toaster} from '../../../toaster';
 import {createEntityListFilter, filterStrings} from '../../../Utility/select';
@@ -138,6 +139,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 			});
 
 			itemsPromise.then(items => this.setState({
+				items,
 				rewards: monster.rewards.map(reward => {
 					reward.item = items.find(item => item.id === reward.item.id);
 
@@ -343,6 +345,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 					<RewardEditor
 						items={this.state.items}
 						onChange={this.onRewardsChange}
+						readOnly={readOnly}
 						rewards={this.state.rewards}
 					/>
 
@@ -484,6 +487,10 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 			locations: this.state.locations.map(location => location.id),
 			name: this.state.name.trim(),
 			resistances: this.state.resistances,
+			rewards: this.state.rewards.map(reward => ({
+				conditions: reward.conditions as RewardConditionPayload[],
+				item: reward.item.id,
+			})),
 			species: this.state.species,
 			type: this.state.type,
 			weaknesses: this.state.weaknesses,

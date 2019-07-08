@@ -65,10 +65,10 @@ export type Monster = Partial<IMonster>;
 export type MonsterPayload = Omit<Monster, 'ailments' | 'locations' | 'rewards'> & {
 	ailments?: number[];
 	locations?: number[];
-	rewards?: {
-		conditions: RewardConditionPayload;
+	rewards?: Array<{
+		conditions: RewardConditionPayload[];
 		item: number;
-	};
+	}>;
 };
 
 export class MonsterModel {

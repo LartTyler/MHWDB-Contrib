@@ -1,23 +1,32 @@
-import {Button, Classes, Dialog, FormGroup, Intent} from '@blueprintjs/core';
+import {Button, Classes, Dialog, FormGroup, InputGroup, Intent} from '@blueprintjs/core';
 import {Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
+import {Rank} from '../../../Api/Model';
 import {RewardCondition, RewardConditionType} from '../../../Api/Models/Reward';
-import {ucwords} from '../../../Utility/string';
+import {cleanNumberString} from '../../../Utility/number';
+import {ucfirst, ucwords} from '../../../Utility/string';
 import {Theme, ThemeContext} from '../../Contexts/ThemeContext';
 
 interface IProps {
-	condition: RewardCondition;
 	isOpen: boolean;
 	onClose: () => void;
-	onSave: () => void;
+	onSave: (condition: RewardCondition) => void;
 }
 
 interface IState {
+	chance: string;
+	quantity: string;
+	rank: Rank;
+	subtype: string;
 	type: RewardConditionType;
 }
 
 export class RewardConditionDialog extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
+		chance: '',
+		quantity: '',
+		rank: null,
+		subtype: '',
 		type: null,
 	};
 
@@ -33,6 +42,19 @@ export class RewardConditionDialog extends React.PureComponent<IProps, IState> {
 					>
 						<div className={Classes.DIALOG_BODY}>
 							<form onSubmit={this.onSave}>
+								<FormGroup label="Rank" labelFor="rank">
+									<Select
+										filterable={false}
+										items={Object.values(Rank)}
+										itemTextRenderer={ucfirst}
+										onItemSelect={this.onRankSelect}
+										popoverProps={{
+											targetClassName: 'full-width',
+										}}
+										selected={this.state.rank}
+									/>
+								</FormGroup>
+
 								<FormGroup label="Type" labelFor="type">
 									<Select
 										filterable={false}
@@ -42,6 +64,36 @@ export class RewardConditionDialog extends React.PureComponent<IProps, IState> {
 										popoverProps={{
 											targetClassName: 'full-width',
 										}}
+										selected={this.state.type}
+									/>
+								</FormGroup>
+
+								<FormGroup label="Subtype" labelFor="subtype">
+									<InputGroup
+										name="subtype"
+										onChange={this.onSubtypeChange}
+										value={this.state.subtype}
+									/>
+								</FormGroup>
+
+								<FormGroup
+									helperText="Enter drop chance as a percentage (whole numbers only)"
+									label="Drop Chance"
+									labelFor="chance"
+								>
+									<InputGroup
+										name="chance"
+										onChange={this.onChanceChange}
+										value={this.state.chance}
+										rightElement={<Button icon="percentage" minimal={true} />}
+									/>
+								</FormGroup>
+
+								<FormGroup label="Quantity" labelFor="quantity">
+									<InputGroup
+										name="quantity"
+										onChange={this.onQuantityChange}
+										value={this.state.quantity}
 									/>
 								</FormGroup>
 							</form>
@@ -53,7 +105,11 @@ export class RewardConditionDialog extends React.PureComponent<IProps, IState> {
 									Cancel
 								</Button>
 
-								<Button intent={Intent.PRIMARY} onClick={this.onSave}>
+								<Button
+									disabled={!this.isDialogComplete()}
+									intent={Intent.PRIMARY}
+									onClick={this.onSave}
+								>
 									Save
 								</Button>
 							</div>
@@ -64,11 +120,47 @@ export class RewardConditionDialog extends React.PureComponent<IProps, IState> {
 		);
 	}
 
+	private onChanceChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		chance: cleanNumberString(event.currentTarget.value, false),
+	});
+
+	private onQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		quantity: cleanNumberString(event.currentTarget.value, false),
+	});
+
+	private onRankSelect = (rank: Rank) => this.setState({
+		rank,
+	});
+
+	private onSubtypeChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
+		subtype: event.currentTarget.value,
+	});
+
 	private onTypeSelect = (type: RewardConditionType) => this.setState({
 		type,
 	});
 
 	private onSave = (event: React.SyntheticEvent<any>) => {
 		event.preventDefault();
+
+		const condition: RewardCondition = {
+			chance: parseInt(this.state.chance, 10),
+			quantity: parseInt(this.state.quantity, 10),
+			rank: this.state.rank,
+			subtype: this.state.subtype.trim() || null,
+			type: this.state.type,
+		};
+
+		this.props.onSave(condition);
+
+		this.setState({
+			chance: '',
+			quantity: '',
+			rank: null,
+			subtype: '',
+			type: null,
+		});
 	};
+
+	private isDialogComplete = () => this.state.type && this.state.quantity && this.state.rank && this.state.chance;
 }
