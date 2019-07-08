@@ -33,7 +33,6 @@ export class MonsterWeaknessesEditor extends React.PureComponent<IProps, IState>
 
 	public render(): React.ReactNode {
 		const elements = Object.values(Element);
-		const omit = this.props.weaknesses.map(weakness => weakness.element);
 
 		return (
 			<>
@@ -81,7 +80,6 @@ export class MonsterWeaknessesEditor extends React.PureComponent<IProps, IState>
 				{!this.props.readOnly && (
 					<>
 						<Button
-							disabled={omit.length === elements.length}
 							icon="plus"
 							onClick={this.onAddClick}
 							style={{marginTop: 15}}
@@ -103,7 +101,6 @@ export class MonsterWeaknessesEditor extends React.PureComponent<IProps, IState>
 												filterable={false}
 												items={elements}
 												itemTextRenderer={this.renderElementText}
-												omit={omit}
 												onItemSelect={this.onElementSelect}
 												popoverProps={{
 													targetClassName: 'full-width',
