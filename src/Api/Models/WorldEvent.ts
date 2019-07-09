@@ -5,7 +5,7 @@ import {IQueryDocument, Projection} from '../routes';
 import {Location} from './Location';
 
 export enum WorldEventType {
-	KULVE_TAROTH = 'kulve taroth seige',
+	KULVE_TAROTH = 'kulve taroth siege',
 	EVENT_QUEST = 'event quest',
 	CHALLENGE_QUEST = 'challenge quest',
 }

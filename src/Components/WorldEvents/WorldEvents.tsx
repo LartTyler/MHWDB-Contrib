@@ -6,7 +6,7 @@ import {formatDateTime} from '../../Utility/date';
 import {Theme, ThemeContext} from '../Contexts/ThemeContext';
 
 const eventTypeNames: { [key in WorldEventType]: string } = {
-	[WorldEventType.KULVE_TAROTH]: 'Kulve Taroth Seige',
+	[WorldEventType.KULVE_TAROTH]: 'Kulve Taroth Siege',
 	[WorldEventType.EVENT_QUEST]: 'Event Quests',
 	[WorldEventType.CHALLENGE_QUEST]: 'Challenge Quests',
 };
