@@ -54,6 +54,7 @@ export enum Element {
 	PARALYSIS = 'paralysis',
 	POISON = 'poison',
 	SLEEP = 'sleep',
+	STUN = 'stun',
 	THUNDER = 'thunder',
 	WATER = 'water',
 }
