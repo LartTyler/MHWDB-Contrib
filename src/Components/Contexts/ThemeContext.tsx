@@ -2,12 +2,12 @@ import * as React from 'react';
 import {Subtract} from 'utility-types';
 
 export enum Theme {
-	DARK = 'DARK',
-	LIGHT = 'LIGHT',
+	DARK = 'dark',
+	LIGHT = 'light',
 }
 
 export const isThemeName = (value: unknown): value is Theme =>
-	typeof value === 'string' && value.toUpperCase() in Theme;
+	Object.values(Theme).indexOf(value) !== -1;
 
 export const ThemeContext = React.createContext(Theme.DARK);
 
