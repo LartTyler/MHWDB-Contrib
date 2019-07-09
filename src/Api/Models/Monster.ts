@@ -17,6 +17,7 @@ export enum MonsterType {
 export enum MonsterSpecies {
 	BIRD_WYVERN = 'bird wyvern',
 	BRUTE_WYVERN = 'brute wyvern',
+	ELDER_DRAGON = 'elder dragon',
 	FANGED_WYVERN = 'fanged wyvern',
 	FISH = 'fish',
 	FLYING_WYVERN = 'flying wyvern',
@@ -24,8 +25,8 @@ export enum MonsterSpecies {
 	LYNIAN = 'lynian',
 	NEOPTERON = 'neopteron',
 	PISCINE_WYVERN = 'piscine wyvern',
+	RELICT = 'relict',
 	WINGDRAKE = 'wingdrake',
-	ELDER_DRAGON = 'elder dragon',
 }
 
 interface IMonster extends IEntity {
