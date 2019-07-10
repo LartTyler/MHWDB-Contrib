@@ -4,7 +4,9 @@ import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {Ailment} from './Ailment';
+import {Item} from './Item';
 import {Location} from './Location';
+import {RewardCondition, RewardConditionPayload} from './Reward';
 import {Element} from './Weapon';
 
 export enum MonsterType {
@@ -15,6 +17,7 @@ export enum MonsterType {
 export enum MonsterSpecies {
 	BIRD_WYVERN = 'bird wyvern',
 	BRUTE_WYVERN = 'brute wyvern',
+	ELDER_DRAGON = 'elder dragon',
 	FANGED_WYVERN = 'fanged wyvern',
 	FISH = 'fish',
 	FLYING_WYVERN = 'flying wyvern',
@@ -22,8 +25,8 @@ export enum MonsterSpecies {
 	LYNIAN = 'lynian',
 	NEOPTERON = 'neopteron',
 	PISCINE_WYVERN = 'piscine wyvern',
+	RELICT = 'relict',
 	WINGDRAKE = 'wingdrake',
-	ELDER_DRAGON = 'elder dragon',
 }
 
 interface IMonster extends IEntity {
@@ -33,6 +36,7 @@ interface IMonster extends IEntity {
 	locations: Location[];
 	name: string;
 	resistances: MonsterResistance[];
+	rewards: MonsterReward[];
 	species: MonsterSpecies;
 	type: MonsterType;
 	weaknesses: MonsterWeakness[];
@@ -49,13 +53,23 @@ interface IMonsterWeakness {
 	stars: number;
 }
 
+interface IMonsterReward extends IEntity {
+	conditions: RewardCondition[];
+	item: Item;
+}
+
 export type MonsterResistance = Partial<IMonsterResistance>;
 export type MonsterWeakness = Partial<IMonsterWeakness>;
+export type MonsterReward = Partial<IMonsterReward>;
 export type Monster = Partial<IMonster>;
 
-export type MonsterPayload = Omit<Monster, 'ailments' | 'locations'> & {
+export type MonsterPayload = Omit<Monster, 'ailments' | 'locations' | 'rewards'> & {
 	ailments?: number[];
 	locations?: number[];
+	rewards?: Array<{
+		conditions: RewardConditionPayload[];
+		item: number;
+	}>;
 };
 
 export class MonsterModel {

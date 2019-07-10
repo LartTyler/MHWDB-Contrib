@@ -23,6 +23,8 @@ interface IState {
 	type: Element;
 }
 
+const weaponElements = Object.values(Element).filter(element => element !== Element.STUN);
+
 export class ElementEditor extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		activeElement: null,
@@ -93,7 +95,7 @@ export class ElementEditor extends React.PureComponent<IProps, IState> {
 										<FormGroup label="Element">
 											<Select
 												filterable={false}
-												items={Object.values(Element)}
+												items={weaponElements}
 												itemTextRenderer={this.renderElementText}
 												omit={this.props.elements.map(element => element.type)}
 												onItemSelect={this.onElementSelect}

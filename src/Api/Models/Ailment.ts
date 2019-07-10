@@ -6,7 +6,9 @@ import {Item} from './Item';
 import {Skill} from './Skill';
 
 export enum RecoveryAction {
+	CROUCH = 'crouch',
 	DODGE = 'dodge',
+	HIT = 'hit',
 }
 
 interface IAilment extends IEntity {

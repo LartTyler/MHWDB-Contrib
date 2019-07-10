@@ -10,6 +10,7 @@ import {Skill, SkillModel} from '../../../Api/Models/Skill';
 import {Projection} from '../../../Api/routes';
 import {toaster} from '../../../toaster';
 import {createEntityListFilter} from '../../../Utility/select';
+import {ucfirst} from '../../../Utility/string';
 import {Role} from '../../RequireRole';
 import {EntitySelect} from '../../Select/EntitySelect';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
@@ -140,8 +141,8 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 							>
 								<MultiSelect
 									disabled={readOnly}
-									items={[RecoveryAction.DODGE]}
-									itemTextRenderer={this.renderRecoveryActionValue}
+									items={Object.values(RecoveryAction)}
+									itemTextRenderer={ucfirst}
 									onClear={this.onRecoveryActionsClear}
 									onItemDeselect={this.onRecoveryActionsDeselect}
 									onItemSelect={this.onRecoveryActionsSelect}
@@ -212,8 +213,6 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 			</>
 		);
 	}
-
-	private renderRecoveryActionValue = (action: string) => `${action.charAt(0).toUpperCase()}${action.substr(1)}`;
 
 	private onClose = () => this.setState({
 		redirect: true,

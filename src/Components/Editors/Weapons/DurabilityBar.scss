@@ -1,0 +1,22 @@
+@import '../../../variables';
+
+.durability-bar {
+	width: 100%;
+	height: 17px;
+	border: solid thin;
+
+	> .durability {
+		height: 15px;
+		display: inline-block;
+	}
+
+	@each $key, $color in $durabilityColors {
+		> .durability-#{'' + $key} {
+			background-color: $color;
+		}
+	}
+
+	> .durability-empty {
+		background-color: #444b51;
+	}
+}

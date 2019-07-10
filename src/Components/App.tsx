@@ -8,6 +8,7 @@ import {Editors} from './Editors';
 import {Home} from './Home';
 import {Navigation} from './Navigation/Navigation';
 import {PageNotFound} from './PageNotFound';
+import {WorldEvents} from './WorldEvents/WorldEvents';
 
 export const App: React.FC<{}> = () => (
 	<>
@@ -22,6 +23,7 @@ export const App: React.FC<{}> = () => (
 				<Route path="/activate/:code" component={UserActivation} />
 
 				<Route path="/" exact={true} component={Home} />
+				<Route path="/events" exact={true} component={WorldEvents} />
 				<Route path="/objects" component={Editors} />
 
 				<Route component={PageNotFound} />

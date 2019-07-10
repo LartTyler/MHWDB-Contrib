@@ -54,6 +54,7 @@ export enum Element {
 	PARALYSIS = 'paralysis',
 	POISON = 'poison',
 	SLEEP = 'sleep',
+	STUN = 'stun',
 	THUNDER = 'thunder',
 	WATER = 'water',
 }
@@ -223,6 +224,15 @@ export type Durability = Partial<IDurability>;
 export type AmmoCapacities = Partial<IAmmoCapacities>;
 export type WeaponAttributes = Partial<IWeaponAttributes>;
 export type Weapon = Partial<IWeapon>;
+
+export const durabilityOrder: Array<keyof Durability> = [
+	'red',
+	'orange',
+	'yellow',
+	'green',
+	'blue',
+	'white',
+];
 
 export type WeaponPayload = Omit<Weapon, 'crafting'> & {
 	crafting?: Omit<WeaponCrafting, 'craftingMaterials' | 'upgradeMaterials'> & {
