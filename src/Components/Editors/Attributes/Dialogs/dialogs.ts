@@ -8,7 +8,6 @@ import {CoatingsDialog} from './CoatingsDialog';
 import {DamageTypeDialog} from './DamageTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {DeviationDialog} from './DeviationDialog';
-import {EldersealDialog} from './EldersealDialog';
 import {PhialTypeDialog} from './PhialTypeDialog';
 import {RequiredGenderDialog} from './RequiredGenderDialog';
 import {ShellingTypeDialog} from './ShellingTypeDialog';
@@ -25,7 +24,6 @@ export const dialogs: DialogMap = {
 	[AttributeName.DAMAGE_TYPE]: DamageTypeDialog,
 	[AttributeName.DEFENSE]: DefenseDialog,
 	[AttributeName.DEVIATION]: DeviationDialog,
-	[AttributeName.ELDERSEAL]: EldersealDialog,
 	[AttributeName.GENDER]: RequiredGenderDialog,
 	[AttributeName.GL_SHELLING_TYPE]: ShellingTypeDialog,
 	[AttributeName.IG_BOOST_TYPE]: BoostTypeDialog,
