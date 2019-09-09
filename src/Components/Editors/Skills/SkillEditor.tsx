@@ -144,7 +144,7 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 						]}
 						fullWidth={true}
 						noDataPlaceholder={<div>This skill has no ranks.</div>}
-						rowKey="id"
+						rowKey="level"
 					/>
 
 					{!readOnly && (
