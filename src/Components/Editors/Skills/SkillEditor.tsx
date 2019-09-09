@@ -213,7 +213,7 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 	private onRankDialogCreateRank = (rank: SkillRank) => {
 		this.onRankDialogClose();
 
-		rank.level = this.state.ranks.length;
+		rank.level = this.state.ranks.length + 1;
 
 		this.setState({
 			ranks: [...this.state.ranks, rank],
