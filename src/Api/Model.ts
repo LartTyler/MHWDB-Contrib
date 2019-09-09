@@ -9,10 +9,14 @@ export type Id = string | number;
 export enum Rank {
 	HIGH = 'high',
 	LOW = 'low',
+	MASTER = 'master',
 }
 
-// @ts-ignore
-export const rankNames = Object.keys(Rank).map(key => Rank[key]);
+export const orderedRanks = [
+	Rank.LOW,
+	Rank.HIGH,
+	Rank.MASTER,
+];
 
 interface ISlot {
 	rank: number;
