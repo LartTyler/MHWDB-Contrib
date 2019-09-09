@@ -1,5 +1,5 @@
-import {Button, H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
-import {Cell, Row} from '@dbstudios/blueprintjs-components';
+import {H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
+import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
@@ -8,6 +8,7 @@ import {Slot} from '../../../Api/Model';
 import {AttributeName, IAttribute} from '../../../Api/Models/attributes';
 import {
 	Durability,
+	Elderseal,
 	WeaponAttributes,
 	WeaponCrafting,
 	WeaponElement,
@@ -17,6 +18,7 @@ import {
 } from '../../../Api/Models/Weapon';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
+import {ucfirst} from '../../../Utility/string';
 import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
@@ -40,6 +42,7 @@ interface IState {
 	attributes: IAttribute[];
 	crafting: WeaponCrafting;
 	durability: Durability[];
+	elderseal: Elderseal;
 	elements: WeaponElement[];
 	loading: boolean;
 	name: string;
@@ -63,6 +66,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			upgradeMaterials: [],
 		},
 		durability: [],
+		elderseal: null,
 		elements: [],
 		loading: true,
 		name: '',
@@ -78,7 +82,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			AttributeName.AFFINITY,
 			AttributeName.DAMAGE_TYPE,
 			AttributeName.DEFENSE,
-			AttributeName.ELDERSEAL,
 		];
 
 		switch (this.props.match.params.weaponType) {
@@ -170,6 +173,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					value,
 				})),
 				crafting: weapon.crafting,
+				elderseal: weapon.elderseal,
 				elements: weapon.elements,
 				loading: false,
 				name: weapon.name,
@@ -194,7 +198,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				<H2>{weaponTypeLabels[type]}: {this.state.name || 'No Name'}</H2>
 
 				<Row>
-					<Cell size={5}>
+					<Cell size={6}>
 						<ValidationAwareFormGroup label="Name" labelFor="name" violations={this.state.violations}>
 							<InputGroup
 								name="name"
@@ -216,7 +220,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 						</ValidationAwareFormGroup>
 					</Cell>
 
-					<Cell size={4}>
+					<Cell size={3}>
 						<ValidationAwareFormGroup
 							label="Attack (In-Game Value)"
 							labelFor="attack.dispaly"
@@ -227,6 +231,28 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 								onChange={this.onAttackChange}
 								readOnly={readOnly}
 								value={this.state.attack}
+							/>
+						</ValidationAwareFormGroup>
+					</Cell>
+				</Row>
+
+				<Row>
+					<Cell size={4}>
+						<ValidationAwareFormGroup
+							label="Elderseal"
+							labelFor="elderseal"
+							violations={this.state.violations}
+						>
+							<Select
+								disabled={readOnly}
+								filterable={false}
+								items={Object.values(Elderseal)}
+								itemTextRenderer={ucfirst}
+								onItemSelect={this.onEldersealSelect}
+								popoverProps={{
+									targetClassName: 'full-width',
+								}}
+								selected={this.state.elderseal}
 							/>
 						</ValidationAwareFormGroup>
 					</Cell>
@@ -304,6 +330,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		redirect: true,
 	});
 
+	private onEldersealSelect = (elderseal: Elderseal) => this.setState({
+		elderseal,
+	});
+
 	private onElementAdd = (element: WeaponElement) => this.setState({
 		elements: [...this.state.elements, element],
 	});
@@ -363,6 +393,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				})),
 			},
 			durability: this.state.durability,
+			elderseal: this.state.elderseal,
 			elements: this.state.elements,
 			name: this.state.name,
 			rarity: parseInt(this.state.rarity, 10),

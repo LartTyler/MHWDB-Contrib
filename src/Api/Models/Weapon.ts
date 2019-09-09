@@ -198,7 +198,6 @@ interface IWeaponAttributes {
 	[AttributeName.COATINGS]: Coating[];
 	[AttributeName.DAMAGE_TYPE]: DamageType;
 	[AttributeName.DEFENSE]: number;
-	[AttributeName.ELDERSEAL]: Elderseal;
 	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
 	[AttributeName.IG_BOOST_TYPE]: BoostType;
 	[AttributeName.PHIAL_TYPE]: PhialType | DamagePhialType;
@@ -210,6 +209,7 @@ interface IWeapon extends IEntity {
 	attributes: WeaponAttributes;
 	crafting: WeaponCrafting;
 	durability: Durability[];
+	elderseal: Elderseal;
 	elements: WeaponElement[];
 	name: string;
 	rarity: number;
