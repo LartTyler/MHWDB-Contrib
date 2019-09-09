@@ -4,7 +4,7 @@ import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
-import {Rank, rankNames, Slot} from '../../../Api/Model';
+import {orderedRanks, Rank, Slot} from '../../../Api/Model';
 import {
 	ArmorCraftingInfo,
 	ArmorModel,
@@ -275,7 +275,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 								<Select
 									disabled={readOnly}
 									itemListPredicate={filterStrings}
-									items={rankNames}
+									items={orderedRanks}
 									itemTextRenderer={ucfirst}
 									onItemSelect={this.onRankSelect}
 									popoverProps={{

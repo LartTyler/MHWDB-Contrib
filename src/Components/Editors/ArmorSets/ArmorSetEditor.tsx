@@ -4,7 +4,7 @@ import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
-import {Rank} from '../../../Api/Model';
+import {orderedRanks, Rank} from '../../../Api/Model';
 import {Armor, ArmorModel} from '../../../Api/Models/Armor';
 import {ArmorSetModel} from '../../../Api/Models/ArmorSet';
 import {ArmorSetBonus, ArmorSetBonusModel} from '../../../Api/Models/ArmorSetBonus';
@@ -149,10 +149,7 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 								<Select
 									disabled={readOnly}
 									filterable={false}
-									items={[
-										Rank.LOW,
-										Rank.HIGH,
-									]}
+									items={orderedRanks}
 									itemTextRenderer={this.renderRankText}
 									onItemSelect={this.onRankSelect}
 									popoverProps={{
