@@ -65,8 +65,11 @@ class ArmorSetBonusEditorComponent extends React.PureComponent<IProps, IState> {
 		if (idParam === 'new') {
 			this.setState({
 				loading: false,
-				ranksLoading: false,
 			});
+
+			skillsPromise.then(() => this.setState({
+				ranksLoading: false,
+			}));
 
 			return;
 		}

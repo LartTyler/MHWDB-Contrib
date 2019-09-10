@@ -63,6 +63,7 @@ export const Slots: React.FC<IProps> = props => {
 								<div className={Classes.DIALOG_BODY}>
 									<FormGroup label="Rank">
 										<Select
+											filterable={false}
 											items={slotRanks}
 											onItemSelect={rank => setSelectedRank(rank)}
 											selected={selectedRank}

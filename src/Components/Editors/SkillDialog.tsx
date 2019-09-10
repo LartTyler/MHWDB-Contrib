@@ -37,6 +37,7 @@ class SkillDialogComponent extends React.PureComponent<IProps, IState> {
 		return (
 			<Dialog
 				className={this.props.theme === Theme.DARK ? Classes.DARK : ''}
+				enforceFocus={false}
 				isOpen={this.props.isOpen}
 				onClose={this.props.onClose}
 				title="Select A Skill"

@@ -73,7 +73,7 @@ export class ArmorSetBonusRanksEditor extends React.PureComponent<IProps, IState
 				{!this.props.readOnly && (
 					<>
 						<Button
-							disabled={this.props.ranks.length === 5}
+							disabled={this.props.loading || this.props.ranks.length === 5}
 							icon="plus"
 							onClick={this.onAddClick}
 							style={{marginTop: 10}}
@@ -85,6 +85,7 @@ export class ArmorSetBonusRanksEditor extends React.PureComponent<IProps, IState
 							{theme => (
 								<Dialog
 									className={theme === Theme.DARK ? Classes.DARK : ''}
+									enforceFocus={false}
 									isOpen={this.state.showDialog}
 									onClose={this.onDialogClose}
 									title="Modify Rank"
