@@ -62,6 +62,7 @@ export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
 				{theme => (
 					<Dialog
 						className={theme === Theme.DARK ? Classes.DARK : ''}
+						enforceFocus={false}
 						isOpen={this.props.isOpen}
 						onClose={this.props.onClose}
 						title="Crafting Cost"
