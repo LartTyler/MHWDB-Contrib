@@ -5,10 +5,13 @@ import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
 import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
 import {Slot} from '../../../Api/Model';
-import {AttributeName, IAttribute} from '../../../Api/Models/attributes';
+import {attributeLabels, AttributeName, IAttribute} from '../../../Api/Models/attributes';
 import {
 	Durability,
 	Elderseal,
+	hasPhialInfo,
+	PhialInfo,
+	PhialTypes,
 	WeaponAttributes,
 	WeaponCrafting,
 	WeaponElement,
@@ -26,6 +29,7 @@ import {EditorButtons} from '../EditorButtons';
 import {Slots} from '../Slots';
 import {DurabilityEditor} from './DurabilityEditor';
 import {ElementEditor} from './ElementEditor';
+import {PhialInfo as PhialInfoComponent} from './PhialInfo';
 import {WeaponCraftingEditor} from './WeaponCraftingEditor';
 
 interface IRouteProps {
@@ -46,6 +50,7 @@ interface IState {
 	elements: WeaponElement[];
 	loading: boolean;
 	name: string;
+	phial: PhialInfo;
 	rarity: string;
 	redirect: boolean;
 	saving: boolean;
@@ -70,6 +75,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		elements: [],
 		loading: true,
 		name: '',
+		phial: {},
 		rarity: '0',
 		redirect: false,
 		saving: false,
@@ -109,12 +115,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					AttributeName.DEVIATION,
 					AttributeName.SPECIAL_AMMO,
 				);
-
-				break;
-
-			case WeaponType.CHARGE_BLADE:
-			case WeaponType.SWITCH_AXE:
-				allowedAttributes.push(AttributeName.PHIAL_TYPE);
 
 				break;
 		}
@@ -165,18 +165,28 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				});
 			}
 
+			const attributes: IAttribute[] = [];
+
+			for (const [attribute, value] of Object.entries(weapon.attributes)) {
+				if (typeof attributeLabels[attribute as AttributeName] === 'undefined')
+					continue;
+
+				attributes.push({
+					key: attribute as AttributeName,
+					value,
+				});
+			}
+
 			this.setState({
 				allowedAttributes,
 				attack: weapon.attack.display.toString(10),
-				attributes: Object.entries(weapon.attributes).map(([attribute, value]) => ({
-					key: attribute as AttributeName,
-					value,
-				})),
+				attributes,
 				crafting: weapon.crafting,
 				elderseal: weapon.elderseal,
 				elements: weapon.elements,
 				loading: false,
 				name: weapon.name,
+				phial: hasPhialInfo(weapon.type) ? weapon.phial : {},
 				rarity: weapon.rarity.toString(10),
 				slots: weapon.slots,
 			});
@@ -256,6 +266,16 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 							/>
 						</ValidationAwareFormGroup>
 					</Cell>
+
+					{hasPhialInfo(type) && (
+						<Cell size={4}>
+							<PhialInfoComponent
+								damage={this.state.phial.damage ? this.state.phial.damage.toString(10) : null}
+								onChange={this.onPhialInfoChange}
+								type={this.state.phial.type}
+							/>
+						</Cell>
+					)}
 				</Row>
 
 				<Row>
@@ -350,6 +370,13 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		name: event.currentTarget.value,
 	});
 
+	private onPhialInfoChange = (type: PhialTypes, damage: number) => this.setState({
+		phial: {
+			damage,
+			type,
+		},
+	});
+
 	private onRarityChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		rarity: cleanNumberString(event.currentTarget.value, false),
 	});
@@ -396,6 +423,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			elderseal: this.state.elderseal,
 			elements: this.state.elements,
 			name: this.state.name,
+			phial: this.state.phial,
 			rarity: parseInt(this.state.rarity, 10),
 			slots: this.state.slots,
 			type: this.props.match.params.weaponType,
