@@ -85,6 +85,7 @@ export class ArmorSetBonusRanksEditor extends React.PureComponent<IProps, IState
 							{theme => (
 								<Dialog
 									className={theme === Theme.DARK ? Classes.DARK : ''}
+									enforceFocus={false}
 									isOpen={this.state.showDialog}
 									onClose={this.onDialogClose}
 									title="Modify Rank"
