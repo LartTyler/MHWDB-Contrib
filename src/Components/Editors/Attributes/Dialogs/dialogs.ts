@@ -8,7 +8,6 @@ import {CoatingsDialog} from './CoatingsDialog';
 import {DamageTypeDialog} from './DamageTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {DeviationDialog} from './DeviationDialog';
-import {PhialTypeDialog} from './PhialTypeDialog';
 import {RequiredGenderDialog} from './RequiredGenderDialog';
 import {ShellingTypeDialog} from './ShellingTypeDialog';
 import {SpecialAmmoDialog} from './SpecialAmmoDialog';
@@ -27,6 +26,5 @@ export const dialogs: DialogMap = {
 	[AttributeName.GENDER]: RequiredGenderDialog,
 	[AttributeName.GL_SHELLING_TYPE]: ShellingTypeDialog,
 	[AttributeName.IG_BOOST_TYPE]: BoostTypeDialog,
-	[AttributeName.PHIAL_TYPE]: PhialTypeDialog,
 	[AttributeName.SPECIAL_AMMO]: SpecialAmmoDialog,
 };

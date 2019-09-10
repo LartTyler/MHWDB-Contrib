@@ -91,6 +91,8 @@ export enum DamagePhialType {
 	POISON = 'poison',
 }
 
+export type PhialTypes = PhialType | DamagePhialType;
+
 export enum Deviation {
 	AVERAGE = 'average',
 	HIGH = 'high',
@@ -200,8 +202,12 @@ interface IWeaponAttributes {
 	[AttributeName.DEFENSE]: number;
 	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
 	[AttributeName.IG_BOOST_TYPE]: BoostType;
-	[AttributeName.PHIAL_TYPE]: PhialType | DamagePhialType;
 	[AttributeName.SPECIAL_AMMO]: SpecialAmmo;
+}
+
+interface IPhialInfo {
+	type: PhialTypes;
+	damage: number;
 }
 
 interface IWeapon extends IEntity {
@@ -212,11 +218,13 @@ interface IWeapon extends IEntity {
 	elderseal: Elderseal;
 	elements: WeaponElement[];
 	name: string;
+	phial: PhialInfo;
 	rarity: number;
 	slots: Slot[];
 	type: WeaponType;
 }
 
+export type PhialInfo = Partial<IPhialInfo>;
 export type Attack = Partial<IAttack>;
 export type WeaponElement = Partial<IWeaponElement>;
 export type WeaponCrafting = Partial<IWeaponCrafting>;
@@ -303,3 +311,7 @@ export class WeaponModel {
 		return type === WeaponType.LIGHT_BOWGUN || type === WeaponType.HEAVY_BOWGUN || type === WeaponType.BOW;
 	}
 }
+
+export const hasPhialInfo = (type: WeaponType) => {
+	return type === WeaponType.CHARGE_BLADE || type === WeaponType.SWITCH_AXE;
+};
