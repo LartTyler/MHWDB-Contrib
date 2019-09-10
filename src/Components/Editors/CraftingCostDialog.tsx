@@ -71,6 +71,7 @@ export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
 							<ValidationAwareFormGroup label="Item" labelFor="items" violations={this.state.violations}>
 								<Select
 									items={this.state.items}
+									itemListPredicate={this.filterItemsList}
 									itemTextRenderer={this.renderItemText}
 									onItemSelect={this.onItemSelect}
 									popoverProps={{
@@ -111,6 +112,12 @@ export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
 			</ThemeContext.Consumer>
 		);
 	}
+
+	private filterItemsList = (query: string, items: Item[]) => {
+		query = query.toLowerCase();
+
+		return items.filter(item => item.name.toLowerCase().indexOf(query) !== -1);
+	};
 
 	private renderItemText = (item: Item) => item.name;
 
