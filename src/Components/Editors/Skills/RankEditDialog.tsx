@@ -59,6 +59,7 @@ export class RankEditDialog extends React.PureComponent<IProps, IState> {
 						canEscapeKeyClose={true}
 						canOutsideClickClose={true}
 						className={theme === Theme.DARK ? Classes.DARK : ''}
+						enforceFocus={true}
 						isOpen={this.props.isOpen}
 						onClose={this.props.onClose}
 						title={this.props.rank ? `Edit Rank ${this.props.rank.level}` : 'Add Rank'}
@@ -91,6 +92,7 @@ export class RankEditDialog extends React.PureComponent<IProps, IState> {
 													)}
 													popoverProps={{
 														targetClassName: 'full-width',
+														usePortal: false,
 													}}
 													selected={modifier.key}
 												/>

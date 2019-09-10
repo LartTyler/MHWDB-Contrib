@@ -95,6 +95,7 @@ export class Camps extends React.PureComponent<IProps, IState> {
 							{theme => (
 								<Dialog
 									className={theme === Theme.DARK ? Classes.DARK : ''}
+									enforceFocus={false}
 									isOpen={this.state.showDialog}
 									onClose={this.onDialogClose}
 									title="Add Camp"
@@ -111,6 +112,7 @@ export class Camps extends React.PureComponent<IProps, IState> {
 										<FormGroup label="Zone">
 											<Select
 												items={this.state.zones}
+												itemListPredicate={this.filterZoneList}
 												onItemSelect={this.onZoneSelect}
 												popoverProps={{
 													targetClassName: 'full-width',
@@ -143,6 +145,10 @@ export class Camps extends React.PureComponent<IProps, IState> {
 			</>
 		);
 	}
+
+	private filterZoneList = (query: string, items: number[]) => {
+		return items.filter(item => item.toString(10).indexOf(query) !== -1);
+	};
 
 	private onDialogClose = () => this.setState({
 		showDialog: false,
