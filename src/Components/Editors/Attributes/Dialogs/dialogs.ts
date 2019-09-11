@@ -4,7 +4,6 @@ import {IAttributeDialogProps} from '../AttributesEditor';
 import {AffinityDialog} from './AffinityDialog';
 import {AmmoCapacitiesDialog} from './AmmoCapacitiesDialog';
 import {BoostTypeDialog} from './BoostTypeDialog';
-import {CoatingsDialog} from './CoatingsDialog';
 import {DamageTypeDialog} from './DamageTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {DeviationDialog} from './DeviationDialog';
@@ -19,7 +18,6 @@ type DialogMap = {
 export const dialogs: DialogMap = {
 	[AttributeName.AFFINITY]: AffinityDialog,
 	[AttributeName.AMMO_CAPACITIES]: AmmoCapacitiesDialog,
-	[AttributeName.COATINGS]: CoatingsDialog,
 	[AttributeName.DAMAGE_TYPE]: DamageTypeDialog,
 	[AttributeName.DEFENSE]: DefenseDialog,
 	[AttributeName.DEVIATION]: DeviationDialog,

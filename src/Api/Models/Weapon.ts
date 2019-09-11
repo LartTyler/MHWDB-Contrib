@@ -5,6 +5,21 @@ import {Id, IEntity, ISimpleCraftingCost, Slot} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {AttributeName} from './attributes';
 import {CraftingCost} from './Item';
+import {AmmoType} from './Weapons/ammo';
+import {BowWeapon} from './Weapons/Bow';
+import {ChargeBladeWeapon} from './Weapons/ChargeBlade';
+import {DualBladesWeapon} from './Weapons/DualBlades';
+import {GreatSwordWeapon} from './Weapons/GreatSword';
+import {GunlanceWeapon} from './Weapons/Gunlance';
+import {HammerWeapon} from './Weapons/Hammer';
+import {HeavyBowgunWeapon} from './Weapons/HeavyBowgun';
+import {HuntingHornWeapon} from './Weapons/HuntingHorn';
+import {InsectGlaiveWeapon} from './Weapons/InsectGlaive';
+import {LanceWeapon} from './Weapons/Lance';
+import {LightBowgunWeapon} from './Weapons/LightBowgun';
+import {LongSwordWeapon} from './Weapons/LongSword';
+import {SwitchAxeWeapon} from './Weapons/SwitchAxe';
+import {SwordAndShieldWeapon} from './Weapons/SwordAndShield';
 
 export enum WeaponType {
 	GREAT_SWORD = 'great-sword',
@@ -118,29 +133,6 @@ export enum BoostType {
 	STAMINA = 'stamina',
 }
 
-export enum AmmoType {
-	NORMAL = 'normal',
-	PIERCING = 'piercing',
-	SPREAD = 'spread',
-	STICKY = 'sticky',
-	CLUSTER = 'cluster',
-	RECOVER = 'recover',
-	POISON = 'poison',
-	PARALYSIS = 'paralysis',
-	SLEEP = 'sleep',
-	EXHAUST = 'exhaust',
-	FLAMING = 'flaming',
-	WATER = 'water',
-	FREEZE = 'freeze',
-	THUNDER = 'thunder',
-	DRAGON = 'dragon',
-	SLICING = 'slicing',
-	WYVERN = 'wyvern',
-	DEMON = 'demon',
-	ARMOR = 'armor',
-	TRANQ = 'tranq',
-}
-
 interface IAttack {
 	display: number;
 	raw: number;
@@ -197,7 +189,6 @@ interface IWeaponAttributes {
 
 	[AttributeName.AFFINITY]: string;
 	[AttributeName.AMMO_CAPACITIES]: AmmoCapacities;
-	[AttributeName.COATINGS]: Coating[];
 	[AttributeName.DAMAGE_TYPE]: DamageType;
 	[AttributeName.DEFENSE]: number;
 	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
@@ -205,33 +196,40 @@ interface IWeaponAttributes {
 	[AttributeName.SPECIAL_AMMO]: SpecialAmmo;
 }
 
-interface IPhialInfo {
-	type: PhialTypes;
-	damage: number;
+export interface IDurabilityFunctionality {
+	durability: Durability[];
 }
 
-interface IWeapon extends IEntity {
+export const hasDurabilityFunctionality = (value: any): value is IDurabilityFunctionality => {
+	return typeof value === 'object' && 'durability' in value;
+};
+
+export const isDurabilityFunctionalityType = (type: WeaponType): boolean => {
+	return !WeaponModel.isRanged(type);
+};
+
+export interface IWeapon<T extends WeaponType> extends IEntity {
 	attack: Attack;
 	attributes: WeaponAttributes;
 	crafting: WeaponCrafting;
-	durability: Durability[];
 	elderseal: Elderseal;
 	elements: WeaponElement[];
 	name: string;
-	phial: PhialInfo;
 	rarity: number;
 	slots: Slot[];
-	type: WeaponType;
+	type: T;
 }
 
-export type PhialInfo = Partial<IPhialInfo>;
 export type Attack = Partial<IAttack>;
 export type WeaponElement = Partial<IWeaponElement>;
 export type WeaponCrafting = Partial<IWeaponCrafting>;
 export type Durability = Partial<IDurability>;
 export type AmmoCapacities = Partial<IAmmoCapacities>;
 export type WeaponAttributes = Partial<IWeaponAttributes>;
-export type Weapon = Partial<IWeapon>;
+
+export type Weapon = BowWeapon | ChargeBladeWeapon | DualBladesWeapon | GreatSwordWeapon | GunlanceWeapon | HammerWeapon
+	| HeavyBowgunWeapon | HuntingHornWeapon | InsectGlaiveWeapon | LanceWeapon | LightBowgunWeapon | LongSwordWeapon
+	| SwitchAxeWeapon | SwordAndShieldWeapon;
 
 export const durabilityOrder: Array<keyof Durability> = [
 	'red',
@@ -278,7 +276,7 @@ export class WeaponModel {
 		return WeaponModel.list(query, projection, cancelToken);
 	}
 
-	public static create(payload: WeaponCreatePayload, projection?: Projection) {
+	public static create(payload: WeaponPayload, projection?: Projection) {
 		return client.put('/weapons', payload, {
 			params: {
 				p: projection,
@@ -311,7 +309,3 @@ export class WeaponModel {
 		return type === WeaponType.LIGHT_BOWGUN || type === WeaponType.HEAVY_BOWGUN || type === WeaponType.BOW;
 	}
 }
-
-export const hasPhialInfo = (type: WeaponType) => {
-	return type === WeaponType.CHARGE_BLADE || type === WeaponType.SWITCH_AXE;
-};

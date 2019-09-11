@@ -1,6 +1,7 @@
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {AmmoCapacities, AmmoType} from '../../../../Api/Models/Weapon';
+import {AmmoCapacities} from '../../../../Api/Models/Weapon';
+import {AmmoType} from '../../../../Api/Models/Weapons/ammo';
 import {ucfirst} from '../../../../Utility/string';
 import {AttributeDialog} from '../AttributeDialog';
 import {IAttributeDialogProps} from '../AttributesEditor';

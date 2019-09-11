@@ -1,7 +1,7 @@
 import {FormGroup, InputGroup} from '@blueprintjs/core';
 import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {AmmoType} from '../../../../../Api/Models/Weapon';
+import {AmmoType} from '../../../../../Api/Models/Weapons/ammo';
 import {cleanNumberString} from '../../../../../Utility/number';
 
 type DefaultLevelMap = {

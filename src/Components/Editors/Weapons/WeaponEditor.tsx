@@ -1,5 +1,5 @@
 import {H2, H3, InputGroup, Intent, Spinner} from '@blueprintjs/core';
-import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
+import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
@@ -9,9 +9,8 @@ import {attributeLabels, AttributeName, IAttribute} from '../../../Api/Models/at
 import {
 	Durability,
 	Elderseal,
-	hasPhialInfo,
-	PhialInfo,
-	PhialTypes,
+	hasDurabilityFunctionality,
+	isDurabilityFunctionalityType,
 	WeaponAttributes,
 	WeaponCrafting,
 	WeaponElement,
@@ -19,9 +18,17 @@ import {
 	WeaponType,
 	weaponTypeLabels,
 } from '../../../Api/Models/Weapon';
+import {BowCoating, hasBowCoatingFunctionality, isBowCoatingFunctionalityType} from '../../../Api/Models/Weapons/Bow';
+import {
+	hasPhialFunctionality,
+	isPhialFunctionalityType,
+	PhialInfo,
+	PhialTypes,
+} from '../../../Api/Models/Weapons/phial';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
-import {ucfirst} from '../../../Utility/string';
+import {filterStrings} from '../../../Utility/select';
+import {ucfirst, ucwords} from '../../../Utility/string';
 import {Role} from '../../RequireRole';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
@@ -44,6 +51,7 @@ interface IState {
 	allowedAttributes: AttributeName[];
 	attack: string;
 	attributes: IAttribute[];
+	coatings: BowCoating[];
 	crafting: WeaponCrafting;
 	durability: Durability[];
 	elderseal: Elderseal;
@@ -63,6 +71,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		allowedAttributes: [],
 		attack: '',
 		attributes: [],
+		coatings: [],
 		crafting: {
 			branches: [],
 			craftable: false,
@@ -91,13 +100,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		];
 
 		switch (this.props.match.params.weaponType) {
-			case WeaponType.BOW:
-				allowedAttributes.push(
-					AttributeName.COATINGS,
-				);
-
-				break;
-
 			case WeaponType.GUNLANCE:
 				allowedAttributes.push(AttributeName.GL_SHELLING_TYPE);
 
@@ -145,8 +147,13 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		WeaponModel.read(id).then(response => {
 			const weapon = response.data;
+			const state: Pick<IState, 'durability' | 'phial' | 'coatings'> = {
+				coatings: [],
+				durability: [],
+				phial: {},
+			};
 
-			if (!WeaponModel.isRanged(weapon.type)) {
+			if (hasDurabilityFunctionality(weapon)) {
 				const durability = weapon.durability;
 
 				for (let i = durability.length; i < 6; i++) {
@@ -160,10 +167,14 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					});
 				}
 
-				this.setState({
-					durability,
-				});
+				state.durability = durability;
 			}
+
+			if (hasPhialFunctionality(weapon))
+				state.phial = weapon.phial;
+
+			if (hasBowCoatingFunctionality(weapon))
+				state.coatings = weapon.coatings;
 
 			const attributes: IAttribute[] = [];
 
@@ -178,6 +189,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			}
 
 			this.setState({
+				...state,
 				allowedAttributes,
 				attack: weapon.attack.display.toString(10),
 				attributes,
@@ -186,7 +198,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				elements: weapon.elements,
 				loading: false,
 				name: weapon.name,
-				phial: hasPhialInfo(weapon.type) ? weapon.phial : {},
 				rarity: weapon.rarity.toString(10),
 				slots: weapon.slots,
 			});
@@ -244,9 +255,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 							/>
 						</ValidationAwareFormGroup>
 					</Cell>
-				</Row>
 
-				<Row>
 					<Cell size={4}>
 						<ValidationAwareFormGroup
 							label="Elderseal"
@@ -267,13 +276,36 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 						</ValidationAwareFormGroup>
 					</Cell>
 
-					{hasPhialInfo(type) && (
+					{isPhialFunctionalityType(type) && (
 						<Cell size={4}>
 							<PhialInfoComponent
 								damage={this.state.phial.damage ? this.state.phial.damage.toString(10) : null}
 								onChange={this.onPhialInfoChange}
 								type={this.state.phial.type}
 							/>
+						</Cell>
+					)}
+
+					{isBowCoatingFunctionalityType(type) && (
+						<Cell size={6}>
+							<ValidationAwareFormGroup
+								label="Coatings"
+								labelFor="coatings"
+								violations={this.state.violations}
+							>
+								<MultiSelect
+									itemListPredicate={filterStrings}
+									items={Object.values(BowCoating)}
+									itemTextRenderer={ucwords}
+									onClear={this.onBowCoatingsClear}
+									onItemDeselect={this.onBowCoatingDeselect}
+									onItemSelect={this.onBowCoatingSelect}
+									popoverProps={{
+										targetClassName: 'full-width',
+									}}
+									selected={this.state.coatings}
+								/>
+							</ValidationAwareFormGroup>
 						</Cell>
 					)}
 				</Row>
@@ -307,7 +339,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				/>
 
 				<Row>
-					{!WeaponModel.isRanged(type) && (
+					{isDurabilityFunctionalityType(type) && (
 						<Cell size={6}>
 							<H3 style={{marginTop: 15}}>Durability</H3>
 
@@ -315,7 +347,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					)}
 
-					<Cell size={WeaponModel.isRanged(type) ? 12 : 6}>
+					<Cell size={!isDurabilityFunctionalityType(type) ? 12 : 6}>
 						<H3 style={{marginTop: 15}}>Elements</H3>
 
 						<ElementEditor
@@ -344,6 +376,18 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
+	});
+
+	private onBowCoatingsClear = () => this.setState({
+		coatings: [],
+	});
+
+	private onBowCoatingDeselect = (target: BowCoating) => this.setState({
+		coatings: this.state.coatings.filter(coating => coating !== target),
+	});
+
+	private onBowCoatingSelect = (coating: BowCoating) => this.setState({
+		coatings: [...this.state.coatings, coating],
 	});
 
 	private onClose = () => this.setState({
@@ -398,7 +442,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		const crafting = this.state.crafting;
 
-		const payload = {
+		const payload: any = {
 			attack: {
 				display: parseInt(this.state.attack, 10),
 			},
@@ -419,15 +463,23 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					quantity: cost.quantity,
 				})),
 			},
-			durability: this.state.durability,
 			elderseal: this.state.elderseal,
 			elements: this.state.elements,
 			name: this.state.name,
-			phial: this.state.phial,
 			rarity: parseInt(this.state.rarity, 10),
 			slots: this.state.slots,
-			type: this.props.match.params.weaponType,
 		};
+
+		payload.type = this.props.match.params.weaponType;
+
+		if (isPhialFunctionalityType(payload.type))
+			payload.phial = this.state.phial;
+
+		if (isDurabilityFunctionalityType(payload.type))
+			payload.durability = this.state.durability;
+
+		if (isBowCoatingFunctionalityType(payload.type))
+			payload.coatings = this.state.coatings;
 
 		const idParam = this.props.match.params.weapon;
 		let promise: Promise<unknown>;

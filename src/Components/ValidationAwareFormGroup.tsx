@@ -8,6 +8,25 @@ interface IProps extends IFormGroupProps {
 }
 
 export const ValidationAwareFormGroup: React.FC<IProps> = ({violations, ...props}) => {
+	if (violations) {
+		if (props.labelFor in violations) {
+			props.helperText = violations[props.labelFor].message;
+			props.intent = Intent.DANGER;
+		} else {
+			for (const key in violations) {
+				if (!violations.hasOwnProperty(key))
+					continue;
+
+				if (key.indexOf(props.labelFor) === 0) {
+					props.helperText = violations[props.labelFor].message;
+					props.intent = Intent.DANGER;
+
+					break;
+				}
+			}
+		}
+	}
+
 	if (violations && props.labelFor in violations) {
 		props.helperText = violations[props.labelFor].message;
 		props.intent = Intent.DANGER;
