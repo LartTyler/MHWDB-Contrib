@@ -1,6 +1,5 @@
 export enum AttributeName {
 	AFFINITY = 'affinity',
-	AMMO_CAPACITIES = 'ammoCapacities',
 	DAMAGE_DRAGON = 'damageDragon',
 	DAMAGE_FIRE = 'damageFire',
 	DAMAGE_ICE = 'damageIce',
@@ -31,7 +30,6 @@ export interface IAttribute {
 
 export const attributeLabels = {
 	[AttributeName.AFFINITY]: 'Affinity',
-	[AttributeName.AMMO_CAPACITIES]: 'Ammo Capacities',
 	[AttributeName.DAMAGE_DRAGON]: 'Damage / Dragon',
 	[AttributeName.DAMAGE_FIRE]: 'Damage / Fire',
 	[AttributeName.DAMAGE_ICE]: 'Damage / Ice',

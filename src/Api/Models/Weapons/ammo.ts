@@ -50,6 +50,29 @@ export type DemonAmmoCapacity = Partial<IAmmoCapacity<AmmoType.DEMON, 1>>;
 export type ArmorAmmoCapacity = Partial<IAmmoCapacity<AmmoType.ARMOR, 1>>;
 export type TranqAmmoCapacity = Partial<IAmmoCapacity<AmmoType.TRANQ, 1>>;
 
+export const ammoLevels: {[key in AmmoType]: number} = {
+	[AmmoType.NORMAL]: 3,
+	[AmmoType.PIERCING]: 3,
+	[AmmoType.SPREAD]: 3,
+	[AmmoType.STICKY]: 3,
+	[AmmoType.CLUSTER]: 3,
+	[AmmoType.RECOVER]: 2,
+	[AmmoType.POISON]: 2,
+	[AmmoType.PARALYSIS]: 2,
+	[AmmoType.SLEEP]: 2,
+	[AmmoType.EXHAUST]: 2,
+	[AmmoType.FLAMING]: 1,
+	[AmmoType.WATER]: 1,
+	[AmmoType.FREEZE]: 1,
+	[AmmoType.THUNDER]: 1,
+	[AmmoType.DRAGON]: 1,
+	[AmmoType.SLICING]: 1,
+	[AmmoType.WYVERN]: 1,
+	[AmmoType.DEMON]: 1,
+	[AmmoType.ARMOR]: 1,
+	[AmmoType.TRANQ]: 1,
+};
+
 export type AmmoCapacity = NormalAmmoCapacity | PiercingAmmoCapacity | SpreadAmmoCapacity | StickyAmmoCapacity
 	| ClusterAmmoCapacity | RecoverAmmoCapacity | PoisonAmmoCapacity | ParalysisAmmoCapacity | SleepAmmoCapacity
 	| ExhaustAmmoCapacity | FlamingAmmoCapacity | WaterAmmoCapacity | FreezeAmmoCapacity | ThunderAmmoCapacity

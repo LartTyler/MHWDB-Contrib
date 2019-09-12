@@ -18,6 +18,13 @@ import {
 	WeaponType,
 	weaponTypeLabels,
 } from '../../../Api/Models/Weapon';
+import {
+	AmmoCapacity,
+	ammoLevels,
+	AmmoType,
+	hasAmmoFunctionality,
+	isAmmoFunctionalityType,
+} from '../../../Api/Models/Weapons/ammo';
 import {BowCoating, hasBowCoatingFunctionality, isBowCoatingFunctionalityType} from '../../../Api/Models/Weapons/Bow';
 import {
 	hasPhialFunctionality,
@@ -34,6 +41,7 @@ import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
 import {EditorButtons} from '../EditorButtons';
 import {Slots} from '../Slots';
+import {AmmoCapacityEditor} from './AmmoCapacityEditor';
 import {DurabilityEditor} from './DurabilityEditor';
 import {ElementEditor} from './ElementEditor';
 import {PhialInfo as PhialInfoComponent} from './PhialInfo';
@@ -49,6 +57,7 @@ interface IProps extends RouteComponentProps<IRouteProps> {
 
 interface IState {
 	allowedAttributes: AttributeName[];
+	ammo: AmmoCapacity[];
 	attack: string;
 	attributes: IAttribute[];
 	coatings: BowCoating[];
@@ -69,6 +78,7 @@ interface IState {
 class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 	public state: Readonly<IState> = {
 		allowedAttributes: [],
+		ammo: [],
 		attack: '',
 		attributes: [],
 		coatings: [],
@@ -113,7 +123,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			case WeaponType.LIGHT_BOWGUN:
 			case WeaponType.HEAVY_BOWGUN:
 				allowedAttributes.push(
-					AttributeName.AMMO_CAPACITIES,
 					AttributeName.DEVIATION,
 					AttributeName.SPECIAL_AMMO,
 				);
@@ -124,34 +133,37 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		const id = this.props.match.params.weapon;
 
 		if (id === 'new') {
-			this.setState({
+			const state: Partial<IState> = {
 				allowedAttributes,
 				loading: false,
-			});
+			};
 
-			if (!WeaponModel.isRanged(this.props.match.params.weaponType)) {
-				this.setState({
-					durability: (new Array(6) as Durability[]).fill({
-						blue: 0,
-						green: 0,
-						orange: 0,
-						red: 0,
-						white: 0,
-						yellow: 0,
-					}),
+			if (isDurabilityFunctionalityType(this.props.match.params.weaponType)) {
+				state.durability = (new Array(6) as Durability[]).fill({
+					blue: 0,
+					green: 0,
+					orange: 0,
+					red: 0,
+					white: 0,
+					yellow: 0,
 				});
 			}
+
+			if (isAmmoFunctionalityType(this.props.match.params.weaponType)) {
+				state.ammo = Object.values(AmmoType).map((type: AmmoType) => ({
+					capacities: (new Array(ammoLevels[type])).fill(0),
+					type,
+				} as AmmoCapacity));
+			}
+
+			this.setState(state as IState);
 
 			return;
 		}
 
 		WeaponModel.read(id).then(response => {
 			const weapon = response.data;
-			const state: Pick<IState, 'durability' | 'phial' | 'coatings'> = {
-				coatings: [],
-				durability: [],
-				phial: {},
-			};
+			const state: Partial<IState> = {};
 
 			if (hasDurabilityFunctionality(weapon)) {
 				const durability = weapon.durability;
@@ -176,6 +188,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			if (hasBowCoatingFunctionality(weapon))
 				state.coatings = weapon.coatings;
 
+			if (hasAmmoFunctionality(weapon))
+				state.ammo = weapon.ammo.sort((a, b) => a.type > b.type ? 1 : (a.type < b.type ? -1 : 0));
+
 			const attributes: IAttribute[] = [];
 
 			for (const [attribute, value] of Object.entries(weapon.attributes)) {
@@ -189,7 +204,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			}
 
 			this.setState({
-				...state,
+				...state as IState,
 				allowedAttributes,
 				attack: weapon.attack.display.toString(10),
 				attributes,
@@ -310,6 +325,14 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					)}
 				</Row>
 
+				{isAmmoFunctionalityType(type) && (
+					<div style={{marginBottom: 10}}>
+						<H3>Ammo Capacities</H3>
+
+						<AmmoCapacityEditor ammo={this.state.ammo} onChange={this.onAmmoChange} />
+					</div>
+				)}
+
 				<Row>
 					<Cell size={8}>
 						<H3>Attributes</H3>
@@ -369,6 +392,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			</form>
 		);
 	}
+
+	private onAmmoChange = (ammo: AmmoCapacity[]) => this.setState({
+		ammo: ammo.sort((a, b) => a.type > b.type ? 1 : (a.type < b.type ? -1 : 0)),
+	});
 
 	private onAttackChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
 		attack: cleanNumberString(event.currentTarget.value, false),
@@ -480,6 +507,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		if (isBowCoatingFunctionalityType(payload.type))
 			payload.coatings = this.state.coatings;
+
+		if (isAmmoFunctionalityType(payload.type))
+			payload.ammo = this.state.ammo;
 
 		const idParam = this.props.match.params.weapon;
 		let promise: Promise<unknown>;
