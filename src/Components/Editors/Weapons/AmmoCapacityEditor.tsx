@@ -39,6 +39,7 @@ export class AmmoCapacityEditor extends React.PureComponent<IProps, IState> {
 								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
 									this.onLevelInputChange(event, i);
 								}}
+								placeholder="0"
 								value={this.state.currentCapacities[i]}
 							/>
 						</FormGroup>
