@@ -37,11 +37,18 @@ import {
 	PhialInfo,
 	PhialTypes,
 } from '../../../Api/Models/Weapons/phial';
+import {
+	hasSpecialAmmoFunctionality,
+	HeavyBowgunSpecialAmmo,
+	isSpecialAmmoFunctionalityType,
+	LightBowgunSpecialAmmo,
+} from '../../../Api/Models/Weapons/special-ammo';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
 import {filterStrings} from '../../../Utility/select';
 import {ucfirst, ucwords} from '../../../Utility/string';
 import {Role} from '../../RequireRole';
+import {ClearableSelect} from '../../Select/ClearableSelect';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 import {AttributesEditor} from '../Attributes/AttributesEditor';
 import {EditorButtons} from '../EditorButtons';
@@ -78,6 +85,7 @@ interface IState {
 	redirect: boolean;
 	saving: boolean;
 	slots: Slot[];
+	specialAmmo: LightBowgunSpecialAmmo | HeavyBowgunSpecialAmmo;
 	violations: IConstraintViolations;
 }
 
@@ -106,6 +114,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		redirect: false,
 		saving: false,
 		slots: [],
+		specialAmmo: null,
 		violations: {},
 	};
 
@@ -124,12 +133,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 			case WeaponType.INSECT_GLAIVE:
 				allowedAttributes.push(AttributeName.IG_BOOST_TYPE);
-
-				break;
-
-			case WeaponType.LIGHT_BOWGUN:
-			case WeaponType.HEAVY_BOWGUN:
-				allowedAttributes.push(AttributeName.SPECIAL_AMMO);
 
 				break;
 		}
@@ -200,6 +203,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 			if (hasDeviationFunctionality(weapon))
 				state.deviation = weapon.deviation;
+
+			if (hasSpecialAmmoFunctionality(weapon))
+				state.specialAmmo = weapon.specialAmmo;
 
 			const attributes: IAttribute[] = [];
 
@@ -327,6 +333,33 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 										targetClassName: 'full-width',
 									}}
 									selected={this.state.deviation}
+								/>
+							</ValidationAwareFormGroup>
+						</Cell>
+					)}
+
+					{isSpecialAmmoFunctionalityType(type) && (
+						<Cell size={4}>
+							<ValidationAwareFormGroup
+								label="Special Ammo"
+								labelFor="specialAmmo"
+								violations={this.state.violations}
+							>
+								<ClearableSelect
+									itemListPredicate={filterStrings}
+									items={
+										type === WeaponType.LIGHT_BOWGUN ?
+											Object.values(LightBowgunSpecialAmmo) :
+											Object.values(HeavyBowgunSpecialAmmo)
+									}
+									itemTextRenderer={ucfirst}
+									onClear={this.onSpecialAmmoClear}
+									onItemSelect={this.onSpecialAmmoSelect}
+									popoverProps={{
+										targetClassName: 'full-width',
+									}}
+									readOnly={readOnly}
+									selected={this.state.specialAmmo}
 								/>
 							</ValidationAwareFormGroup>
 						</Cell>
@@ -491,6 +524,14 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		slots,
 	});
 
+	private onSpecialAmmoClear = () => this.setState({
+		specialAmmo: null,
+	});
+
+	private onSpecialAmmoSelect = (specialAmmo: LightBowgunSpecialAmmo | HeavyBowgunSpecialAmmo) => this.setState({
+		specialAmmo,
+	});
+
 	private save = (event?: React.SyntheticEvent<any>) => {
 		if (event)
 			event.preventDefault();
@@ -509,7 +550,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				display: parseInt(this.state.attack, 10),
 			},
 			attributes: this.state.attributes.reduce((collector, attribute) => {
-				collector[attribute.key] = attribute.value;
+				collector[attribute.key as string] = attribute.value;
 
 				return collector;
 			}, {} as WeaponAttributes),
@@ -548,6 +589,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		if (isDeviationFunctionalityType(payload.type))
 			payload.deviation = this.state.deviation;
+
+		if (isSpecialAmmoFunctionalityType(payload.type))
+			payload.specialAmmo = this.state.specialAmmo;
 
 		const idParam = this.props.match.params.weapon;
 		let promise: Promise<unknown>;

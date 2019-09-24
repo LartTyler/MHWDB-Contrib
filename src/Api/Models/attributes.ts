@@ -18,7 +18,6 @@ export enum AttributeName {
 	RESIST_ICE = 'resistIce',
 	RESIST_THUNDER = 'resistThunder',
 	RESIST_WATER = 'resistWater',
-	SPECIAL_AMMO = 'specialAmmo',
 	STAMINA = 'stamina',
 }
 
@@ -47,6 +46,5 @@ export const attributeLabels = {
 	[AttributeName.RESIST_ICE]: 'Resist / Ice',
 	[AttributeName.RESIST_THUNDER]: 'Resist / Thunder',
 	[AttributeName.RESIST_WATER]: 'Resist / Water',
-	[AttributeName.SPECIAL_AMMO]: 'Special Ammo',
 	[AttributeName.STAMINA]: 'Stamina',
 };

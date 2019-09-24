@@ -7,7 +7,6 @@ import {DamageTypeDialog} from './DamageTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
 import {RequiredGenderDialog} from './RequiredGenderDialog';
 import {ShellingTypeDialog} from './ShellingTypeDialog';
-import {SpecialAmmoDialog} from './SpecialAmmoDialog';
 
 type DialogMap = {
 	[P in AttributeName]?: React.ComponentType<IAttributeDialogProps<any>>;
@@ -20,5 +19,4 @@ export const dialogs: DialogMap = {
 	[AttributeName.GENDER]: RequiredGenderDialog,
 	[AttributeName.GL_SHELLING_TYPE]: ShellingTypeDialog,
 	[AttributeName.IG_BOOST_TYPE]: BoostTypeDialog,
-	[AttributeName.SPECIAL_AMMO]: SpecialAmmoDialog,
 };

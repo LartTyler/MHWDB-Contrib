@@ -85,12 +85,6 @@ export enum ShellingType {
 	WIDE = 'Wide',
 }
 
-export enum SpecialAmmo {
-	WYVERNBLAST = 'wyvernblast',
-	WYVERNHEART = 'wyvernheart',
-	WYVERNSNIPE = 'wyvernsnipe',
-}
-
 export enum PhialType {
 	ELEMENT = 'element',
 	IMPACT = 'impact',
@@ -152,7 +146,6 @@ interface IWeaponAttributes {
 	[AttributeName.DEFENSE]: number;
 	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
 	[AttributeName.IG_BOOST_TYPE]: BoostType;
-	[AttributeName.SPECIAL_AMMO]: SpecialAmmo;
 }
 
 export interface IDurabilityFunctionality {
