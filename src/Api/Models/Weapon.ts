@@ -5,7 +5,6 @@ import {Id, IEntity, ISimpleCraftingCost, Slot} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {AttributeName} from './attributes';
 import {CraftingCost} from './Item';
-import {AmmoType} from './Weapons/ammo';
 import {BowWeapon} from './Weapons/Bow';
 import {ChargeBladeWeapon} from './Weapons/ChargeBlade';
 import {DualBladesWeapon} from './Weapons/DualBlades';
@@ -108,22 +107,6 @@ export enum DamagePhialType {
 
 export type PhialTypes = PhialType | DamagePhialType;
 
-export enum Deviation {
-	AVERAGE = 'average',
-	HIGH = 'high',
-	LOW = 'low',
-	NONE = 'none',
-}
-
-export enum Coating {
-	BLAST = 'blast',
-	CLOSE_RANGE = 'close range',
-	PARALYSIS = 'paralysis',
-	POISON = 'poison',
-	POWER = 'power',
-	SLEEP = 'sleep',
-}
-
 export enum BoostType {
 	BLUNT = 'blunt',
 	ELEMENT = 'element',
@@ -161,34 +144,10 @@ interface IDurability {
 	white: number;
 }
 
-export interface IAmmoCapacities {
-	[AmmoType.NORMAL]: [number, number, number];
-	[AmmoType.PIERCING]: [number, number, number];
-	[AmmoType.SPREAD]: [number, number, number];
-	[AmmoType.STICKY]: [number, number, number];
-	[AmmoType.CLUSTER]: [number, number, number];
-	[AmmoType.RECOVER]: [number, number];
-	[AmmoType.POISON]: [number, number];
-	[AmmoType.PARALYSIS]: [number, number];
-	[AmmoType.SLEEP]: [number, number];
-	[AmmoType.EXHAUST]: [number, number];
-	[AmmoType.FLAMING]: [number];
-	[AmmoType.WATER]: [number];
-	[AmmoType.FREEZE]: [number];
-	[AmmoType.THUNDER]: [number];
-	[AmmoType.DRAGON]: [number];
-	[AmmoType.SLICING]: [number];
-	[AmmoType.WYVERN]: [number];
-	[AmmoType.DEMON]: [number];
-	[AmmoType.ARMOR]: [number];
-	[AmmoType.TRANQ]: [number];
-}
-
 interface IWeaponAttributes {
 	[key: string]: any;
 
 	[AttributeName.AFFINITY]: string;
-	[AttributeName.AMMO_CAPACITIES]: AmmoCapacities;
 	[AttributeName.DAMAGE_TYPE]: DamageType;
 	[AttributeName.DEFENSE]: number;
 	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
@@ -224,7 +183,6 @@ export type Attack = Partial<IAttack>;
 export type WeaponElement = Partial<IWeaponElement>;
 export type WeaponCrafting = Partial<IWeaponCrafting>;
 export type Durability = Partial<IDurability>;
-export type AmmoCapacities = Partial<IAmmoCapacities>;
 export type WeaponAttributes = Partial<IWeaponAttributes>;
 
 export type Weapon = BowWeapon | ChargeBladeWeapon | DualBladesWeapon | GreatSwordWeapon | GunlanceWeapon | HammerWeapon

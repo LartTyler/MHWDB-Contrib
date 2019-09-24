@@ -27,6 +27,11 @@ import {
 } from '../../../Api/Models/Weapons/ammo';
 import {BowCoating, hasBowCoatingFunctionality, isBowCoatingFunctionalityType} from '../../../Api/Models/Weapons/Bow';
 import {
+	Deviation,
+	hasDeviationFunctionality,
+	isDeviationFunctionalityType,
+} from '../../../Api/Models/Weapons/deviation';
+import {
 	hasPhialFunctionality,
 	isPhialFunctionalityType,
 	PhialInfo,
@@ -62,6 +67,7 @@ interface IState {
 	attributes: IAttribute[];
 	coatings: BowCoating[];
 	crafting: WeaponCrafting;
+	deviation: Deviation;
 	durability: Durability[];
 	elderseal: Elderseal;
 	elements: WeaponElement[];
@@ -89,6 +95,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			previous: null,
 			upgradeMaterials: [],
 		},
+		deviation: null,
 		durability: [],
 		elderseal: null,
 		elements: [],
@@ -122,10 +129,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 			case WeaponType.LIGHT_BOWGUN:
 			case WeaponType.HEAVY_BOWGUN:
-				allowedAttributes.push(
-					AttributeName.DEVIATION,
-					AttributeName.SPECIAL_AMMO,
-				);
+				allowedAttributes.push(AttributeName.SPECIAL_AMMO);
 
 				break;
 		}
@@ -155,6 +159,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					type,
 				} as AmmoCapacity));
 			}
+
+			if (isDeviationFunctionalityType(this.props.match.params.weaponType))
+				state.deviation = Deviation.NONE;
 
 			this.setState(state as IState);
 
@@ -190,6 +197,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 			if (hasAmmoFunctionality(weapon))
 				state.ammo = weapon.ammo.sort((a, b) => a.type > b.type ? 1 : (a.type < b.type ? -1 : 0));
+
+			if (hasDeviationFunctionality(weapon))
+				state.deviation = weapon.deviation;
 
 			const attributes: IAttribute[] = [];
 
@@ -298,6 +308,27 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 								onChange={this.onPhialInfoChange}
 								type={this.state.phial.type}
 							/>
+						</Cell>
+					)}
+
+					{isDeviationFunctionalityType(type) && (
+						<Cell size={4}>
+							<ValidationAwareFormGroup
+								label="Deviation"
+								labelFor="deviation"
+								violations={this.state.violations}
+							>
+								<Select
+									itemListPredicate={filterStrings}
+									items={Object.values(Deviation)}
+									itemTextRenderer={ucwords}
+									onItemSelect={this.onDeviationSelect}
+									popoverProps={{
+										targetClassName: 'full-width',
+									}}
+									selected={this.state.deviation}
+								/>
+							</ValidationAwareFormGroup>
 						</Cell>
 					)}
 
@@ -421,6 +452,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		redirect: true,
 	});
 
+	private onDeviationSelect = (deviation: Deviation) => this.setState({
+		deviation,
+	});
+
 	private onEldersealSelect = (elderseal: Elderseal) => this.setState({
 		elderseal,
 	});
@@ -510,6 +545,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		if (isAmmoFunctionalityType(payload.type))
 			payload.ammo = this.state.ammo;
+
+		if (isDeviationFunctionalityType(payload.type))
+			payload.deviation = this.state.deviation;
 
 		const idParam = this.props.match.params.weapon;
 		let promise: Promise<unknown>;

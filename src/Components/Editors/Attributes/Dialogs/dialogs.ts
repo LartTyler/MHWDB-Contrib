@@ -5,7 +5,6 @@ import {AffinityDialog} from './AffinityDialog';
 import {BoostTypeDialog} from './BoostTypeDialog';
 import {DamageTypeDialog} from './DamageTypeDialog';
 import {DefenseDialog} from './DefenseDialog';
-import {DeviationDialog} from './DeviationDialog';
 import {RequiredGenderDialog} from './RequiredGenderDialog';
 import {ShellingTypeDialog} from './ShellingTypeDialog';
 import {SpecialAmmoDialog} from './SpecialAmmoDialog';
@@ -18,7 +17,6 @@ export const dialogs: DialogMap = {
 	[AttributeName.AFFINITY]: AffinityDialog,
 	[AttributeName.DAMAGE_TYPE]: DamageTypeDialog,
 	[AttributeName.DEFENSE]: DefenseDialog,
-	[AttributeName.DEVIATION]: DeviationDialog,
 	[AttributeName.GENDER]: RequiredGenderDialog,
 	[AttributeName.GL_SHELLING_TYPE]: ShellingTypeDialog,
 	[AttributeName.IG_BOOST_TYPE]: BoostTypeDialog,
