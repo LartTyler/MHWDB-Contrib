@@ -8,11 +8,12 @@ import {filterStrings} from '../../../Utility/select';
 import {ucwords} from '../../../Utility/string';
 import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 
-const damagePhialTypes = Object.values(DamagePhialType);
-const allPhialTypes = Object.values(PhialType).concat(damagePhialTypes).sort();
+const damagePhialTypes: string[] = Object.values(DamagePhialType);
+const allPhialTypes = (Object.values(PhialType) as string[]).concat(damagePhialTypes).sort();
 
 interface IProps {
 	onChange: (type: PhialTypes, damage: number) => void;
+	readOnly: boolean;
 	type: PhialTypes;
 
 	damage?: string;
@@ -27,6 +28,7 @@ export const PhialInfo: React.FC<IProps> = props => {
 			<Cell size={hasDamage ? 6 : 12}>
 				<ValidationAwareFormGroup label="Phial Type" labelFor="phial.type" violations={props.violations}>
 					<Select
+						disabled={props.readOnly}
 						items={allPhialTypes}
 						itemListPredicate={filterStrings}
 						itemTextRenderer={ucwords}
@@ -62,6 +64,7 @@ export const PhialInfo: React.FC<IProps> = props => {
 
 								props.onChange(props.type, damage ? parseInt(damage, 10) : null);
 							}}
+							readOnly={props.readOnly}
 							value={props.damage || ''}
 						/>
 					</ValidationAwareFormGroup>

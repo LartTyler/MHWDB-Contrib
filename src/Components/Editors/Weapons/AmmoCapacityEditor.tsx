@@ -12,6 +12,7 @@ const sortedAmmoTypes = Object.values(AmmoType).sort();
 interface IProps {
 	ammo: AmmoCapacity[];
 	onChange: (ammo: AmmoCapacity[]) => void;
+	readOnly: boolean;
 }
 
 interface IState {
@@ -62,7 +63,7 @@ export class AmmoCapacityEditor extends React.PureComponent<IProps, IState> {
 						},
 						{
 							align: 'right',
-							render: (record: AmmoCapacity) => (
+							render: (record: AmmoCapacity) => !this.props.readOnly && (
 								<>
 									<Button
 										icon="edit"
@@ -90,42 +91,46 @@ export class AmmoCapacityEditor extends React.PureComponent<IProps, IState> {
 					fullWidth={true}
 				/>
 
-				<Select
-					buttonProps={{
-						icon: 'plus',
-					}}
-					itemListPredicate={filterStrings}
-					items={sortedAmmoTypes}
-					itemTextRenderer={ucfirst}
-					noItemSelected="Add Ammo Capacity"
-					omit={this.props.ammo.map(item => item.type)}
-					onItemSelect={this.onAddAmmoCapacitySelect}
-					popoverProps={{
-						position: PopoverPosition.TOP,
-					}}
-				/>
+				{!this.props.readOnly && (
+					<>
+						<Select
+							buttonProps={{
+								icon: 'plus',
+							}}
+							itemListPredicate={filterStrings}
+							items={sortedAmmoTypes}
+							itemTextRenderer={ucfirst}
+							noItemSelected="Add Ammo Capacity"
+							omit={this.props.ammo.map(item => item.type)}
+							onItemSelect={this.onAddAmmoCapacitySelect}
+							popoverProps={{
+								position: PopoverPosition.TOP,
+							}}
+						/>
 
-				<Dialog
-					isOpen={this.state.showDialog}
-					onClose={this.onDialogClose}
-					title={this.state.currentAmmoType && `Modify ${ucfirst(this.state.currentAmmoType)} Ammo Capacity`}
-				>
-					<div className={Classes.DIALOG_BODY}>
-						<form onSubmit={this.onDialogSave}>
-							<Row>
-								{dialogItems}
-							</Row>
-						</form>
-					</div>
+						<Dialog
+							isOpen={this.state.showDialog}
+							onClose={this.onDialogClose}
+							title={this.state.currentAmmoType && `Modify ${ucfirst(this.state.currentAmmoType)} Ammo Capacity`}
+						>
+							<div className={Classes.DIALOG_BODY}>
+								<form onSubmit={this.onDialogSave}>
+									<Row>
+										{dialogItems}
+									</Row>
+								</form>
+							</div>
 
-					<div className={Classes.DIALOG_FOOTER}>
-						<div className={Classes.DIALOG_FOOTER_ACTIONS}>
-							<Button onClick={this.onDialogClose} text="Cancel" />
+							<div className={Classes.DIALOG_FOOTER}>
+								<div className={Classes.DIALOG_FOOTER_ACTIONS}>
+									<Button onClick={this.onDialogClose} text="Cancel" />
 
-							<Button intent={Intent.PRIMARY} onClick={this.onDialogSave} text="Save" />
-						</div>
-					</div>
-				</Dialog>
+									<Button intent={Intent.PRIMARY} onClick={this.onDialogSave} text="Save" />
+								</div>
+							</div>
+						</Dialog>
+					</>
+				)}
 			</>
 		);
 	}

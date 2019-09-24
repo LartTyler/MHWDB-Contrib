@@ -312,6 +312,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 							<PhialInfoComponent
 								damage={this.state.phial.damage ? this.state.phial.damage.toString(10) : null}
 								onChange={this.onPhialInfoChange}
+								readOnly={readOnly}
 								type={this.state.phial.type}
 							/>
 						</Cell>
@@ -325,9 +326,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 								violations={this.state.violations}
 							>
 								<Select
+									disabled={readOnly}
 									itemListPredicate={filterStrings}
 									items={Object.values(Deviation)}
-									itemTextRenderer={ucwords}
+									itemTextRenderer={ucfirst}
 									onItemSelect={this.onDeviationSelect}
 									popoverProps={{
 										targetClassName: 'full-width',
@@ -373,6 +375,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 								violations={this.state.violations}
 							>
 								<MultiSelect
+									disabled={readOnly}
 									itemListPredicate={filterStrings}
 									items={Object.values(BowCoating)}
 									itemTextRenderer={ucwords}
@@ -393,7 +396,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					<div style={{marginBottom: 10}}>
 						<H3>Ammo Capacities</H3>
 
-						<AmmoCapacityEditor ammo={this.state.ammo} onChange={this.onAmmoChange} />
+						<AmmoCapacityEditor ammo={this.state.ammo} onChange={this.onAmmoChange} readOnly={readOnly} />
 					</div>
 				)}
 
