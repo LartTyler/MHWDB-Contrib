@@ -101,15 +101,6 @@ export enum DamagePhialType {
 
 export type PhialTypes = PhialType | DamagePhialType;
 
-export enum BoostType {
-	BLUNT = 'blunt',
-	ELEMENT = 'element',
-	HEALTH = 'health',
-	SEVER = 'sever',
-	SPEED = 'speed',
-	STAMINA = 'stamina',
-}
-
 interface IAttack {
 	display: number;
 	raw: number;
@@ -145,7 +136,6 @@ interface IWeaponAttributes {
 	[AttributeName.DAMAGE_TYPE]: DamageType;
 	[AttributeName.DEFENSE]: number;
 	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
-	[AttributeName.IG_BOOST_TYPE]: BoostType;
 }
 
 export interface IDurabilityFunctionality {

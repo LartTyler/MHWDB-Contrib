@@ -31,6 +31,7 @@ import {
 	hasDeviationFunctionality,
 	isDeviationFunctionalityType,
 } from '../../../Api/Models/Weapons/deviation';
+import {InsectGlaiveBoostType} from '../../../Api/Models/Weapons/InsectGlaive';
 import {
 	hasPhialFunctionality,
 	isPhialFunctionalityType,
@@ -72,6 +73,7 @@ interface IState {
 	ammo: AmmoCapacity[];
 	attack: string;
 	attributes: IAttribute[];
+	boostType: InsectGlaiveBoostType;
 	coatings: BowCoating[];
 	crafting: WeaponCrafting;
 	deviation: Deviation;
@@ -95,6 +97,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		ammo: [],
 		attack: '',
 		attributes: [],
+		boostType: null,
 		coatings: [],
 		crafting: {
 			branches: [],
@@ -128,11 +131,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		switch (this.props.match.params.weaponType) {
 			case WeaponType.GUNLANCE:
 				allowedAttributes.push(AttributeName.GL_SHELLING_TYPE);
-
-				break;
-
-			case WeaponType.INSECT_GLAIVE:
-				allowedAttributes.push(AttributeName.IG_BOOST_TYPE);
 
 				break;
 		}
@@ -206,6 +204,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 			if (hasSpecialAmmoFunctionality(weapon))
 				state.specialAmmo = weapon.specialAmmo;
+
+			if (weapon.type === WeaponType.INSECT_GLAIVE)
+				state.boostType = weapon.boostType;
 
 			const attributes: IAttribute[] = [];
 
@@ -367,6 +368,26 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					)}
 
+					{type === WeaponType.INSECT_GLAIVE && (
+						<Cell size={4}>
+							<ValidationAwareFormGroup
+								label="Boost Type"
+								labelFor="boostType"
+								violations={this.state.violations}
+							>
+								<ClearableSelect
+									itemListPredicate={filterStrings}
+									items={Object.values(InsectGlaiveBoostType)}
+									itemTextRenderer={ucfirst}
+									onClear={this.onBoostTypeClear}
+									onItemSelect={this.onBoostTypeSelect}
+									readOnly={readOnly}
+									selected={this.state.boostType}
+								/>
+							</ValidationAwareFormGroup>
+						</Cell>
+					)}
+
 					{isBowCoatingFunctionalityType(type) && (
 						<Cell size={6}>
 							<ValidationAwareFormGroup
@@ -470,6 +491,14 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
+	});
+
+	private onBoostTypeClear = () => this.setState({
+		boostType: null,
+	});
+
+	private onBoostTypeSelect = (boostType: InsectGlaiveBoostType) => this.setState({
+		boostType,
 	});
 
 	private onBowCoatingsClear = () => this.setState({
@@ -595,6 +624,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		if (isSpecialAmmoFunctionalityType(payload.type))
 			payload.specialAmmo = this.state.specialAmmo;
+
+		if (payload.type === WeaponType.INSECT_GLAIVE)
+			payload.boostType = this.state.boostType;
 
 		const idParam = this.props.match.params.weapon;
 		let promise: Promise<unknown>;
