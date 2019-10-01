@@ -1,4 +1,5 @@
 import {CancelToken} from 'axios';
+import {parseIso8601Date} from '../../Utility/date';
 import {client} from '../client';
 import {Id, IEntity} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
@@ -65,10 +66,10 @@ export class WorldEventModel {
 
 	private static denormalize(event: WorldEvent): WorldEvent {
 		if (typeof event.startTimestamp === 'string')
-			event.startTimestamp = new Date(event.startTimestamp);
+			event.startTimestamp = parseIso8601Date(event.startTimestamp);
 
 		if (typeof event.endTimestamp === 'string')
-			event.endTimestamp = new Date(event.endTimestamp);
+			event.endTimestamp = parseIso8601Date(event.endTimestamp);
 
 		return event;
 	}
