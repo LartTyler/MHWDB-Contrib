@@ -294,15 +294,16 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 							labelFor="elderseal"
 							violations={this.state.violations}
 						>
-							<Select
-								disabled={readOnly}
+							<ClearableSelect
 								filterable={false}
 								items={Object.values(Elderseal)}
 								itemTextRenderer={ucfirst}
+								onClear={this.onEldersealClear}
 								onItemSelect={this.onEldersealSelect}
 								popoverProps={{
 									targetClassName: 'full-width',
 								}}
+								readOnly={readOnly}
 								selected={this.state.elderseal}
 							/>
 						</ValidationAwareFormGroup>
@@ -519,6 +520,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 	private onDeviationSelect = (deviation: Deviation) => this.setState({
 		deviation,
+	});
+
+	private onEldersealClear = () => this.setState({
+		elderseal: null,
 	});
 
 	private onEldersealSelect = (elderseal: Elderseal) => this.setState({
