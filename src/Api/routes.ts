@@ -535,7 +535,7 @@ export interface IMonHunDBRoutes {
 		};
 
 		PUT: {
-			body: WeaponCreatePayload;
+			body: WeaponPayload;
 			query: IProjectable;
 			response: Weapon;
 		};
