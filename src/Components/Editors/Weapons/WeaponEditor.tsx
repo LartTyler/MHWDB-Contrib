@@ -31,6 +31,7 @@ import {
 	hasDeviationFunctionality,
 	isDeviationFunctionalityType,
 } from '../../../Api/Models/Weapons/deviation';
+import {IShellingInfo, ShellingType} from '../../../Api/Models/Weapons/Gunlance';
 import {InsectGlaiveBoostType} from '../../../Api/Models/Weapons/InsectGlaive';
 import {
 	hasPhialFunctionality,
@@ -58,6 +59,7 @@ import {AmmoCapacityEditor} from './AmmoCapacityEditor';
 import {DurabilityEditor} from './DurabilityEditor';
 import {ElementEditor} from './ElementEditor';
 import {PhialInfo as PhialInfoComponent} from './PhialInfo';
+import {ShellingInfo} from './ShellingInfo';
 import {WeaponCraftingEditor} from './WeaponCraftingEditor';
 
 interface IRouteProps {
@@ -86,6 +88,7 @@ interface IState {
 	rarity: string;
 	redirect: boolean;
 	saving: boolean;
+	shelling: IShellingInfo;
 	slots: Slot[];
 	specialAmmo: LightBowgunSpecialAmmo | HeavyBowgunSpecialAmmo;
 	violations: IConstraintViolations;
@@ -116,6 +119,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		rarity: '0',
 		redirect: false,
 		saving: false,
+		shelling: {
+			level: null,
+			type: null,
+		},
 		slots: [],
 		specialAmmo: null,
 		violations: {},
@@ -127,13 +134,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			AttributeName.DAMAGE_TYPE,
 			AttributeName.DEFENSE,
 		];
-
-		switch (this.props.match.params.weaponType) {
-			case WeaponType.GUNLANCE:
-				allowedAttributes.push(AttributeName.GL_SHELLING_TYPE);
-
-				break;
-		}
 
 		const id = this.props.match.params.weapon;
 
@@ -207,6 +207,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 			if (weapon.type === WeaponType.INSECT_GLAIVE)
 				state.boostType = weapon.boostType;
+
+			if (weapon.type === WeaponType.GUNLANCE)
+				state.shelling = weapon.shelling;
 
 			const attributes: IAttribute[] = [];
 
@@ -391,6 +394,17 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 						</Cell>
 					)}
 
+					{type === WeaponType.GUNLANCE && (
+						<Cell size={4}>
+							<ShellingInfo
+								onChange={this.onShellingChange}
+								readOnly={readOnly}
+								shelling={this.state.shelling}
+								violations={this.state.violations}
+							/>
+						</Cell>
+					)}
+
 					{isBowCoatingFunctionalityType(type) && (
 						<Cell size={6}>
 							<ValidationAwareFormGroup
@@ -555,6 +569,13 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		rarity: cleanNumberString(event.currentTarget.value, false),
 	});
 
+	private onShellingChange = (type: ShellingType, level: number) => this.setState({
+		shelling: {
+			level,
+			type,
+		},
+	});
+
 	private onSlotsChange = (slots: Slot[]) => this.setState({
 		slots,
 	});
@@ -630,6 +651,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 		if (payload.type === WeaponType.INSECT_GLAIVE)
 			payload.boostType = this.state.boostType;
+
+		if (payload.type === WeaponType.GUNLANCE)
+			payload.shelling = this.state.shelling;
 
 		const idParam = this.props.match.params.weapon;
 		let promise: Promise<unknown>;

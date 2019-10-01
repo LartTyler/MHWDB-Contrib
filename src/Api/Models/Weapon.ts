@@ -79,12 +79,6 @@ export enum Elderseal {
 	HIGH = 'high',
 }
 
-export enum ShellingType {
-	LONG = 'Long',
-	NORMAL = 'Normal',
-	WIDE = 'Wide',
-}
-
 export enum PhialType {
 	ELEMENT = 'element',
 	IMPACT = 'impact',
@@ -135,7 +129,6 @@ interface IWeaponAttributes {
 	[AttributeName.AFFINITY]: string;
 	[AttributeName.DAMAGE_TYPE]: DamageType;
 	[AttributeName.DEFENSE]: number;
-	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
 }
 
 export interface IDurabilityFunctionality {
