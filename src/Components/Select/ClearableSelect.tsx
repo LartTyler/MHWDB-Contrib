@@ -4,7 +4,8 @@ import * as React from 'react';
 
 interface IProps<T> extends ISelectProps<T> {
 	onClear: () => void;
-	readOnly: boolean;
+
+	readOnly?: boolean;
 }
 
 export const ClearableSelect: React.FC<IProps<any>> =
@@ -23,3 +24,7 @@ export const ClearableSelect: React.FC<IProps<any>> =
 			</ButtonGroup>
 		);
 	};
+
+ClearableSelect.defaultProps = {
+	readOnly: false,
+};
