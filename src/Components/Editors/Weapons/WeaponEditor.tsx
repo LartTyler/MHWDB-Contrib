@@ -376,13 +376,15 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 								labelFor="boostType"
 								violations={this.state.violations}
 							>
-								<ClearableSelect
+								<Select
+									disabled={readOnly}
 									itemListPredicate={filterStrings}
 									items={Object.values(InsectGlaiveBoostType)}
 									itemTextRenderer={ucfirst}
-									onClear={this.onBoostTypeClear}
 									onItemSelect={this.onBoostTypeSelect}
-									readOnly={readOnly}
+									popoverProps={{
+										targetClassName: 'full-width',
+									}}
 									selected={this.state.boostType}
 								/>
 							</ValidationAwareFormGroup>
@@ -492,10 +494,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 
 	private onAttributesChange = (attributes: IAttribute[]) => this.setState({
 		attributes,
-	});
-
-	private onBoostTypeClear = () => this.setState({
-		boostType: null,
 	});
 
 	private onBoostTypeSelect = (boostType: InsectGlaiveBoostType) => this.setState({
