@@ -7,6 +7,7 @@ import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Er
 import {Slot} from '../../../Api/Model';
 import {attributeLabels, AttributeName, IAttribute} from '../../../Api/Models/attributes';
 import {
+	DamageType,
 	Durability,
 	Elderseal,
 	hasDurabilityFunctionality,
@@ -78,6 +79,7 @@ interface IState {
 	boostType: InsectGlaiveBoostType;
 	coatings: BowCoating[];
 	crafting: WeaponCrafting;
+	damageType: DamageType;
 	deviation: Deviation;
 	durability: Durability[];
 	elderseal: Elderseal;
@@ -109,6 +111,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 			previous: null,
 			upgradeMaterials: [],
 		},
+		damageType: null,
 		deviation: null,
 		durability: [],
 		elderseal: null,
@@ -131,7 +134,6 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 	public componentDidMount(): void {
 		const allowedAttributes = [
 			AttributeName.AFFINITY,
-			AttributeName.DAMAGE_TYPE,
 			AttributeName.DEFENSE,
 		];
 
@@ -229,6 +231,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				attack: weapon.attack.display.toString(10),
 				attributes,
 				crafting: weapon.crafting,
+				damageType: weapon.damageType,
 				elderseal: weapon.elderseal,
 				elements: weapon.elements,
 				loading: false,
@@ -287,6 +290,26 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 								onChange={this.onAttackChange}
 								readOnly={readOnly}
 								value={this.state.attack}
+							/>
+						</ValidationAwareFormGroup>
+					</Cell>
+
+					<Cell size={4}>
+						<ValidationAwareFormGroup
+							label="Damage Type"
+							labelFor="damageType"
+							violations={this.state.violations}
+						>
+							<Select
+								disabled={readOnly}
+								filterable={false}
+								items={Object.values(DamageType)}
+								itemTextRenderer={ucfirst}
+								onItemSelect={this.onDamageTypeSelect}
+								popoverProps={{
+									targetClassName: 'full-width',
+								}}
+								selected={this.state.damageType}
 							/>
 						</ValidationAwareFormGroup>
 					</Cell>
@@ -406,7 +429,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					)}
 
 					{isBowCoatingFunctionalityType(type) && (
-						<Cell size={6}>
+						<Cell size={4}>
 							<ValidationAwareFormGroup
 								label="Coatings"
 								labelFor="coatings"
@@ -530,6 +553,10 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 		redirect: true,
 	});
 
+	private onDamageTypeSelect = (damageType: DamageType) => this.setState({
+		damageType,
+	});
+
 	private onDeviationSelect = (deviation: Deviation) => this.setState({
 		deviation,
 	});
@@ -622,6 +649,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 					quantity: cost.quantity,
 				})),
 			},
+			damageType: this.state.damageType,
 			elderseal: this.state.elderseal,
 			elements: this.state.elements,
 			name: this.state.name,

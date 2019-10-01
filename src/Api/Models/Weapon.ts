@@ -127,7 +127,6 @@ interface IWeaponAttributes {
 	[key: string]: any;
 
 	[AttributeName.AFFINITY]: string;
-	[AttributeName.DAMAGE_TYPE]: DamageType;
 	[AttributeName.DEFENSE]: number;
 }
 
@@ -147,6 +146,7 @@ export interface IWeapon<T extends WeaponType> extends IEntity {
 	attack: Attack;
 	attributes: WeaponAttributes;
 	crafting: WeaponCrafting;
+	damageType: DamageType;
 	elderseal: Elderseal;
 	elements: WeaponElement[];
 	name: string;
