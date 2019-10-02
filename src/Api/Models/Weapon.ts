@@ -5,6 +5,20 @@ import {Id, IEntity, ISimpleCraftingCost, Slot} from '../Model';
 import {IQueryDocument, Projection} from '../routes';
 import {AttributeName} from './attributes';
 import {CraftingCost} from './Item';
+import {BowWeapon} from './Weapons/Bow';
+import {ChargeBladeWeapon} from './Weapons/ChargeBlade';
+import {DualBladesWeapon} from './Weapons/DualBlades';
+import {GreatSwordWeapon} from './Weapons/GreatSword';
+import {GunlanceWeapon} from './Weapons/Gunlance';
+import {HammerWeapon} from './Weapons/Hammer';
+import {HeavyBowgunWeapon} from './Weapons/HeavyBowgun';
+import {HuntingHornWeapon} from './Weapons/HuntingHorn';
+import {InsectGlaiveWeapon} from './Weapons/InsectGlaive';
+import {LanceWeapon} from './Weapons/Lance';
+import {LightBowgunWeapon} from './Weapons/LightBowgun';
+import {LongSwordWeapon} from './Weapons/LongSword';
+import {SwitchAxeWeapon} from './Weapons/SwitchAxe';
+import {SwordAndShieldWeapon} from './Weapons/SwordAndShield';
 
 export enum WeaponType {
 	GREAT_SWORD = 'great-sword',
@@ -65,18 +79,6 @@ export enum Elderseal {
 	HIGH = 'high',
 }
 
-export enum ShellingType {
-	LONG = 'Long',
-	NORMAL = 'Normal',
-	WIDE = 'Wide',
-}
-
-export enum SpecialAmmo {
-	WYVERNBLAST = 'wyvernblast',
-	WYVERNHEART = 'wyvernheart',
-	WYVERNSNIPE = 'wyvernsnipe',
-}
-
 export enum PhialType {
 	ELEMENT = 'element',
 	IMPACT = 'impact',
@@ -91,53 +93,7 @@ export enum DamagePhialType {
 	POISON = 'poison',
 }
 
-export enum Deviation {
-	AVERAGE = 'average',
-	HIGH = 'high',
-	LOW = 'low',
-	NONE = 'none',
-}
-
-export enum Coating {
-	BLAST = 'blast',
-	CLOSE_RANGE = 'close range',
-	PARALYSIS = 'paralysis',
-	POISON = 'poison',
-	POWER = 'power',
-	SLEEP = 'sleep',
-}
-
-export enum BoostType {
-	BLUNT = 'blunt',
-	ELEMENT = 'element',
-	HEALTH = 'health',
-	SEVER = 'sever',
-	SPEED = 'speed',
-	STAMINA = 'stamina',
-}
-
-export enum AmmoType {
-	NORMAL = 'normal',
-	PIERCING = 'piercing',
-	SPREAD = 'spread',
-	STICKY = 'sticky',
-	CLUSTER = 'cluster',
-	RECOVER = 'recover',
-	POISON = 'poison',
-	PARALYSIS = 'paralysis',
-	SLEEP = 'sleep',
-	EXHAUST = 'exhaust',
-	FLAMING = 'flaming',
-	WATER = 'water',
-	FREEZE = 'freeze',
-	THUNDER = 'thunder',
-	DRAGON = 'dragon',
-	SLICING = 'slicing',
-	WYVERN = 'wyvern',
-	DEMON = 'demon',
-	ARMOR = 'armor',
-	TRANQ = 'tranq',
-}
+export type PhialTypes = PhialType | DamagePhialType;
 
 interface IAttack {
 	display: number;
@@ -167,63 +123,47 @@ interface IDurability {
 	white: number;
 }
 
-export interface IAmmoCapacities {
-	[AmmoType.NORMAL]: [number, number, number];
-	[AmmoType.PIERCING]: [number, number, number];
-	[AmmoType.SPREAD]: [number, number, number];
-	[AmmoType.STICKY]: [number, number, number];
-	[AmmoType.CLUSTER]: [number, number, number];
-	[AmmoType.RECOVER]: [number, number];
-	[AmmoType.POISON]: [number, number];
-	[AmmoType.PARALYSIS]: [number, number];
-	[AmmoType.SLEEP]: [number, number];
-	[AmmoType.EXHAUST]: [number, number];
-	[AmmoType.FLAMING]: [number];
-	[AmmoType.WATER]: [number];
-	[AmmoType.FREEZE]: [number];
-	[AmmoType.THUNDER]: [number];
-	[AmmoType.DRAGON]: [number];
-	[AmmoType.SLICING]: [number];
-	[AmmoType.WYVERN]: [number];
-	[AmmoType.DEMON]: [number];
-	[AmmoType.ARMOR]: [number];
-	[AmmoType.TRANQ]: [number];
-}
-
 interface IWeaponAttributes {
 	[key: string]: any;
 
 	[AttributeName.AFFINITY]: string;
-	[AttributeName.AMMO_CAPACITIES]: AmmoCapacities;
-	[AttributeName.COATINGS]: Coating[];
-	[AttributeName.DAMAGE_TYPE]: DamageType;
 	[AttributeName.DEFENSE]: number;
-	[AttributeName.ELDERSEAL]: Elderseal;
-	[AttributeName.GL_SHELLING_TYPE]: ShellingType;
-	[AttributeName.IG_BOOST_TYPE]: BoostType;
-	[AttributeName.PHIAL_TYPE]: PhialType | DamagePhialType;
-	[AttributeName.SPECIAL_AMMO]: SpecialAmmo;
 }
 
-interface IWeapon extends IEntity {
+export interface IDurabilityFunctionality {
+	durability: Durability[];
+}
+
+export const hasDurabilityFunctionality = (value: any): value is IDurabilityFunctionality => {
+	return typeof value === 'object' && 'durability' in value;
+};
+
+export const isDurabilityFunctionalityType = (type: WeaponType): boolean => {
+	return !WeaponModel.isRanged(type);
+};
+
+export interface IWeapon<T extends WeaponType> extends IEntity {
 	attack: Attack;
 	attributes: WeaponAttributes;
 	crafting: WeaponCrafting;
-	durability: Durability[];
+	damageType: DamageType;
+	elderseal: Elderseal;
 	elements: WeaponElement[];
 	name: string;
 	rarity: number;
 	slots: Slot[];
-	type: WeaponType;
+	type: T;
 }
 
 export type Attack = Partial<IAttack>;
 export type WeaponElement = Partial<IWeaponElement>;
 export type WeaponCrafting = Partial<IWeaponCrafting>;
 export type Durability = Partial<IDurability>;
-export type AmmoCapacities = Partial<IAmmoCapacities>;
 export type WeaponAttributes = Partial<IWeaponAttributes>;
-export type Weapon = Partial<IWeapon>;
+
+export type Weapon = BowWeapon | ChargeBladeWeapon | DualBladesWeapon | GreatSwordWeapon | GunlanceWeapon | HammerWeapon
+	| HeavyBowgunWeapon | HuntingHornWeapon | InsectGlaiveWeapon | LanceWeapon | LightBowgunWeapon | LongSwordWeapon
+	| SwitchAxeWeapon | SwordAndShieldWeapon;
 
 export const durabilityOrder: Array<keyof Durability> = [
 	'red',
@@ -270,7 +210,7 @@ export class WeaponModel {
 		return WeaponModel.list(query, projection, cancelToken);
 	}
 
-	public static create(payload: WeaponCreatePayload, projection?: Projection) {
+	public static create(payload: WeaponPayload, projection?: Projection) {
 		return client.put('/weapons', payload, {
 			params: {
 				p: projection,
