@@ -2,13 +2,10 @@ import {Button, Classes, Dialog, FormGroup, Intent} from '@blueprintjs/core';
 import {Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Slot} from '../../Api/Model';
+import {range} from '../../Utility/array';
 import {Theme, ThemeContext} from '../Contexts/ThemeContext';
 
-export const slotRanks = [
-	1,
-	2,
-	3,
-];
+export const slotRanks = range(1, 4);
 
 interface IProps {
 	slots: Slot[];
