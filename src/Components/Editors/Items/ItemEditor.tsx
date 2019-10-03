@@ -6,20 +6,9 @@ import {isRoleGrantedToUser} from '../../../Api/client';
 import {ItemModel, ItemPayload} from '../../../Api/Models/Item';
 import {Projection} from '../../../Api/routes';
 import {toaster} from '../../../toaster';
+import {cleanNumberString} from '../../../Utility/number';
 import {Role} from '../../RequireRole';
 import {EditorButtons} from '../EditorButtons';
-
-const cleanIntegerString = (input: string, max: number = null): string => {
-	let output = parseInt(input.replace(/[^\d.]/, ''), 10);
-
-	if (isNaN(output))
-		return '';
-
-	if (max !== null)
-		output = Math.min(output, max);
-
-	return Math.abs(output).toString(10);
-};
 
 const toInteger = (input: string): number => {
 	const value = parseInt(input, 10);
@@ -167,7 +156,7 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 	}
 
 	private onCarryLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		carryLimit: cleanIntegerString(event.currentTarget.value),
+		carryLimit: cleanNumberString(event.currentTarget.value, false),
 	});
 
 	private onClose = () => this.setState({
@@ -183,11 +172,11 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 	});
 
 	private onRarityChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		rarity: cleanIntegerString(event.currentTarget.value, 8),
+		rarity: cleanNumberString(event.currentTarget.value, false),
 	});
 
 	private onValueChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
-		value: cleanIntegerString(event.currentTarget.value),
+		value: cleanNumberString(event.currentTarget.value, false),
 	});
 
 	private save = (event?: React.SyntheticEvent<any>) => {
