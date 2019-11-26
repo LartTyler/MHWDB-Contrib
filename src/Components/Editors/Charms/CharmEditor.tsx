@@ -161,6 +161,7 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 					})),
 				},
 				level: rank.level,
+				name: rank.name,
 				rarity: rank.rarity,
 				skills: rank.skills.map(skillRank => ({
 					level: skillRank.level,
