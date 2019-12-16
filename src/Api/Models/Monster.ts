@@ -27,6 +27,7 @@ export enum MonsterSpecies {
 	PISCINE_WYVERN = 'piscine wyvern',
 	RELICT = 'relict',
 	WINGDRAKE = 'wingdrake',
+	FANGED_BEAST = 'fanged beast',
 }
 
 interface IMonster extends IEntity {
