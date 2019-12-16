@@ -189,12 +189,12 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 								let output = platformNames[event.platform];
 
 								if (event.exclusive)
-									output += ` (${platformExclusivityNames[event.exclusive]} only)`;
+									output += ` (${platformExclusivityNames[event.exclusive]})`;
 
 								return output;
 							},
 							style: {
-								width: 200,
+								width: 150,
 							},
 							title: 'Platform',
 						},
@@ -203,9 +203,10 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 							title: 'Expansion',
 						},
 						{
+							align: 'right',
 							render: event => (
 								<>
-									{event.questRank} <Icon icon="star" />
+									{event.masterRank && 'MR'} {event.questRank} <Icon icon="star" />
 								</>
 							),
 							title: 'Rank',

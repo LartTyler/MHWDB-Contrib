@@ -39,6 +39,7 @@ interface IWorldEvent extends IEntity {
 	successConditions: string;
 	type: WorldEventType;
 	expansion: Expansion;
+	masterRank: boolean;
 }
 
 export type WorldEvent = Partial<IWorldEvent>;
