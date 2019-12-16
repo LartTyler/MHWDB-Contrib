@@ -1,14 +1,28 @@
 import {Button, Classes, Dialog, H2, H3, Icon} from '@blueprintjs/core';
 import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {Platform, PlatformExclusivity, WorldEvent, WorldEventModel, WorldEventType} from '../../Api/Models/WorldEvent';
+import {
+	Expansion,
+	Platform,
+	PlatformExclusivity,
+	WorldEvent,
+	WorldEventModel,
+	WorldEventType,
+} from '../../Api/Models/WorldEvent';
 import {formatDateTime} from '../../Utility/date';
 import {Theme, ThemeContext} from '../Contexts/ThemeContext';
+import {ucwords} from '../../Utility/string';
 
 const eventTypeNames: { [key in WorldEventType]: string } = {
 	[WorldEventType.KULVE_TAROTH]: 'Kulve Taroth Siege',
+	[WorldEventType.SAFI_JIIVA]: 'Safi\'jiiva Siege',
 	[WorldEventType.EVENT_QUEST]: 'Event Quests',
 	[WorldEventType.CHALLENGE_QUEST]: 'Challenge Quests',
+};
+
+const expansionNames: { [key in Expansion]: string } = {
+	[Expansion.BASE]: 'Base Game',
+	[Expansion.ICEBORNE]: 'Iceborne',
 };
 
 const platformNames: { [key in Platform]: string } = {
@@ -23,6 +37,7 @@ const platformExclusivityNames: { [key in PlatformExclusivity]: string } = {
 interface IState {
 	activeEvent: WorldEvent;
 	events: WorldEvent[];
+	expansion: Expansion | 'all';
 	loading: boolean;
 	platform: Platform | 'all';
 }
@@ -31,6 +46,7 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 	public state: Readonly<IState> = {
 		activeEvent: null,
 		events: [],
+		expansion: 'all',
 		loading: false,
 		platform: 'all',
 	};
@@ -57,6 +73,19 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 							selected={this.state.platform}
 						/>
 					</Cell>
+
+					<Cell size={2}>
+						<Select
+							filterable={false}
+							items={['all', ...Object.values(Expansion)]}
+							itemTextRenderer={this.renderExpansionText}
+							onItemSelect={this.onExpansionSelect}
+							popoverProps={{
+								targetClassName: 'full-width',
+							}}
+							selected={this.state.expansion}
+						/>
+					</Cell>
 				</Row>
 
 				{Object.values(WorldEventType).map(type => {
@@ -64,6 +93,8 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 						if (event.type !== type)
 							return false;
 						else if (this.state.platform !== 'all' && event.platform !== this.state.platform)
+							return false;
+						else if (this.state.expansion !== 'all' && event.expansion !== this.state.expansion)
 							return false;
 
 						return true;
@@ -158,19 +189,24 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 								let output = platformNames[event.platform];
 
 								if (event.exclusive)
-									output += ` (${platformExclusivityNames[event.exclusive]} only)`;
+									output += ` (${platformExclusivityNames[event.exclusive]})`;
 
 								return output;
 							},
 							style: {
-								width: 200,
+								width: 150,
 							},
 							title: 'Platform',
 						},
 						{
+							render: event => expansionNames[event.expansion],
+							title: 'Expansion',
+						},
+						{
+							align: 'right',
 							render: event => (
 								<>
-									{event.questRank} <Icon icon="star" />
+									{event.masterRank && 'MR'} {event.questRank} <Icon icon="star" />
 								</>
 							),
 							title: 'Rank',
@@ -203,12 +239,20 @@ export class WorldEvents extends React.PureComponent<{}, IState> {
 		return platform === 'all' ? 'All Platforms' : platformNames[platform as Platform];
 	};
 
+	private renderExpansionText = (expansion: string) => {
+		return expansion === 'all' ? 'All Expansions' : expansionNames[expansion as Expansion];
+	};
+
 	private onDialogClose = () => this.setState({
 		activeEvent: null,
 	});
 
 	private onPlatformSelect = (platform: Platform | 'all') => this.setState({
 		platform,
+	});
+
+	private onExpansionSelect = (expansion: Expansion | 'all') => this.setState({
+		expansion,
 	});
 
 	private onShowInfoClick = (event: WorldEvent) => this.setState({
