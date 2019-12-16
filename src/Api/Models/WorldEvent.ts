@@ -7,8 +7,14 @@ import {Location} from './Location';
 
 export enum WorldEventType {
 	KULVE_TAROTH = 'kulve taroth siege',
+	SAFI_JIIVA = 'safi\'jiiva siege',
 	EVENT_QUEST = 'event quest',
 	CHALLENGE_QUEST = 'challenge quest',
+}
+
+export enum Expansion {
+	BASE = 'base',
+	ICEBORNE = 'iceborne',
 }
 
 export enum Platform {
@@ -32,6 +38,7 @@ interface IWorldEvent extends IEntity {
 	startTimestamp: Date;
 	successConditions: string;
 	type: WorldEventType;
+	expansion: Expansion;
 }
 
 export type WorldEvent = Partial<IWorldEvent>;
