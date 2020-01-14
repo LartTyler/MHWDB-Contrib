@@ -11,7 +11,7 @@ import {Monster, MonsterPayload} from './Models/Monster';
 import {MotionValue, MotionValuePayload} from './Models/MotionValue';
 import {Skill, SkillPayload} from './Models/Skill';
 import {User, UserCreatePayload, UserPayload} from './Models/User';
-import {Weapon, WeaponCreatePayload, WeaponPayload, WeaponType} from './Models/Weapon';
+import {Weapon, WeaponPayload, WeaponType} from './Models/Weapon';
 import {WorldEvent} from './Models/WorldEvent';
 
 interface IProjection<T extends boolean> {
@@ -32,10 +32,10 @@ export type Condition = {
 };
 
 export interface IQueryDocument {
-	[key: string]: Scalar | Condition | IQueryDocument[];
-
 	'$and'?: IQueryDocument[];
 	'$or'?: IQueryDocument[];
+
+	[key: string]: Scalar | Condition | IQueryDocument[];
 }
 
 export interface IQueryable {

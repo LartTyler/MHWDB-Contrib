@@ -17,6 +17,7 @@ import {isUserAuthenticated, logout, tokenStore} from '../../Api/client';
 import {ThemeSwitcher} from '../ThemeSwitcher';
 import {ContributeButton} from './ContributeButton';
 import {LinkButton} from './LinkButton';
+import {LocaleSwitcher} from '../LocaleSwitcher';
 
 export const Navigation: React.FC<{}> = () => (
 	<Navbar fixedToTop={true}>
@@ -37,6 +38,10 @@ export const Navigation: React.FC<{}> = () => (
 		</NavbarGroup>
 
 		<NavbarGroup align={Alignment.RIGHT}>
+			<div style={{marginRight: 5}}>
+				<LocaleSwitcher />
+			</div>
+
 			<Popover>
 				<Button icon={<GoMarkGithub size={16} />} minimal={true} style={{marginRight: 5}} />
 
