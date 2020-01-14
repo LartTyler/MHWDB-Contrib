@@ -2,13 +2,9 @@ import {Classes} from '@blueprintjs/core';
 import * as React from 'react';
 import {Route, Router, Switch} from 'react-router-dom';
 import {App} from './Components/App';
-import {Login} from './Components/Auth/Login';
-import {PasswordReset} from './Components/Auth/PasswordReset';
-import {UserActivation} from './Components/Auth/UserActivation';
 import {isThemeName, Theme, ThemeContext, ThemeMutatorContext} from './Components/Contexts/ThemeContext';
 import {history} from './history';
 import './Layout.scss';
-import {PrivateRoute} from './Security/PrivateRoute';
 
 const THEME_NAME_KEY = 'ui.theme_name';
 
