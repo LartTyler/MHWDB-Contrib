@@ -3,7 +3,7 @@ import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {orderedRanks, Rank, Slot} from '../../../Api/Model';
 import {
 	ArmorCraftingInfo,
@@ -73,7 +73,7 @@ interface IState {
 	skills: SkillRank[];
 	slots: Slot[];
 	type: ArmorType;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 const ArmorSetEntitySelect = EntitySelect.ofType<ArmorSet>();
@@ -770,9 +770,9 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 				message: error.message,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 

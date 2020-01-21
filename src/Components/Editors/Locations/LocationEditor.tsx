@@ -3,7 +3,7 @@ import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {Camp, LocationModel, LocationPayload} from '../../../Api/Models/Location';
 import {toaster} from '../../../toaster';
 import {cleanNumberString} from '../../../Utility/number';
@@ -29,7 +29,7 @@ interface IState {
 	redirect: boolean;
 	saving: boolean;
 	showAddCampDialog: boolean;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 	zoneCount: string;
 }
 
@@ -196,9 +196,9 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 				saving: false,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 		});

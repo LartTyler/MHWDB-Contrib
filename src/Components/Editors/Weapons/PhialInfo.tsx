@@ -1,7 +1,7 @@
 import {InputGroup} from '@blueprintjs/core';
 import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {IConstraintViolations} from '../../../Api/Error';
+import {IValidationFailures} from '../../../Api/Error';
 import {DamagePhialType, PhialType, PhialTypes} from '../../../Api/Models/Weapon';
 import {cleanNumberString} from '../../../Utility/number';
 import {filterStrings} from '../../../Utility/select';
@@ -17,7 +17,7 @@ interface IProps {
 	type: PhialTypes;
 
 	damage?: string;
-	violations?: IConstraintViolations;
+	violations?: IValidationFailures;
 }
 
 export const PhialInfo: React.FC<IProps> = props => {

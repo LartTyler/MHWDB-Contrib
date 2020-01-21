@@ -3,7 +3,7 @@ import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {CharmModel, CharmRank} from '../../../Api/Models/Charm';
 import {toaster} from '../../../toaster';
 import {Role} from '../../RequireRole';
@@ -24,7 +24,7 @@ interface IState {
 	ranks: CharmRank[];
 	redirect: boolean;
 	saving: boolean;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 class CharmEditorComponent extends React.PureComponent<IProps, IState> {
@@ -193,9 +193,9 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 				message: error.message,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 

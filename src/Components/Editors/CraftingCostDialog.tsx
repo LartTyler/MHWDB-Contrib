@@ -1,7 +1,7 @@
 import {Button, Classes, Dialog, InputGroup, Intent} from '@blueprintjs/core';
 import {Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {IConstraintViolations} from '../../Api/Error';
+import {IValidationFailures} from '../../Api/Error';
 import {CraftingCost, Item, ItemModel} from '../../Api/Models/Item';
 import {Theme, ThemeContext} from '../Contexts/ThemeContext';
 import {ValidationAwareFormGroup} from '../ValidationAwareFormGroup';
@@ -21,7 +21,7 @@ interface IState {
 	item: Item;
 	items: Item[];
 	quantity: string;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
@@ -130,7 +130,7 @@ export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
 	});
 
 	private onSaveClick = () => {
-		const violations: IConstraintViolations = {};
+		const violations: IValidationFailures = {};
 
 		if (!this.state.item) {
 			violations.items = {

@@ -3,7 +3,7 @@ import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components'
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {Slot} from '../../../Api/Model';
 import {attributeLabels, AttributeName, IAttribute} from '../../../Api/Models/attributes';
 import {
@@ -93,7 +93,7 @@ interface IState {
 	shelling: IShellingInfo;
 	slots: Slot[];
 	specialAmmo: LightBowgunSpecialAmmo | HeavyBowgunSpecialAmmo;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
@@ -710,9 +710,9 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				saving: false,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 		});
