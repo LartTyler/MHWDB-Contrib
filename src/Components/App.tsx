@@ -9,25 +9,62 @@ import {Home} from './Home';
 import {Navigation} from './Navigation/Navigation';
 import {PageNotFound} from './PageNotFound';
 import {WorldEvents} from './WorldEvents/WorldEvents';
+import {Locale, setApiLocale} from '../Api/client';
 
-export const App: React.FC<{}> = () => (
-	<>
-		<div id="app-navigation">
-			<Navigation />
-		</div>
+const STORAGE_KEY = 'locale';
 
-		<div id="app-content">
-			<Switch>
-				<Route path="/login" component={Login} />
-				<Route path="/password-reset/:code" component={PasswordReset} />
-				<Route path="/activate/:code" component={UserActivation} />
+const localeText: { [key: string]: string } = {
+	[Locale.ENGLISH]: 'English',
+	[Locale.FRENCH]: 'French',
+	[Locale.GERMAN]: 'German',
+	[Locale.CHINESE_SIMPLIFIED]: 'Chinese (Simplified)',
+	[Locale.CHINESE_TRADITIONAL]: 'Chinese (Traditional)',
+};
 
-				<Route path="/" exact={true} component={Home} />
-				<Route path="/events" exact={true} component={WorldEvents} />
-				<Route path="/objects" component={Editors} />
+const isLocale = (value: any): value is Locale => typeof value === 'string' && value in localeText;
 
-				<Route component={PageNotFound} />
-			</Switch>
-		</div>
-	</>
-);
+export const App: React.FC = () => {
+	let value = window.localStorage.getItem(STORAGE_KEY);
+
+	if (value === null || !isLocale(value)) {
+		value = Locale.ENGLISH;
+
+		window.localStorage.setItem(STORAGE_KEY, value);
+	}
+
+	const [locale, setLocale] = React.useState(value as Locale);
+	setApiLocale(locale);
+
+	React.useEffect(() => {
+		if (window.localStorage.getItem(STORAGE_KEY) === locale)
+			return;
+
+		window.localStorage.setItem(STORAGE_KEY, locale);
+
+		setApiLocale(locale);
+
+		window.location.reload();
+	}, [locale]);
+
+	return (
+		<>
+			<div id="app-navigation">
+				<Navigation locale={locale} onLocaleChange={setLocale} />
+			</div>
+
+			<div id="app-content">
+				<Switch>
+					<Route path="/login" component={Login} />
+					<Route path="/password-reset/:code" component={PasswordReset} />
+					<Route path="/activate/:code" component={UserActivation} />
+
+					<Route path="/" exact={true} component={Home} />
+					<Route path="/events" exact={true} component={WorldEvents} />
+					<Route path="/objects" component={Editors} />
+
+					<Route component={PageNotFound} />
+				</Switch>
+			</div>
+		</>
+	);
+};

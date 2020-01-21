@@ -16,12 +16,10 @@ export enum Locale {
 }
 
 export const client = axios.create<IMonHunDBRoutes>({
-	// @ts-ignore
 	baseURL: process.env.API_URL,
 });
 
 export const setApiLocale = (locale: Locale) => {
-	// @ts-ignore
 	client.defaults.baseURL = process.env.API_URL;
 
 	if (locale)
@@ -45,6 +43,9 @@ export const login = (username: string, password: string): Promise<void> => {
 	return client.post('/auth', {
 		password,
 		username,
+	}, {
+		// Override baseURL, since /auth doesn't use the locale route arg
+		baseURL: process.env.API_URL,
 	}).then(response => {
 		tokenStore.setToken(new Token(response.data.token));
 	});

@@ -8,18 +8,32 @@ import {
 	NavbarDivider,
 	NavbarGroup,
 	NavbarHeading,
-	Popover, PopoverPosition,
+	Popover,
+	PopoverPosition,
 } from '@blueprintjs/core';
 import * as React from 'react';
 import {GoMarkGithub} from 'react-icons/go';
 import {Link} from 'react-router-dom';
-import {isUserAuthenticated, logout, tokenStore} from '../../Api/client';
+import {isUserAuthenticated, Locale, logout, tokenStore} from '../../Api/client';
 import {ThemeSwitcher} from '../ThemeSwitcher';
 import {ContributeButton} from './ContributeButton';
 import {LinkButton} from './LinkButton';
-import {LocaleSwitcher} from '../LocaleSwitcher';
+import {Select} from '@dbstudios/blueprintjs-components';
 
-export const Navigation: React.FC<{}> = () => (
+const localeText: { [key: string]: string } = {
+	[Locale.ENGLISH]: 'English',
+	[Locale.FRENCH]: 'French',
+	[Locale.GERMAN]: 'German',
+	[Locale.CHINESE_SIMPLIFIED]: 'Chinese (Simplified)',
+	[Locale.CHINESE_TRADITIONAL]: 'Chinese (Traditional)',
+};
+
+interface IProps {
+	locale: Locale;
+	onLocaleChange: (locale: Locale) => void;
+}
+
+export const Navigation: React.FC<IProps> = props => (
 	<Navbar fixedToTop={true}>
 		<NavbarGroup align={Alignment.LEFT}>
 			<NavbarHeading>
@@ -39,7 +53,18 @@ export const Navigation: React.FC<{}> = () => (
 
 		<NavbarGroup align={Alignment.RIGHT}>
 			<div style={{marginRight: 5}}>
-				<LocaleSwitcher />
+				<Select
+					filterable={false}
+					items={Object.values(Locale)}
+					itemTextRenderer={value => localeText[value as string] || 'Unknown'}
+					noItemSelected={localeText[props.locale]}
+					onItemSelect={props.onLocaleChange}
+					selected={props.locale}
+					buttonProps={{
+						minimal: true,
+						rightIcon: 'caret-down',
+					}}
+				/>
 			</div>
 
 			<Popover>

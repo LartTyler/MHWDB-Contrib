@@ -15,7 +15,7 @@ import {MotionValues} from './MotionValues';
 import {Skills} from './Skills';
 import {Weapons} from './Weapons';
 
-export const Editors: React.FC<{}> = () => (
+export const Editors: React.FC = () => (
 	<ContentContainer>
 		<Switch>
 			<Route path="/objects/ailments" component={Ailments} />
