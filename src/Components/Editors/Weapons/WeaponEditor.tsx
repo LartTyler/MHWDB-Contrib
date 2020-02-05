@@ -235,7 +235,7 @@ class WeaponEditorComponent extends React.PureComponent<IProps, IState> {
 				elderseal: weapon.elderseal,
 				elements: weapon.elements,
 				loading: false,
-				name: weapon.name,
+				name: weapon.name || '',
 				rarity: weapon.rarity.toString(10),
 				slots: weapon.slots,
 			});
