@@ -59,7 +59,7 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 		LocationModel.read(idParam).then(response => this.setState({
 			camps: response.data.camps.sort(campSorter),
 			loading: false,
-			name: response.data.name,
+			name: response.data.name || '',
 			zoneCount: response.data.zoneCount.toString(10),
 		}));
 	}
@@ -115,8 +115,10 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 						camps={this.state.camps}
 						onDelete={this.onCampDelete}
 						onSave={this.onCampAdd}
+						onUpdate={() => this.forceUpdate()}
 						readOnly={readOnly}
 						zoneCount={parseInt(this.state.zoneCount, 10)}
+						violations={this.state.violations}
 					/>
 
 					<EditorButtons
@@ -164,7 +166,10 @@ class LocationEditorComponent extends React.PureComponent<IProps, IState> {
 		});
 
 		const payload: LocationPayload = {
-			camps: this.state.camps,
+			camps: this.state.camps.map(camp => ({
+				...camp,
+				name: camp.name || '',
+			})),
 			name: this.state.name,
 			zoneCount: parseInt(this.state.zoneCount, 10),
 		};
