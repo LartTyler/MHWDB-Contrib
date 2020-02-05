@@ -50,7 +50,7 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 
 		CharmModel.read(idParam).then(response => this.setState({
 			loading: false,
-			name: response.data.name,
+			name: response.data.name || '',
 			ranks: response.data.ranks,
 		}));
 	}
@@ -161,7 +161,7 @@ class CharmEditorComponent extends React.PureComponent<IProps, IState> {
 					})),
 				},
 				level: rank.level,
-				name: rank.name,
+				name: rank.name || '',
 				rarity: rank.rarity,
 				skills: rank.skills.map(skillRank => ({
 					level: skillRank.level,

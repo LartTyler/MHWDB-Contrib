@@ -114,12 +114,17 @@ export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
 	}
 
 	private filterItemsList = (query: string, items: Item[]) => {
+		if (!query)
+			return items;
+
 		query = query.toLowerCase();
 
-		return items.filter(item => item.name.toLowerCase().indexOf(query) !== -1);
+		return items.filter(item => {
+			return item.name && item.name.toLowerCase().indexOf(query) !== -1
+		});
 	};
 
-	private renderItemText = (item: Item) => item.name;
+	private renderItemText = (item: Item) => item.name || '???';
 
 	private onItemSelect = (item: Item) => this.setState({
 		item,
