@@ -113,10 +113,10 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 			const monster = response.data;
 
 			this.setState({
-				description: monster.description,
+				description: monster.description || '',
 				elements: monster.elements,
 				loading: false,
-				name: monster.name,
+				name: monster.name || '',
 				resistances: monster.resistances,
 				species: monster.species,
 				type: monster.type,
@@ -360,11 +360,11 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private renderAilmentText = (ailment: Ailment) => ailment.name;
+	private renderAilmentText = (ailment: Ailment) => ailment.name || '???';
 
 	private renderElementText = (element: Element) => ucfirst(element);
 
-	private renderLocationText = (location: Location) => location.name;
+	private renderLocationText = (location: Location) => location.name || '???';
 
 	private renderSpeciesText = (species: MonsterSpecies) => ucwords(species);
 
