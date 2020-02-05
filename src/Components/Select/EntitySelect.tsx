@@ -23,7 +23,7 @@ export class EntitySelect<T extends Entity> extends React.PureComponent<IProps<T
 		);
 	}
 
-	private renderEntityText = (item: T) => item[this.props.labelField];
+	private renderEntityText = (item: T) => item[this.props.labelField] || '???';
 
 	public static ofType = <T extends any>() => EntitySelect as new (props: IProps<T>) => EntitySelect<T>;
 }

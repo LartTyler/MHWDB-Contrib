@@ -81,7 +81,11 @@ export class TokenStore {
 		this.clearRefreshTask();
 
 		window.setTimeout(() => {
-			client.get('/auth/refresh')
+			client
+				.get('/auth/refresh', {
+					// Override baseURL, since /auth/refresh doesn't use the locale route arg
+					baseURL: process.env.API_URL,
+				})
 				.then(response => this.setToken(new Token(response.data.token)));
 		}, Math.max((this.getToken().getTimeToLive() - 5) * 1000, 1));
 	}

@@ -3,7 +3,7 @@ import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components'
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {orderedRanks, Rank} from '../../../Api/Model';
 import {Armor, ArmorModel} from '../../../Api/Models/Armor';
 import {ArmorSetModel} from '../../../Api/Models/ArmorSet';
@@ -38,7 +38,7 @@ interface IState {
 	rank: Rank;
 	redirect: boolean;
 	saving: boolean;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
@@ -97,7 +97,7 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 
 			this.setState({
 				loading: false,
-				name: set.name,
+				name: set.name || '',
 				rank: set.rank,
 			});
 
@@ -224,9 +224,9 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private renderArmorText = (armor: Armor) => armor.name;
+	private renderArmorText = (armor: Armor) => armor.name || '???';
 
-	private renderBonusText = (bonus: ArmorSetBonus) => bonus.name;
+	private renderBonusText = (bonus: ArmorSetBonus) => bonus.name || '???';
 
 	private renderRankText = (rank: Rank) => ucfirst(rank);
 
@@ -307,9 +307,9 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 				saving: false,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 		});

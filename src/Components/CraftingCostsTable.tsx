@@ -16,7 +16,7 @@ export const CraftingCostTable: React.FC<IProps> = props => (
 	<Table
 		columns={[
 			{
-				render: cost => cost.item.name,
+				render: cost => cost.item.name || '???',
 				title: 'Name',
 			},
 			{

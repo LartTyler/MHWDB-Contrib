@@ -7,10 +7,24 @@ import {TokenStore} from './Authentication/TokenStore';
 import {ApiError, isErrorResponse} from './Error';
 import {IMonHunDBRoutes} from './routes';
 
+export enum Locale {
+	ENGLISH = '',
+	FRENCH = 'fr',
+	GERMAN = 'de',
+	CHINESE_SIMPLIFIED = 'zh',
+	CHINESE_TRADITIONAL = 'zh-Hant',
+}
+
 export const client = axios.create<IMonHunDBRoutes>({
-	// @ts-ignore
 	baseURL: process.env.API_URL,
 });
+
+export const setApiLocale = (locale: Locale) => {
+	client.defaults.baseURL = process.env.API_URL;
+
+	if (locale)
+		client.defaults.baseURL += '/' + locale;
+};
 
 export const tokenStorageKey = 'api.auth_token';
 export const tokenStore = new TokenStore(tokenStorageKey);
@@ -29,6 +43,9 @@ export const login = (username: string, password: string): Promise<void> => {
 	return client.post('/auth', {
 		password,
 		username,
+	}, {
+		// Override baseURL, since /auth doesn't use the locale route arg
+		baseURL: process.env.API_URL,
 	}).then(response => {
 		tokenStore.setToken(new Token(response.data.token));
 	});

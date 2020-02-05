@@ -5,13 +5,14 @@
 	height: 17px;
 	border: solid thin;
 
-	> .durability {
+	.durability {
 		height: 15px;
 		display: inline-block;
+		width: 100%;
 	}
 
 	@each $key, $color in $durabilityColors {
-		> .durability-#{'' + $key} {
+		.durability-#{'' + $key} {
 			background-color: $color;
 		}
 	}

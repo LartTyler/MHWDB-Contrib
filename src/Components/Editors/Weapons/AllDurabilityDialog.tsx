@@ -137,7 +137,7 @@ export class AllDurabilityDialog extends React.PureComponent<IProps, IState> {
 				});
 			}
 
-			if (color === 'white')
+			if (color === 'purple')
 				break;
 
 			breakpoints.push({
@@ -186,7 +186,7 @@ export class AllDurabilityDialog extends React.PureComponent<IProps, IState> {
 					breakpoint = breakpoints.shift();
 
 				if (!breakpoint)
-					current.white += 10;
+					current.purple += 10;
 				else {
 					current[breakpoint.color] += 10;
 

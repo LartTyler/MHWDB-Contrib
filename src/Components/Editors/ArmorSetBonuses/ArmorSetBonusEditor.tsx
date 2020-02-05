@@ -3,7 +3,7 @@ import {Cell, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {ArmorSetBonusModel, ArmorSetBonusRank} from '../../../Api/Models/ArmorSetBonus';
 import {Skill, SkillModel} from '../../../Api/Models/Skill';
 import {toaster} from '../../../toaster';
@@ -28,7 +28,7 @@ interface IState {
 	redirect: boolean;
 	saving: boolean;
 	skills: Skill[];
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 class ArmorSetBonusEditorComponent extends React.PureComponent<IProps, IState> {
@@ -79,7 +79,7 @@ class ArmorSetBonusEditorComponent extends React.PureComponent<IProps, IState> {
 
 			this.setState({
 				loading: false,
-				name: bonus.name,
+				name: bonus.name || '',
 			});
 
 			skillsPromise.then(skills => {
@@ -213,9 +213,9 @@ class ArmorSetBonusEditorComponent extends React.PureComponent<IProps, IState> {
 				saving: false,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 		});

@@ -215,12 +215,15 @@ export class WeaponCraftingEditor extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private renderWeaponText = (weapon: Weapon) => weapon.name;
+	private renderWeaponText = (weapon: Weapon) => weapon.name || '???';
 
 	private filterWeaponList = (query: string, weapons: Weapon[]) => {
+		if (!query)
+			return weapons;
+
 		query = query.toLowerCase();
 
-		return weapons.filter(weapon => weapon.name.toLowerCase().indexOf(query) !== -1);
+		return weapons.filter(weapon => weapon.name && weapon.name.toLowerCase().indexOf(query) !== -1);
 	};
 
 	private onCraftableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
