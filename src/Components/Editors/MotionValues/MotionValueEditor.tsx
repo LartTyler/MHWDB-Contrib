@@ -81,7 +81,7 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 			exhaust: response.data.exhaust ? response.data.exhaust.toString(10) : '',
 			hits: response.data.hits.join(', '),
 			loading: false,
-			name: response.data.name,
+			name: response.data.name || '',
 			stun: response.data.stun ? response.data.stun.toString(10) : '',
 		}));
 	}
