@@ -48,7 +48,7 @@ export class ArmorSetBonusRanksEditor extends React.PureComponent<IProps, IState
 							title: 'Pieces Required',
 						},
 						{
-							render: rank => `${rank.skill.skillName} ${rank.skill.level}`,
+							render: rank => `${rank.skill.skillName || 'No Name Provided'} ${rank.skill.level}`,
 							title: 'Skill',
 						},
 						{
@@ -152,7 +152,7 @@ export class ArmorSetBonusRanksEditor extends React.PureComponent<IProps, IState
 		);
 	}
 
-	private renderSkillText = (skill: Skill) => skill.name;
+	private renderSkillText = (skill: Skill) => skill.name || 'No Name Provided';
 
 	private renderSkillLevelText = (level: number) => `Level ${level}`;
 

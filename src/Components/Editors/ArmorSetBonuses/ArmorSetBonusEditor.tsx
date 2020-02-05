@@ -79,7 +79,7 @@ class ArmorSetBonusEditorComponent extends React.PureComponent<IProps, IState> {
 
 			this.setState({
 				loading: false,
-				name: bonus.name,
+				name: bonus.name || '',
 			});
 
 			skillsPromise.then(skills => {
