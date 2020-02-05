@@ -42,7 +42,9 @@ const armorAttributes = [
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
 	query = query.toLowerCase();
 
-	return armorSets.filter(armorSet => armorSet.name.toLowerCase().indexOf(query) !== -1);
+	return armorSets.filter(armorSet => {
+		return armorSet.name && armorSet.name.toLowerCase().indexOf(query) !== -1;
+	});
 };
 
 interface IRouteProps {
@@ -134,7 +136,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					})),
 					crafting: armor.crafting,
 					defense: toStringValues(armor.defense),
-					name: armor.name,
+					name: armor.name || '',
 					rank: armor.rank,
 					rarity: armor.rarity.toString(10),
 					resistances: toStringValues(armor.resistances),
