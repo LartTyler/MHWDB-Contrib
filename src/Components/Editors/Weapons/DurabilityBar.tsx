@@ -1,6 +1,8 @@
 import * as React from 'react';
 import {Durability, durabilityOrder} from '../../../Api/Models/Weapon';
 import './DurabilityBar.scss';
+import {Tooltip} from '@blueprintjs/core';
+import {ucfirst} from '../../../Utility/string';
 
 interface IProps {
 	durability: Durability;
@@ -15,13 +17,18 @@ export const DurabilityBar: React.FC<IProps> = props => {
 				sum += props.durability[color];
 
 				return (
-					<div
-						className={`durability durability-${color}`}
+					<Tooltip
+						content={`${ucfirst(color)} / ${props.durability[color]} hits`}
 						key={color}
-						style={{
-							width: `${props.durability[color] / 400 * 100}%`,
+						targetProps={{
+							style: {
+								display: 'inline-block',
+								width: `${props.durability[color] / 400 * 100}%`
+							}
 						}}
-					/>
+					>
+						<div className={`durability durability-${color}`} />
+					</Tooltip>
 				);
 			})}
 
