@@ -224,9 +224,9 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private renderArmorText = (armor: Armor) => armor.name || 'No Name Provided';
+	private renderArmorText = (armor: Armor) => armor.name || '???';
 
-	private renderBonusText = (bonus: ArmorSetBonus) => bonus.name || 'No Name Provided';
+	private renderBonusText = (bonus: ArmorSetBonus) => bonus.name || '???';
 
 	private renderRankText = (rank: Rank) => ucfirst(rank);
 

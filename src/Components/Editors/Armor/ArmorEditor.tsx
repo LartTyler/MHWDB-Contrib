@@ -40,6 +40,9 @@ const armorAttributes = [
 ];
 
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
+	if (!query)
+		return armorSets;
+
 	query = query.toLowerCase();
 
 	return armorSets.filter(armorSet => {
@@ -473,7 +476,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						dataSource={this.state.skills}
 						columns={[
 							{
-								dataIndex: 'skillName',
+								render: rank => rank.skillName || '???',
 								title: 'Name',
 							},
 							{
@@ -509,7 +512,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						dataSource={this.state.crafting.materials}
 						columns={[
 							{
-								render: cost => cost.item.name,
+								render: cost => cost.item.name || '???',
 								title: 'Item',
 							},
 							{
