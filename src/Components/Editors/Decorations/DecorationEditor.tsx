@@ -79,7 +79,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 
 			this.setState({
 				loading: false,
-				name: deco.name,
+				name: deco.name || '',
 				rarity: deco.rarity.toString(10),
 				slot: deco.slot,
 			});
@@ -168,7 +168,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 					dataSource={this.state.skills}
 					columns={[
 						{
-							dataIndex: 'skillName',
+							render: rank => rank.skillName || '???',
 							title: 'Name',
 						},
 						{
