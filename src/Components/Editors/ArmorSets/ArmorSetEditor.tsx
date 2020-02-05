@@ -97,7 +97,7 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 
 			this.setState({
 				loading: false,
-				name: set.name,
+				name: set.name || '',
 				rank: set.rank,
 			});
 
@@ -224,9 +224,9 @@ class ArmorSetEditorComponent extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private renderArmorText = (armor: Armor) => armor.name;
+	private renderArmorText = (armor: Armor) => armor.name || 'No Name Provided';
 
-	private renderBonusText = (bonus: ArmorSetBonus) => bonus.name;
+	private renderBonusText = (bonus: ArmorSetBonus) => bonus.name || 'No Name Provided';
 
 	private renderRankText = (rank: Rank) => ucfirst(rank);
 
