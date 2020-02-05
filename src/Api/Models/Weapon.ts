@@ -121,6 +121,7 @@ interface IDurability {
 	green: number;
 	blue: number;
 	white: number;
+	purple: number;
 }
 
 interface IWeaponAttributes {
@@ -172,6 +173,7 @@ export const durabilityOrder: Array<keyof Durability> = [
 	'green',
 	'blue',
 	'white',
+	'purple',
 ];
 
 export type WeaponPayload = Omit<Weapon, 'crafting'> & {
