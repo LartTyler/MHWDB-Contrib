@@ -3,7 +3,7 @@ import {Cell, MultiSelect, Row} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {AilmentModel, IAilmentPayload, RecoveryAction} from '../../../Api/Models/Ailment';
 import {Item, ItemModel} from '../../../Api/Models/Item';
 import {Skill, SkillModel} from '../../../Api/Models/Skill';
@@ -38,7 +38,7 @@ interface IAilmentEditorState {
 	redirect: boolean;
 	saving: boolean;
 	skills: Skill[];
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 const ItemEntitySelect = EntitySelect.ofType<Item>();
@@ -304,8 +304,8 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 			const recoveryItemIds = ailment.recovery.items.map(item => item.id);
 
 			this.setState({
-				description: ailment.description,
-				name: ailment.name,
+				description: ailment.description || '',
+				name: ailment.name || '',
 				protectionItems: this.state.items.filter(item => protectionItemIds.indexOf(item.id) !== -1),
 				protectionSkills: this.state.skills.filter(skill => protectionSkillIds.indexOf(skill.id) !== -1),
 				recoveryActions: ailment.recovery.actions,
@@ -326,7 +326,7 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 		});
 
 		const payload: IAilmentPayload = {
-			description: this.state.description.trim() || null,
+			description: this.state.description.trim(),
 			name: this.state.name,
 			protection: {
 				items: this.state.protectionItems.map(item => item.id),
@@ -369,9 +369,9 @@ export class AilmentEditor extends React.PureComponent<IAilmentEditorProps, IAil
 				saving: false,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 		});

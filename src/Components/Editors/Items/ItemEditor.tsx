@@ -62,9 +62,9 @@ class ItemEditorComponent extends React.PureComponent<IItemEditorProps, IItemEdi
 
 			this.setState({
 				carryLimit: item.carryLimit.toString(10),
-				description: item.description,
+				description: item.description || '',
 				loading: false,
-				name: item.name,
+				name: item.name || '',
 				rarity: item.rarity.toString(10),
 				value: item.value.toString(10),
 			});

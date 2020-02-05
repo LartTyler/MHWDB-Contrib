@@ -9,6 +9,7 @@ import {toaster} from '../../../toaster';
 import {Role} from '../../RequireRole';
 import {EditorButtons} from '../EditorButtons';
 import {RankEditDialog} from './RankEditDialog';
+import {ValidationAwareFormGroup} from '../../ValidationAwareFormGroup';
 
 interface IRouteProps {
 	skill: string;
@@ -55,9 +56,9 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 			const skill = response.data;
 
 			this.setState({
-				description: skill.description,
+				description: skill.description || '',
 				loading: false,
-				name: skill.name,
+				name: skill.name || '',
 				ranks: skill.ranks,
 			});
 		});
@@ -247,7 +248,10 @@ class SkillEditorComponent extends React.PureComponent<ISkillEditorProps, ISkill
 		const payload: SkillPayload = {
 			description: this.state.description,
 			name: this.state.name,
-			ranks: this.state.ranks,
+			ranks: this.state.ranks.map(rank => ({
+				...rank,
+				description: rank.description || '',
+			})),
 		};
 
 		const projection: Projection = {

@@ -3,7 +3,7 @@ import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {orderedRanks, Rank, Slot} from '../../../Api/Model';
 import {
 	ArmorCraftingInfo,
@@ -40,9 +40,14 @@ const armorAttributes = [
 ];
 
 const filterArmorSets = (query: string, armorSets: ArmorSet[]) => {
+	if (!query)
+		return armorSets;
+
 	query = query.toLowerCase();
 
-	return armorSets.filter(armorSet => armorSet.name.toLowerCase().indexOf(query) !== -1);
+	return armorSets.filter(armorSet => {
+		return armorSet.name && armorSet.name.toLowerCase().indexOf(query) !== -1;
+	});
 };
 
 interface IRouteProps {
@@ -73,7 +78,7 @@ interface IState {
 	skills: SkillRank[];
 	slots: Slot[];
 	type: ArmorType;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 const ArmorSetEntitySelect = EntitySelect.ofType<ArmorSet>();
@@ -134,7 +139,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 					})),
 					crafting: armor.crafting,
 					defense: toStringValues(armor.defense),
-					name: armor.name,
+					name: armor.name || '',
 					rank: armor.rank,
 					rarity: armor.rarity.toString(10),
 					resistances: toStringValues(armor.resistances),
@@ -471,7 +476,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						dataSource={this.state.skills}
 						columns={[
 							{
-								dataIndex: 'skillName',
+								render: rank => rank.skillName || '???',
 								title: 'Name',
 							},
 							{
@@ -507,7 +512,7 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 						dataSource={this.state.crafting.materials}
 						columns={[
 							{
-								render: cost => cost.item.name,
+								render: cost => cost.item.name || '???',
 								title: 'Item',
 							},
 							{
@@ -770,9 +775,9 @@ class ArmorEditorComponent extends React.PureComponent<IProps, IState> {
 				message: error.message,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 

@@ -1,10 +1,10 @@
 import {FormGroup, IFormGroupProps, Intent} from '@blueprintjs/core';
 import * as React from 'react';
-import {IConstraintViolations} from '../Api/Error';
+import {IValidationFailures} from '../Api/Error';
 
 interface IProps extends IFormGroupProps {
 	labelFor: string;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 export const ValidationAwareFormGroup: React.FC<IProps> = ({violations, ...props}) => {
@@ -13,23 +13,21 @@ export const ValidationAwareFormGroup: React.FC<IProps> = ({violations, ...props
 			props.helperText = violations[props.labelFor].message;
 			props.intent = Intent.DANGER;
 		} else {
-			for (const key in violations) {
+			for (let key in violations) {
 				if (!violations.hasOwnProperty(key))
 					continue;
 
-				if (key.indexOf(props.labelFor) === 0) {
-					props.helperText = violations[props.labelFor].message;
+				// Fix for strings objects on localized entities
+				const path = key.replace(/strings\[\d+\]\./, '');
+
+				if (path.indexOf(props.labelFor) === 0) {
+					props.helperText = violations[key].message;
 					props.intent = Intent.DANGER;
 
 					break;
 				}
 			}
 		}
-	}
-
-	if (violations && props.labelFor in violations) {
-		props.helperText = violations[props.labelFor].message;
-		props.intent = Intent.DANGER;
 	}
 
 	return (

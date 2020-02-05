@@ -69,7 +69,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 				<Table
 					columns={[
 						{
-							dataIndex: 'name',
+							render: rank => rank.name || `??? ${rank.level}`,
 							title: 'Name',
 						},
 						{
@@ -220,7 +220,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 									small={true}
 								/>
 							)}
-							text={`${cost.quantity}x ${cost.item.name}`}
+							text={`${cost.quantity}x ${cost.item.name || '???'}`}
 						/>
 					)) || (
 						<MenuItem disabled={true} text="No materials yet" />
@@ -269,7 +269,7 @@ export class CharmRanksTable extends React.PureComponent<IProps, IState> {
 									small={true}
 								/>
 							)}
-							text={`${skill.skillName} ${skill.level}`}
+							text={`${skill.skillName || '???'} ${skill.level}`}
 						/>
 					)) || (
 						<MenuItem disabled={true} text="This charm has no skills." />

@@ -3,7 +3,7 @@ import {Cell, Row, Select, Table} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {DecorationModel} from '../../../Api/Models/Decoration';
 import {Skill, SkillModel, SkillRank} from '../../../Api/Models/Skill';
 import {toaster} from '../../../toaster';
@@ -35,7 +35,7 @@ interface IState {
 	skillList: Skill[];
 	skills: SkillRank[];
 	slot: number;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
@@ -79,7 +79,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 
 			this.setState({
 				loading: false,
-				name: deco.name,
+				name: deco.name || '',
 				rarity: deco.rarity.toString(10),
 				slot: deco.slot,
 			});
@@ -168,7 +168,7 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 					dataSource={this.state.skills}
 					columns={[
 						{
-							dataIndex: 'skillName',
+							render: rank => rank.skillName || '???',
 							title: 'Name',
 						},
 						{
@@ -301,9 +301,9 @@ class DecorationEditorComponent extends React.PureComponent<IProps, IState> {
 				saving: false,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 		});

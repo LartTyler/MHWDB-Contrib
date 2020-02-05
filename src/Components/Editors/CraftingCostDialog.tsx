@@ -1,7 +1,7 @@
 import {Button, Classes, Dialog, InputGroup, Intent} from '@blueprintjs/core';
 import {Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {IConstraintViolations} from '../../Api/Error';
+import {IValidationFailures} from '../../Api/Error';
 import {CraftingCost, Item, ItemModel} from '../../Api/Models/Item';
 import {Theme, ThemeContext} from '../Contexts/ThemeContext';
 import {ValidationAwareFormGroup} from '../ValidationAwareFormGroup';
@@ -21,7 +21,7 @@ interface IState {
 	item: Item;
 	items: Item[];
 	quantity: string;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
@@ -114,12 +114,17 @@ export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
 	}
 
 	private filterItemsList = (query: string, items: Item[]) => {
+		if (!query)
+			return items;
+
 		query = query.toLowerCase();
 
-		return items.filter(item => item.name.toLowerCase().indexOf(query) !== -1);
+		return items.filter(item => {
+			return item.name && item.name.toLowerCase().indexOf(query) !== -1
+		});
 	};
 
-	private renderItemText = (item: Item) => item.name;
+	private renderItemText = (item: Item) => item.name || '???';
 
 	private onItemSelect = (item: Item) => this.setState({
 		item,
@@ -130,7 +135,7 @@ export class CraftingCostDialog extends React.PureComponent<IProps, IState> {
 	});
 
 	private onSaveClick = () => {
-		const violations: IConstraintViolations = {};
+		const violations: IValidationFailures = {};
 
 		if (!this.state.item) {
 			violations.items = {

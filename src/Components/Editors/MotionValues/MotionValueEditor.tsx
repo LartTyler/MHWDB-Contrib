@@ -3,7 +3,7 @@ import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {MotionValueModel} from '../../../Api/Models/MotionValue';
 import {DamageType, WeaponType, weaponTypeLabels} from '../../../Api/Models/Weapon';
 import {toaster} from '../../../toaster';
@@ -49,7 +49,7 @@ interface IState {
 	redirect: boolean;
 	saving: boolean;
 	stun: string;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
@@ -81,7 +81,7 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 			exhaust: response.data.exhaust ? response.data.exhaust.toString(10) : '',
 			hits: response.data.hits.join(', '),
 			loading: false,
-			name: response.data.name,
+			name: response.data.name || '',
 			stun: response.data.stun ? response.data.stun.toString(10) : '',
 		}));
 	}
@@ -283,9 +283,9 @@ class MotionValueEditorComponent extends React.PureComponent<IProps, IState> {
 				message: error.message,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 

@@ -15,7 +15,9 @@ export const createEntityListFilter = <T extends Entity>(key: keyof T) => (query
 	return items.filter(item => {
 		let value: any = item[key];
 
-		if (typeof value === 'number')
+		if (!value)
+			return false;
+		else if (typeof value === 'number')
 			value = value.toString(10);
 		else if (typeof value !== 'string')
 			throw new Error('Entities can only be filtered on string or numeric fields');

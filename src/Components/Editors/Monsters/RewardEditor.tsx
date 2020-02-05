@@ -34,7 +34,7 @@ export class RewardEditor extends React.PureComponent<IProps, IState> {
 				<Table
 					columns={[
 						{
-							render: reward => reward.item.name,
+							render: reward => reward.item.name || '???',
 							title: 'Item',
 						},
 						{
@@ -87,7 +87,7 @@ export class RewardEditor extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private renderItemText = (item: Item) => item.name;
+	private renderItemText = (item: Item) => item.name || '???';
 
 	private renderConditionsPopover = (reward: MonsterReward) => {
 		return (
@@ -166,9 +166,12 @@ export class RewardEditor extends React.PureComponent<IProps, IState> {
 	});
 
 	private onItemsFilter = (query: string, items: Item[]) => {
+		if (!query)
+			return items;
+
 		query = query.toLowerCase();
 
-		return items.filter(item => item.name.toLowerCase().indexOf(query) !== -1);
+		return items.filter(item => item.name && item.name.toLowerCase().indexOf(query) !== -1);
 	};
 
 	private onRewardAdd = (item: Item) => {

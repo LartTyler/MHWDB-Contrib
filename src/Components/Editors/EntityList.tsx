@@ -15,6 +15,8 @@ import {SearchInput} from '../Search';
 export const createEntityFilter = <T extends Entity>(key: keyof T) => (record: T, search: string) => {
 	let value: any = record[key];
 
+	if (!value)
+		return false;
 	if (typeof value === 'number')
 		value = value.toString(10);
 	else if (typeof value !== 'string')

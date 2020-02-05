@@ -24,26 +24,26 @@ export interface IErrorResponse<T extends object = {}> {
 	};
 }
 
-export interface IConstraintViolation {
+export interface IValidationFailure {
 	code: string;
 	path: string;
 	message: string;
 }
 
-export interface IConstraintViolations {
-	[key: string]: IConstraintViolation;
+export interface IValidationFailures {
+	[key: string]: IValidationFailure;
 }
 
-export interface IConstraintViolationContext {
-	violations: IConstraintViolations;
+export interface IValidationFailureContext {
+	failures: IValidationFailures;
 }
 
 export const isErrorResponse = (value: any): value is IErrorResponse => {
 	return typeof value === 'object' && 'error' in value;
 };
 
-export const isConstraintViolationError = (value: any): value is ApiError<IConstraintViolationContext> => {
-	return value instanceof Error && 'context' in value && 'violations' in (value as ApiError).context;
+export const isValidationFailedError = (value: any): value is ApiError<IValidationFailureContext> => {
+	return value instanceof Error && (value as ApiError).code === 'validation_failed';
 };
 
 export class ApiError<T = {}> extends Error {

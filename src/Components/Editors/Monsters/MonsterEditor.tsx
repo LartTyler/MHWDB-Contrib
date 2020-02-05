@@ -3,7 +3,7 @@ import {Cell, MultiSelect, Row, Select} from '@dbstudios/blueprintjs-components'
 import * as React from 'react';
 import {Redirect, RouteComponentProps, withRouter} from 'react-router';
 import {isRoleGrantedToUser} from '../../../Api/client';
-import {IConstraintViolations, isConstraintViolationError} from '../../../Api/Error';
+import {IValidationFailures, isValidationFailedError} from '../../../Api/Error';
 import {Ailment, AilmentModel} from '../../../Api/Models/Ailment';
 import {Item, ItemModel} from '../../../Api/Models/Item';
 import {Location, LocationModel} from '../../../Api/Models/Location';
@@ -57,7 +57,7 @@ interface IState {
 	saving: boolean;
 	species: MonsterSpecies;
 	type: MonsterType;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 	weaknesses: MonsterWeakness[];
 }
 
@@ -113,10 +113,10 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 			const monster = response.data;
 
 			this.setState({
-				description: monster.description,
+				description: monster.description || '',
 				elements: monster.elements,
 				loading: false,
-				name: monster.name,
+				name: monster.name || '',
 				resistances: monster.resistances,
 				species: monster.species,
 				type: monster.type,
@@ -360,11 +360,11 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 		);
 	}
 
-	private renderAilmentText = (ailment: Ailment) => ailment.name;
+	private renderAilmentText = (ailment: Ailment) => ailment.name || '???';
 
 	private renderElementText = (element: Element) => ucfirst(element);
 
-	private renderLocationText = (location: Location) => location.name;
+	private renderLocationText = (location: Location) => location.name || '???';
 
 	private renderSpeciesText = (species: MonsterSpecies) => ucwords(species);
 
@@ -445,7 +445,7 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 		if (this.state.saving)
 			return;
 
-		const violations: IConstraintViolations = {};
+		const violations: IValidationFailures = {};
 
 		if (!this.state.type) {
 			violations.type = {
@@ -523,9 +523,9 @@ class MonsterEditorComponent extends React.PureComponent<IProps, IState> {
 				saving: false,
 			});
 
-			if (isConstraintViolationError(error)) {
+			if (isValidationFailedError(error)) {
 				this.setState({
-					violations: error.context.violations,
+					violations: error.context.failures,
 				});
 			}
 		});

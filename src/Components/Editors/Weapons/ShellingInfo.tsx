@@ -1,6 +1,6 @@
 import {Cell, Row, Select} from '@dbstudios/blueprintjs-components';
 import * as React from 'react';
-import {IConstraintViolations} from '../../../Api/Error';
+import {IValidationFailures} from '../../../Api/Error';
 import {IShellingInfo, ShellingType} from '../../../Api/Models/Weapons/Gunlance';
 import {range} from '../../../Utility/array';
 import {ucfirst} from '../../../Utility/string';
@@ -10,7 +10,7 @@ interface IProps {
 	onChange: (type: ShellingType, level: number) => void;
 	readOnly: boolean;
 	shelling: IShellingInfo;
-	violations: IConstraintViolations;
+	violations: IValidationFailures;
 }
 
 export const ShellingInfo: React.FC<IProps> = props => (
