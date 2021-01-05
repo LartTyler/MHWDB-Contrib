@@ -17,7 +17,7 @@
 		"@types/react": "^16.4",
 		"@types/react-dom": "^16.0",
 		"@types/react-router-dom": "^4.3",
-		"axios": "^0.18",
+		"axios": "^0.21",
 		"debounce": "^1.2",
 		"dotenv": "^6.0",
 		"react": "^16.5",
